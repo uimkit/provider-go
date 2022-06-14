@@ -1,6 +1,6 @@
 package provider
 
-type SendMessageRequest struct {
+type MessageRequest struct {
 	*BaseRequest
 	Type string `json:"type,omitempty"`
 	From string `json:"from,omitempty"`
@@ -8,8 +8,8 @@ type SendMessageRequest struct {
 	Body any    `json:"body,omitempty"`
 }
 
-func NewSendMessageRequest(t, from, to string, body any) *SendMessageRequest {
-	return &SendMessageRequest{
+func NewMessageRequest(t, from, to string, body any) *MessageRequest {
+	return &MessageRequest{
 		BaseRequest: NewBaseRequestWithPath("/send_message"),
 		Type:        t,
 		From:        from,
@@ -18,18 +18,8 @@ func NewSendMessageRequest(t, from, to string, body any) *SendMessageRequest {
 	}
 }
 
-type SendMessageResponse struct {
-	*BaseResponse
-}
-
-func NewSendMessageResponse() *SendMessageResponse {
-	return &SendMessageResponse{
-		BaseResponse: &BaseResponse{},
-	}
-}
-
-func (client *Client) SendMessage(request *SendMessageRequest) (response *SendMessageResponse, err error) {
-	response = NewSendMessageResponse()
+func (client *Client) SendMessage(request *MessageRequest) (err error) {
+	response := &BaseResponse{}
 	err = client.DoAction(request, response)
 	return
 }
