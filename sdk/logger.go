@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"uimkit.chat/provider-go/sdk/utils"
+	"github.com/uimkit/provider-go/sdk/utils"
 )
 
 type Logger struct {

@@ -23,7 +23,7 @@ import (
 	"net/http"
 	"strings"
 
-	"uimkit.chat/provider-go/sdk/errors"
+	"github.com/uimkit/provider-go/sdk/errors"
 )
 
 type Response interface {

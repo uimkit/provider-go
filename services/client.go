@@ -16,7 +16,7 @@ package services
 // Changes may cause incorrect behavior and will be lost if the code is regenerated.
 
 import (
-	"uimkit.chat/provider-go/sdk"
+	"github.com/uimkit/provider-go/sdk"
 )
 
 // Client is the sdk client struct, each func corresponds to an OpenAPI

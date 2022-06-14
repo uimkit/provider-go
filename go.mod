@@ -1,4 +1,4 @@
-module uimkit.chat/provider-go
+module github.com/uimkit/provider-go
 
 go 1.18
 

@@ -1,8 +1,8 @@
 package services
 
 import (
-	"uimkit.chat/provider-go/sdk/requests"
-	"uimkit.chat/provider-go/sdk/responses"
+	"github.com/uimkit/provider-go/sdk/requests"
+	"github.com/uimkit/provider-go/sdk/responses"
 )
 
 //Licensed under the Apache License, Version 2.0 (the "License");

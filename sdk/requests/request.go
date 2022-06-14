@@ -25,8 +25,8 @@ import (
 	"strings"
 	"time"
 
-	"uimkit.chat/provider-go/sdk/errors"
-	"uimkit.chat/provider-go/sdk/utils"
+	"github.com/uimkit/provider-go/sdk/errors"
+	"github.com/uimkit/provider-go/sdk/utils"
 )
 
 const (
