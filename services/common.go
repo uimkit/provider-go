@@ -1,6 +1,8 @@
 package services
 
 import (
+	"net/http"
+
 	"github.com/uimkit/provider-go/sdk/requests"
 	"github.com/uimkit/provider-go/sdk/responses"
 )
@@ -28,6 +30,19 @@ type SendMessageRequest struct {
 	Body any    `json:"body,omitempty"`
 }
 
+func NewSendMessageRequest(t, from, to string, body any) *SendMessageRequest {
+	request := &SendMessageRequest{
+		CommonRequest: requests.NewCommonRequest(),
+		Type:          t,
+		From:          from,
+		To:            to,
+		Body:          body,
+	}
+	request.Method = http.MethodPost
+	request.PathPattern = "/send_message"
+	return request
+}
+
 type SendIQRequest struct {
 	*requests.CommonRequest
 	ID      string `json:"id,omitempty"`
@@ -35,6 +50,20 @@ type SendIQRequest struct {
 	From    string `json:"from,omitempty"`
 	To      string `json:"to,omitempty"`
 	Payload any    `json:"payload,omitempty"`
+}
+
+func NewSendIQRequest(id, t, from, to string, payload any) *SendIQRequest {
+	request := &SendIQRequest{
+		CommonRequest: requests.NewCommonRequest(),
+		ID:            id,
+		Type:          t,
+		From:          from,
+		To:            to,
+		Payload:       payload,
+	}
+	request.Method = http.MethodPost
+	request.PathPattern = "/send_iq"
+	return request
 }
 
 type SendMessageResponse struct {

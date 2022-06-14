@@ -314,6 +314,7 @@ func defaultBaseRequest() (request *baseRequest) {
 			"Accept-Encoding":   "identity",
 		},
 		FormParams: make(map[string]string),
+		PathParams: make(map[string]string),
 	}
 	return
 }
