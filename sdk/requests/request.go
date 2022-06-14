@@ -17,6 +17,7 @@ package requests
 import (
 	"bytes"
 	"encoding/json"
+	"encoding/xml"
 	"fmt"
 	"io"
 	"net/url"
@@ -69,6 +70,8 @@ type Request interface {
 	GetQueryParams() map[string]string
 	GetFormParams() map[string]string
 	GetPathParams() map[string]string
+	GetContentType() (string, bool)
+	SetContentType(string)
 	GetContent() []byte
 	SetContent(content []byte)
 	GetBodyReader() io.Reader
@@ -321,7 +324,21 @@ func defaultBaseRequest() (request *baseRequest) {
 
 func InitParams(request Request) (err error) {
 	requestValue := reflect.ValueOf(request).Elem()
-	err = flatRepeatedList(requestValue, request, "", "")
+	if err = flatRepeatedList(requestValue, request, "", ""); err != nil {
+		return
+	}
+	if contentType, contains := request.GetContentType(); contains {
+		var content []byte
+		if contentType == Json {
+			content, err = json.Marshal(request)
+		} else if contentType == Xml {
+			content, err = xml.Marshal(request)
+		}
+		if err != nil {
+			return
+		}
+		request.SetContent(content)
+	}
 	return
 }
 

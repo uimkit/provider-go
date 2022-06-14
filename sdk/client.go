@@ -220,12 +220,11 @@ func (client *Client) buildRequest(request requests.Request) (httpRequest *http.
 
 	// resolve endpoint
 	endpoint := request.GetDomain()
-
 	if endpoint == "" && client.Domain != "" {
 		endpoint = client.Domain
 	}
-
 	request.SetDomain(endpoint)
+
 	if request.GetScheme() == "" {
 		request.SetScheme(client.config.Scheme)
 	}
