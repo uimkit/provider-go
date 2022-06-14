@@ -1,4 +1,4 @@
-package utils
+package provider
 
 import (
 	"fmt"
@@ -8,18 +8,10 @@ import (
 
 type Debug func(format string, v ...interface{})
 
-var hookGetEnv = func() string {
-	return os.Getenv("DEBUG")
-}
-
-var hookPrint = func(input string) {
-	fmt.Println(input)
-}
-
-func Init(flag string) Debug {
+func getDebug(flag string) Debug {
 	enable := false
 
-	env := hookGetEnv()
+	env := os.Getenv("DEBUG")
 	parts := strings.Split(env, ",")
 	for _, part := range parts {
 		if part == flag {
@@ -30,7 +22,7 @@ func Init(flag string) Debug {
 
 	return func(format string, v ...interface{}) {
 		if enable {
-			hookPrint(fmt.Sprintf(format, v...))
+			fmt.Println(fmt.Sprintf(format, v...))
 		}
 	}
 }

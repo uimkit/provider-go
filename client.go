@@ -1,22 +1,9 @@
-/*
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-package sdk
+package provider
 
 import (
 	"context"
 	"crypto/tls"
+	"encoding/json"
 	"fmt"
 	"net"
 	"net/http"
@@ -27,51 +14,37 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/uimkit/provider-go/sdk/errors"
-	"github.com/uimkit/provider-go/sdk/requests"
-	"github.com/uimkit/provider-go/sdk/responses"
-	"github.com/uimkit/provider-go/sdk/utils"
 )
 
-var debug utils.Debug
+var debug Debug
 
 func init() {
-	debug = utils.Init("sdk")
+	debug = getDebug("sdk")
 }
 
-// Version this value will be replaced while build: -ldflags="-X sdk.version=x.x.x"
+// Version this value will be replaced while build: -ldflags="-X provider.version=x.x.x"
 var Version = "0.0.1"
 var defaultConnectTimeout = 5 * time.Second
 var defaultReadTimeout = 10 * time.Second
 
 var DefaultUserAgent = fmt.Sprintf("UIMKit (%s; %s) Golang/%s Core/%s", runtime.GOOS, runtime.GOARCH, strings.Trim(runtime.Version(), "go"), Version)
 
-var hookDo = func(fn func(req *http.Request) (*http.Response, error)) func(req *http.Request) (*http.Response, error) {
-	return fn
-}
+const DefaultDomain = "api.uimkit.chat/provider/v1"
 
-// Client the type Client
 type Client struct {
-	SourceIp        string
-	SecureTransport string
-	isInsecure      bool
-	config          *Config
-	httpProxy       string
-	httpsProxy      string
-	noProxy         string
-	logger          *Logger
-	userAgent       map[string]string
-	httpClient      *http.Client
-	asyncTaskQueue  chan func()
-	readTimeout     time.Duration
-	connectTimeout  time.Duration
-	Domain          string
-	isOpenAsync     bool
-}
-
-func (client *Client) Init() (err error) {
-	panic("not support yet")
+	Domain         string
+	isInsecure     bool
+	httpProxy      string
+	httpsProxy     string
+	noProxy        string
+	readTimeout    time.Duration
+	connectTimeout time.Duration
+	userAgent      map[string]string
+	config         *Config
+	httpClient     *http.Client
+	logger         *Logger
+	asyncTaskQueue chan func()
+	isOpenAsync    bool
 }
 
 func (client *Client) SetHTTPSInsecure(isInsecure bool) {
@@ -113,26 +86,6 @@ func (client *Client) SetTransport(transport http.RoundTripper) {
 	client.httpClient.Transport = transport
 }
 
-func (client *Client) InitWithOptions(config *Config) (err error) {
-	client.config = config
-	client.httpClient = &http.Client{}
-
-	if config.Transport != nil {
-		client.httpClient.Transport = config.Transport
-	} else if config.HttpTransport != nil {
-		client.httpClient.Transport = config.HttpTransport
-	}
-
-	if config.Timeout > 0 {
-		client.httpClient.Timeout = config.Timeout
-	}
-
-	if config.EnableAsync {
-		client.EnableAsync(config.GoRoutinePoolSize, config.MaxTaskQueueSize)
-	}
-	return
-}
-
 func (client *Client) SetReadTimeout(readTimeout time.Duration) {
 	client.readTimeout = readTimeout
 }
@@ -149,8 +102,32 @@ func (client *Client) GetConnectTimeout() time.Duration {
 	return client.connectTimeout
 }
 
+func (client *Client) GetConfig() *Config {
+	return client.config
+}
+
+func (client *Client) InitWithOptions(config *Config) (err error) {
+	client.config = config
+
+	client.httpClient = &http.Client{}
+	if config.Transport != nil {
+		client.httpClient.Transport = config.Transport
+	} else if config.HttpTransport != nil {
+		client.httpClient.Transport = config.HttpTransport
+	}
+
+	if config.Timeout > 0 {
+		client.httpClient.Timeout = config.Timeout
+	}
+
+	if config.EnableAsync {
+		client.EnableAsync(config.GoRoutinePoolSize, config.MaxTaskQueueSize)
+	}
+	return
+}
+
 func (client *Client) getHttpProxy(scheme string) (proxy *url.URL, err error) {
-	if scheme == "https" {
+	if strings.ToUpper(scheme) == HTTPS {
 		if client.GetHttpsProxy() != "" {
 			proxy, err = url.Parse(client.httpsProxy)
 		} else if rawurl := os.Getenv("HTTPS_PROXY"); rawurl != "" {
@@ -167,7 +144,6 @@ func (client *Client) getHttpProxy(scheme string) (proxy *url.URL, err error) {
 			proxy, err = url.Parse(rawurl)
 		}
 	}
-
 	return proxy, err
 }
 
@@ -180,8 +156,37 @@ func (client *Client) getNoProxy(scheme string) []string {
 	} else if rawurl := os.Getenv("no_proxy"); rawurl != "" {
 		urls = strings.Split(rawurl, ",")
 	}
-
 	return urls
+}
+
+func getSendUserAgent(configUserAgent string, clientUserAgent, requestUserAgent map[string]string) string {
+	realUserAgent := ""
+	for key1, value1 := range clientUserAgent {
+		for key2 := range requestUserAgent {
+			if key1 == key2 {
+				key1 = ""
+			}
+		}
+		if key1 != "" {
+			realUserAgent += fmt.Sprintf(" %s/%s", key1, value1)
+		}
+	}
+	for key, value := range requestUserAgent {
+		realUserAgent += fmt.Sprintf(" %s/%s", key, value)
+	}
+	if configUserAgent != "" {
+		return realUserAgent + fmt.Sprintf(" Extra/%s", configUserAgent)
+	}
+	return realUserAgent
+}
+
+func (client *Client) getHTTPSInsecure(request Request) (insecure bool) {
+	if request.GetHTTPSInsecure() != nil {
+		insecure = *request.GetHTTPSInsecure()
+	} else {
+		insecure = client.GetHTTPSInsecure()
+	}
+	return insecure
 }
 
 // EnableAsync enable the async task queue
@@ -206,15 +211,30 @@ func (client *Client) EnableAsync(routinePoolSize, maxTaskQueueSize int) {
 	}
 }
 
-func (client *Client) InitClientConfig() (config *Config) {
-	if client.config != nil {
-		return client.config
-	} else {
-		return NewConfig()
+func (client *Client) Shutdown() {
+	if client.asyncTaskQueue != nil {
+		close(client.asyncTaskQueue)
 	}
+	client.isOpenAsync = false
 }
 
-func (client *Client) buildRequest(request requests.Request) (httpRequest *http.Request, err error) {
+/**
+only block when any one of the following occurs:
+1. the asyncTaskQueue is full, increase the queue size to avoid this
+2. Shutdown() in progressing, the client is being closed
+**/
+func (client *Client) AddAsyncTask(task func()) (err error) {
+	if client.asyncTaskQueue != nil {
+		if client.isOpenAsync {
+			client.asyncTaskQueue <- task
+		}
+	} else {
+		err = NewClientError(AsyncFunctionNotEnabledCode, AsyncFunctionNotEnabledMessage, nil)
+	}
+	return
+}
+
+func (client *Client) buildRequest(request Request) (httpRequest *http.Request, err error) {
 	// add clientVersion
 	request.GetHeaders()["x-sdk-core-version"] = Version
 
@@ -223,13 +243,21 @@ func (client *Client) buildRequest(request requests.Request) (httpRequest *http.
 	if endpoint == "" && client.Domain != "" {
 		endpoint = client.Domain
 	}
+	if endpoint == "" {
+		endpoint = DefaultDomain
+	}
 	request.SetDomain(endpoint)
 
 	if request.GetScheme() == "" {
 		request.SetScheme(client.config.Scheme)
 	}
 	// init request params
-	err = requests.InitParams(request)
+	err = initParams(request)
+	if err != nil {
+		return
+	}
+
+	err = marshalBody(request)
 	if err != nil {
 		return
 	}
@@ -243,34 +271,11 @@ func (client *Client) buildRequest(request requests.Request) (httpRequest *http.
 	return
 }
 
-func getSendUserAgent(configUserAgent string, clientUserAgent, requestUserAgent map[string]string) string {
-	realUserAgent := ""
-	for key1, value1 := range clientUserAgent {
-		for key2 := range requestUserAgent {
-			if key1 == key2 {
-				key1 = ""
-			}
-		}
-		if key1 != "" {
-			realUserAgent += fmt.Sprintf(" %s/%s", key1, value1)
-
-		}
-	}
-	for key, value := range requestUserAgent {
-		realUserAgent += fmt.Sprintf(" %s/%s", key, value)
-	}
-	if configUserAgent != "" {
-		return realUserAgent + fmt.Sprintf(" Extra/%s", configUserAgent)
-	}
-	return realUserAgent
-}
-
 func (client *Client) AppendUserAgent(key, value string) {
-	newkey := true
-
 	if client.userAgent == nil {
 		client.userAgent = make(map[string]string)
 	}
+	newkey := true
 	if strings.ToLower(key) != "core" && strings.ToLower(key) != "go" {
 		for tag := range client.userAgent {
 			if tag == key {
@@ -284,12 +289,7 @@ func (client *Client) AppendUserAgent(key, value string) {
 	}
 }
 
-func (client *Client) BuildRequest(request requests.Request) (err error) {
-	_, err = client.buildRequest(request)
-	return
-}
-
-func (client *Client) getTimeout(request requests.Request) (time.Duration, time.Duration) {
+func (client *Client) getTimeout(request Request) (time.Duration, time.Duration) {
 	readTimeout := defaultReadTimeout
 	connectTimeout := defaultConnectTimeout
 
@@ -320,7 +320,7 @@ func Timeout(connectTimeout time.Duration) func(cxt context.Context, net, addr s
 	}
 }
 
-func (client *Client) setTimeout(request requests.Request) {
+func (client *Client) setTimeout(request Request) {
 	readTimeout, connectTimeout := client.getTimeout(request)
 	client.httpClient.Timeout = readTimeout
 	if trans, ok := client.httpClient.Transport.(*http.Transport); ok && trans != nil {
@@ -333,21 +333,13 @@ func (client *Client) setTimeout(request requests.Request) {
 	}
 }
 
-func (client *Client) getHTTPSInsecure(request requests.Request) (insecure bool) {
-	if request.GetHTTPSInsecure() != nil {
-		insecure = *request.GetHTTPSInsecure()
-	} else {
-		insecure = client.GetHTTPSInsecure()
-	}
-	return insecure
-}
-
-func (client *Client) DoAction(request requests.Request, response responses.Response) (err error) {
+func (client *Client) DoAction(request Request, response Response) (err error) {
 	fieldMap := make(map[string]string)
 	initLogMsg(fieldMap)
 	defer func() {
 		client.printLog(fieldMap, err)
 	}()
+
 	httpRequest, err := client.buildRequest(request)
 	if err != nil {
 		return
@@ -358,7 +350,6 @@ func (client *Client) DoAction(request requests.Request, response responses.Resp
 	if err != nil {
 		return err
 	}
-
 	noProxy := client.getNoProxy(httpRequest.URL.Scheme)
 
 	var flag bool
@@ -399,6 +390,7 @@ func (client *Client) DoAction(request requests.Request, response responses.Resp
 			initLogMsg(fieldMap)
 		}
 		putMsgToMap(fieldMap, httpRequest)
+
 		debug("> %s %s %s", httpRequest.Method, httpRequest.URL.RequestURI(), httpRequest.Proto)
 		debug("> Host: %s", httpRequest.Host)
 		for key, value := range httpRequest.Header {
@@ -409,17 +401,20 @@ func (client *Client) DoAction(request requests.Request, response responses.Resp
 
 		startTime := time.Now()
 		fieldMap["{start_time}"] = startTime.Format("2006-01-02 15:04:05")
-		httpResponse, err = hookDo(client.httpClient.Do)(httpRequest)
+		httpResponse, err = client.httpClient.Do(httpRequest)
 		fieldMap["{cost}"] = time.Since(startTime).String()
+
 		if err == nil {
 			fieldMap["{code}"] = strconv.Itoa(httpResponse.StatusCode)
-			fieldMap["{res_headers}"] = TransToString(httpResponse.Header)
+			fieldMap["{res_headers}"] = toString(httpResponse.Header)
+
 			debug("< %s %s", httpResponse.Proto, httpResponse.Status)
 			for key, value := range httpResponse.Header {
 				debug("< %s: %v", key, strings.Join(value, ""))
 			}
 		}
 		debug("<")
+
 		// receive error
 		if err != nil {
 			debug(" Error: %s.", err.Error())
@@ -428,16 +423,17 @@ func (client *Client) DoAction(request requests.Request, response responses.Resp
 			} else if retryTimes >= client.config.MaxRetryTime {
 				// timeout but reached the max retry times, return
 				times := strconv.Itoa(retryTimes + 1)
-				timeoutErrorMsg := fmt.Sprintf(errors.TimeoutErrorMessage, times, times)
+				timeoutErrorMsg := fmt.Sprintf(TimeoutErrorMessage, times, times)
 				if strings.Contains(err.Error(), "Client.Timeout") {
 					timeoutErrorMsg += " Read timeout. Please set a valid ReadTimeout."
 				} else {
 					timeoutErrorMsg += " Connect timeout. Please set a valid ConnectTimeout."
 				}
-				err = errors.NewClientError(errors.TimeoutErrorCode, timeoutErrorMsg, err)
+				err = NewClientError(TimeoutErrorCode, timeoutErrorMsg, err)
 				return
 			}
 		}
+
 		if isCertificateError(err) {
 			return
 		}
@@ -456,39 +452,21 @@ func (client *Client) DoAction(request requests.Request, response responses.Resp
 		break
 	}
 
-	err = responses.Unmarshal(response, httpResponse, request.GetAcceptFormat())
+	err = unmarshalResponse(response, httpResponse, request.GetAcceptFormat())
 	fieldMap["{res_body}"] = response.GetHttpContentString()
 	debug("%s", response.GetHttpContentString())
+
 	// wrap server errors
-	if serverErr, ok := err.(*errors.ServerError); ok {
+	if serverErr, ok := err.(*ServerError); ok {
 		var wrapInfo = map[string]string{}
 		serverErr.RespHeaders = response.GetHttpHeaders()
 		wrapInfo["StringToSign"] = request.GetStringToSign()
-		err = errors.WrapServerError(serverErr, wrapInfo)
+		err = wrapServerError(serverErr, wrapInfo)
 	}
 	return
 }
 
-func isCertificateError(err error) bool {
-	if err != nil && strings.Contains(err.Error(), "x509: certificate signed by unknown authority") {
-		return true
-	}
-	return false
-}
-
-func putMsgToMap(fieldMap map[string]string, request *http.Request) {
-	fieldMap["{host}"] = request.Host
-	fieldMap["{method}"] = request.Method
-	fieldMap["{uri}"] = request.URL.RequestURI()
-	fieldMap["{pid}"] = strconv.Itoa(os.Getpid())
-	fieldMap["{version}"] = strings.Split(request.Proto, "/")[1]
-	hostname, _ := os.Hostname()
-	fieldMap["{hostname}"] = hostname
-	fieldMap["{req_headers}"] = TransToString(request.Header)
-	fieldMap["{target}"] = request.URL.Path + request.URL.RawQuery
-}
-
-func buildHttpRequest(request requests.Request) (httpRequest *http.Request, err error) {
+func buildHttpRequest(request Request) (httpRequest *http.Request, err error) {
 	requestMethod := request.GetMethod()
 	requestUrl := request.BuildUrl()
 	body := request.GetBodyReader()
@@ -506,33 +484,42 @@ func buildHttpRequest(request requests.Request) (httpRequest *http.Request, err 
 	return
 }
 
-func isServerError(httpResponse *http.Response) bool {
-	return httpResponse.StatusCode >= http.StatusInternalServerError
-}
-
-/**
-only block when any one of the following occurs:
-1. the asyncTaskQueue is full, increase the queue size to avoid this
-2. Shutdown() in progressing, the client is being closed
-**/
-func (client *Client) AddAsyncTask(task func()) (err error) {
-	if client.asyncTaskQueue != nil {
-		if client.isOpenAsync {
-			client.asyncTaskQueue <- task
+func marshalBody(request Request) (err error) {
+	if contentType, contains := request.GetContentType(); contains {
+		var content []byte
+		if contentType == Json {
+			if content, err = json.Marshal(request); err != nil {
+				err = NewClientError(JsonMarshalErrorCode, JsonMarshalErrorMessage, err)
+				return
+			}
+			request.SetContent(content)
 		}
-	} else {
-		err = errors.NewClientError(errors.AsyncFunctionNotEnabledCode, errors.AsyncFunctionNotEnabledMessage, nil)
 	}
 	return
 }
 
-func (client *Client) GetConfig() *Config {
-	return client.config
+func isCertificateError(err error) bool {
+	return err != nil && strings.Contains(err.Error(), "x509: certificate signed by unknown authority")
+}
+
+func putMsgToMap(fieldMap map[string]string, request *http.Request) {
+	fieldMap["{host}"] = request.Host
+	fieldMap["{method}"] = request.Method
+	fieldMap["{uri}"] = request.URL.RequestURI()
+	fieldMap["{pid}"] = strconv.Itoa(os.Getpid())
+	fieldMap["{version}"] = strings.Split(request.Proto, "/")[1]
+	hostname, _ := os.Hostname()
+	fieldMap["{hostname}"] = hostname
+	fieldMap["{req_headers}"] = toString(request.Header)
+	fieldMap["{target}"] = request.URL.Path + request.URL.RawQuery
+}
+
+func isServerError(httpResponse *http.Response) bool {
+	return httpResponse.StatusCode >= http.StatusInternalServerError
 }
 
 func NewClient() (client *Client, err error) {
-	client = &Client{}
-	err = client.Init()
+	client, err = NewClientWithOptions(NewConfig())
 	return
 }
 
@@ -540,12 +527,4 @@ func NewClientWithOptions(config *Config) (client *Client, err error) {
 	client = &Client{}
 	err = client.InitWithOptions(config)
 	return
-}
-
-func (client *Client) Shutdown() {
-	if client.asyncTaskQueue != nil {
-		close(client.asyncTaskQueue)
-	}
-
-	client.isOpenAsync = false
 }

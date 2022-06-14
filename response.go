@@ -1,29 +1,12 @@
-/*
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-package responses
+package provider
 
 import (
 	"bytes"
 	"encoding/json"
-	"encoding/xml"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strings"
-
-	"github.com/uimkit/provider-go/sdk/errors"
 )
 
 type Response interface {
@@ -37,13 +20,13 @@ type Response interface {
 }
 
 // Unmarshal object from http response body to target Response
-func Unmarshal(response Response, httpResponse *http.Response, format string) (err error) {
+func unmarshalResponse(response Response, httpResponse *http.Response, format string) (err error) {
 	err = response.parseFromHttpResponse(httpResponse)
 	if err != nil {
 		return
 	}
 	if !response.IsSuccess() {
-		err = errors.NewServerError(response.GetHttpStatus(), response.GetHttpContentString(), "")
+		err = NewServerError(response.GetHttpStatus(), response.GetHttpContentString(), "")
 		return
 	}
 
@@ -51,13 +34,11 @@ func Unmarshal(response Response, httpResponse *http.Response, format string) (e
 		return
 	}
 
-	if strings.ToUpper(format) == "JSON" {
+	if format == Json {
 		err = json.Unmarshal(response.GetHttpContentBytes(), response)
 		if err != nil {
-			err = errors.NewClientError(errors.JsonUnmarshalErrorCode, errors.JsonUnmarshalErrorMessage, err)
+			err = NewClientError(JsonUnmarshalErrorCode, JsonUnmarshalErrorMessage, err)
 		}
-	} else if strings.ToUpper(format) == "XML" {
-		err = xml.Unmarshal(response.GetHttpContentBytes(), response)
 	}
 	return
 }
@@ -94,7 +75,6 @@ func (baseResponse *BaseResponse) IsSuccess() bool {
 	if baseResponse.GetHttpStatus() >= 200 && baseResponse.GetHttpStatus() < 300 {
 		return true
 	}
-
 	return false
 }
 

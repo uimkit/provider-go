@@ -1,14 +1,11 @@
-package sdk
+package provider
 
 import (
-	"encoding/json"
 	"io"
 	"log"
 	"os"
 	"strings"
 	"time"
-
-	"github.com/uimkit/provider-go/sdk/utils"
 )
 
 type Logger struct {
@@ -82,20 +79,12 @@ func (client *Client) GetTemplate() string {
 	return client.logger.formatTemplate
 }
 
-func TransToString(object interface{}) string {
-	byt, err := json.Marshal(object)
-	if err != nil {
-		return ""
-	}
-	return string(byt)
-}
-
 func (client *Client) printLog(fieldMap map[string]string, err error) {
 	if err != nil {
 		fieldMap["{error}"] = err.Error()
 	}
 	fieldMap["{time}"] = time.Now().Format("2006-01-02 15:04:05")
-	fieldMap["{ts}"] = utils.GetTimeInFormatISO8601()
+	fieldMap["{ts}"] = timeISO8601()
 	if client.logger != nil {
 		logMsg := client.logger.formatTemplate
 		for key, value := range fieldMap {
