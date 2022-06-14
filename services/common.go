@@ -64,6 +64,7 @@ func NewSendIQRequest(id, t, from, to string, payload any) *SendIQRequest {
 	}
 	request.Method = http.MethodPost
 	request.PathPattern = "/send_iq"
+	request.SetContentType(requests.Json)
 	return request
 }
 
