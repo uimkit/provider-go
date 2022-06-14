@@ -16,7 +16,11 @@ package services
 // Changes may cause incorrect behavior and will be lost if the code is regenerated.
 
 import (
+	"net/http"
+
 	"github.com/uimkit/provider-go/sdk"
+	"github.com/uimkit/provider-go/sdk/requests"
+	"github.com/uimkit/provider-go/sdk/responses"
 )
 
 // Client is the sdk client struct, each func corresponds to an OpenAPI
@@ -32,10 +36,81 @@ func NewClientWithOptions(config *sdk.Config) (client *Client, err error) {
 	return
 }
 
+type SendMessageRequest struct {
+	*requests.CommonRequest
+	Type string `json:"type,omitempty"`
+	From string `json:"from,omitempty"`
+	To   string `json:"to,omitempty"`
+	Body any    `json:"body,omitempty"`
+}
+
+func NewSendMessageRequest(t, from, to string, body any) *SendMessageRequest {
+	request := &SendMessageRequest{
+		CommonRequest: requests.NewCommonRequest(),
+		Type:          t,
+		From:          from,
+		To:            to,
+		Body:          body,
+	}
+	request.Method = http.MethodPost
+	request.PathPattern = "/send_message"
+	request.SetContentType(requests.Json)
+	return request
+}
+
+type SendMessageResponse struct {
+	*responses.BaseResponse
+}
+
+func NewSendMessageResponse() *SendMessageResponse {
+	return &SendMessageResponse{
+		BaseResponse: &responses.BaseResponse{},
+	}
+}
+
 func (client *Client) SendMessage(request *SendMessageRequest) (response *SendMessageResponse, err error) {
 	response = NewSendMessageResponse()
 	err = client.DoAction(request, response)
 	return
+}
+
+type SendIQRequest struct {
+	*requests.CommonRequest
+	ID      string `json:"id,omitempty"`
+	Type    string `json:"type,omitempty"`
+	From    string `json:"from,omitempty"`
+	To      string `json:"to,omitempty"`
+	Payload any    `json:"payload,omitempty"`
+}
+
+func NewSendIQRequest(id, t, from, to string, payload any) *SendIQRequest {
+	request := &SendIQRequest{
+		CommonRequest: requests.NewCommonRequest(),
+		ID:            id,
+		Type:          t,
+		From:          from,
+		To:            to,
+		Payload:       payload,
+	}
+	request.Method = http.MethodPost
+	request.PathPattern = "/send_iq"
+	request.SetContentType(requests.Json)
+	return request
+}
+
+type SendIQResponse struct {
+	*responses.BaseResponse
+	ID      string `json:"id,omitempty"`
+	Type    string `json:"type,omitempty"`
+	From    string `json:"from,omitempty"`
+	To      string `json:"to,omitempty"`
+	Payload any    `json:"payload,omitempty"`
+}
+
+func NewSendIQResponse() *SendIQResponse {
+	return &SendIQResponse{
+		BaseResponse: &responses.BaseResponse{},
+	}
 }
 
 func (client *Client) SendIQ(request *SendIQRequest, callback func(response *SendIQResponse, err error)) <-chan int {
