@@ -16,8 +16,6 @@ package services
 // Changes may cause incorrect behavior and will be lost if the code is regenerated.
 
 import (
-	"net/http"
-
 	"github.com/uimkit/provider-go/sdk"
 	"github.com/uimkit/provider-go/sdk/requests"
 	"github.com/uimkit/provider-go/sdk/responses"
@@ -52,9 +50,7 @@ func NewSendMessageRequest(t, from, to string, body any) *SendMessageRequest {
 		To:            to,
 		Body:          body,
 	}
-	request.Method = http.MethodPost
 	request.PathPattern = "/send_message"
-	request.SetContentType(requests.Json)
 	return request
 }
 
@@ -92,9 +88,7 @@ func NewSendIQRequest(id, t, from, to string, payload any) *SendIQRequest {
 		To:            to,
 		Payload:       payload,
 	}
-	request.Method = http.MethodPost
 	request.PathPattern = "/send_iq"
-	request.SetContentType(requests.Json)
 	return request
 }
 

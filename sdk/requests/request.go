@@ -22,6 +22,7 @@ import (
 	"io"
 	"net/url"
 	"reflect"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -309,16 +310,17 @@ func defaultBaseRequest() (request *baseRequest) {
 	request = &baseRequest{
 		Scheme:       "",
 		AcceptFormat: "JSON",
-		Method:       GET,
-		QueryParams:  make(map[string]string),
+		Method:       POST,
 		Headers: map[string]string{
 			"x-sdk-client":      "golang/1.0.0",
 			"x-sdk-invoke-type": "normal",
 			"Accept-Encoding":   "identity",
 		},
-		FormParams: make(map[string]string),
-		PathParams: make(map[string]string),
+		QueryParams: make(map[string]string),
+		FormParams:  make(map[string]string),
+		PathParams:  make(map[string]string),
 	}
+	request.SetContentType(Json)
 	return
 }
 
@@ -558,4 +560,52 @@ func addParam(request Request, position, name, value string) (err error) {
 		}
 	}
 	return
+}
+
+type CommonRequest struct {
+	*baseRequest
+}
+
+func NewCommonRequest() (request *CommonRequest) {
+	request = &CommonRequest{
+		baseRequest: defaultBaseRequest(),
+	}
+	return
+}
+
+func (request *CommonRequest) String() string {
+	resultBuilder := bytes.Buffer{}
+
+	mapOutput := func(m map[string]string) {
+		if len(m) > 0 {
+			sortedKeys := make([]string, 0)
+			for k := range m {
+				sortedKeys = append(sortedKeys, k)
+			}
+
+			// sort 'string' key in increasing order
+			sort.Strings(sortedKeys)
+
+			for _, key := range sortedKeys {
+				resultBuilder.WriteString(key + ": " + m[key] + "\n")
+			}
+		}
+	}
+
+	// Request Line
+	resultBuilder.WriteString(fmt.Sprintf("%s %s\n", request.Method, request.buildPath()))
+
+	// Headers
+	resultBuilder.WriteString("Host" + ": " + request.Domain + "\n")
+	mapOutput(request.Headers)
+
+	resultBuilder.WriteString("\n")
+	// Body
+	if len(request.Content) > 0 {
+		resultBuilder.WriteString(string(request.Content) + "\n")
+	} else {
+		mapOutput(request.FormParams)
+	}
+
+	return resultBuilder.String()
 }
