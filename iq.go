@@ -9,11 +9,11 @@ type IQRequest struct {
 	Payload any    `json:"payload,omitempty"`
 }
 
-func NewIQRequest(id, t, from, to string, payload any) *IQRequest {
+func NewIQRequest(id, typ, from, to string, payload any) *IQRequest {
 	return &IQRequest{
 		BaseRequest: NewBaseRequestWithPath("/send_iq"),
 		ID:          id,
-		Type:        t,
+		Type:        typ,
 		From:        from,
 		To:          to,
 		Payload:     payload,
@@ -29,14 +29,14 @@ type IQResponse struct {
 	Payload any    `json:"payload,omitempty"`
 }
 
-func NewSendIQResponse() *IQResponse {
+func NewIQResponse() *IQResponse {
 	return &IQResponse{
 		BaseResponse: &BaseResponse{},
 	}
 }
 
 func (client *Client) SendIQ(request *IQRequest) (response *IQResponse, err error) {
-	response = NewSendIQResponse()
+	response = NewIQResponse()
 	err = client.DoAction(request, response)
 	return
 }
