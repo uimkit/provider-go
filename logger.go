@@ -1,6 +1,7 @@
 package provider
 
 import (
+	"fmt"
 	"io"
 	"log"
 	"os"
@@ -93,6 +94,27 @@ func (client *Client) printLog(fieldMap map[string]string, err error) {
 		client.logger.lastLogMsg = logMsg
 		if client.logger.isOpen {
 			client.logger.Output(2, logMsg)
+		}
+	}
+}
+
+type Debug func(format string, v ...interface{})
+
+func getDebug(flag string) Debug {
+	enable := false
+
+	env := os.Getenv("DEBUG")
+	parts := strings.Split(env, ",")
+	for _, part := range parts {
+		if part == flag {
+			enable = true
+			break
+		}
+	}
+
+	return func(format string, v ...interface{}) {
+		if enable {
+			fmt.Println(fmt.Sprintf(format, v...))
 		}
 	}
 }
