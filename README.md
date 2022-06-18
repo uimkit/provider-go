@@ -30,7 +30,7 @@ func main() {
     miniClient.OnMessage(func (message *miniprogram.Message) {
         // send to downstream
         uimMessage := ... translate from message
-        providerClient.SendMessage(message)
+        providerClient.NewMessage(message)
     })
 
     engine := gin.Default()
