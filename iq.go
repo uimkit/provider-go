@@ -1,4 +1,4 @@
-package provider
+package uim
 
 type IQRequest struct {
 	*BaseRequest

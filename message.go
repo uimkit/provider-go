@@ -1,4 +1,4 @@
-package provider
+package uim
 
 type MessageRequest struct {
 	*BaseRequest

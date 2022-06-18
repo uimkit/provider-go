@@ -1,4 +1,4 @@
-package provider
+package uim
 
 // 性别
 type Gender int
