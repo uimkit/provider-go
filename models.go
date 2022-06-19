@@ -85,7 +85,7 @@ type Message struct {
 	Seq              int              `json:"seq,omitempty"`               // 序列号，在会话中唯一且有序增长，用于确保消息顺序
 	MentionedType    MentionedType    `json:"mentioned_type,omitempty"`    // @用户类型
 	MentionedUsers   []*IMUser        `json:"mentioned_users"`             // @用户列表
-	SentAt           *time.Time       `json:"sent_at,omitempty"`           // 发送时间
+	SentAt           time.Time        `json:"sent_at,omitempty"`           // 发送时间
 	Payload          *MessagePayload  `json:"payload,omitempty"`           // 消息内容
 	Revoked          bool             `json:"revoked,omitempty"`           // 是否撤回
 	Metadata         map[string]any   `json:"metadata,omitempty"`          // 公开元数据

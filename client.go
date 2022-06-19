@@ -4,9 +4,7 @@ import (
 	"context"
 	"crypto/tls"
 	"encoding/json"
-	"errors"
 	"fmt"
-	"io/ioutil"
 	"net"
 	"net/http"
 	"net/url"
@@ -536,83 +534,4 @@ func NewClientWithOptions(config *Config) (client *Client, err error) {
 	client = &Client{}
 	err = client.InitWithOptions(config)
 	return
-}
-
-func (c *Client) Webhook(header http.Header, body []byte) (*Webhook, error) {
-	for _, token := range header["X-UIM-Key"] {
-		if token == c.AppId && checkSignature(header.Get("X-UIM-Signature"), c.Secret, body) {
-			unmarshalledWebhooks, err := unmarshalledWebhook(body)
-			if err != nil {
-				return nil, err
-			}
-
-			return unmarshalledWebhooks, nil
-		}
-	}
-	return nil, errors.New("Invalid webhook")
-}
-
-func (c *Client) WebhookHandler() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		body, _ := ioutil.ReadAll(r.Body)
-		webhook, err := c.Webhook(r.Header, body)
-		if err != nil {
-			fmt.Println("Webhook is invalid :(")
-
-			return
-		}
-
-		succ := true
-
-		for _, event := range webhook.Events {
-			err := c.processEvent(&event)
-			if err != nil {
-				succ = false
-			}
-		}
-
-		if !succ {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-
-		w.WriteHeader(http.StatusOK)
-	}
-}
-
-type ProviderEvent string
-
-const (
-	EV_SEND_MESSAGE ProviderEvent = "send_message"
-)
-
-func (c *Client) processEvent(event *WebhookEvent) error {
-	eventType := ProviderEvent(event.Event)
-
-	switch eventType {
-	case EV_SEND_MESSAGE:
-		var message *Message
-		if err := json.Unmarshal([]byte(event.Data), &message); err != nil {
-			return err
-		}
-
-		return c.triggerNewMessage(message)
-	default:
-	}
-
-	return nil
-}
-
-func (c *Client) triggerNewMessage(message *Message) error {
-	for _, handler := range c.messageHandlers {
-		if err := handler(message); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-func (c *Client) OnSendMessage(handler MessageHandler) {
-	c.messageHandlers = append(c.messageHandlers, handler)
 }
