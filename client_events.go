@@ -14,9 +14,21 @@ const (
 	// 从 UIM 传递过来的事件
 	UIMEventSendMessage   = "uim.send_message"   // 发送消息
 	UIMEventFriendRequest = "uim.friend_request" // 好友请求
-	// 传递 给 UIM 的事件
-	ChatEventNewMessage = "chat.new_message"
 )
+
+// 传递 给 UIM 的事件
+const (
+	ProviderEventNewMessage = "provider.new_message"
+	AddAccountRequest       = "add_account"
+	AddGroupRequest         = "add_group"
+	AddGroupMemberRequest   = "add_group_member"
+	GetAccountsIQ           = "get_accounts"
+)
+
+func (client *Client) SendEvent(event *cloudevents.Event) (err error) {
+	// TODO 发送事件
+	return
+}
 
 func (c *Client) WebhookHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {

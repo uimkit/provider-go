@@ -2,14 +2,6 @@ package uim
 
 import "time"
 
-const (
-	AddAccountRequest     = "add_account"
-	AddGroupRequest       = "add_group"
-	AddGroupMemberRequest = "add_group_member"
-	PostMessageRequest    = "post_message"
-	GetAccountsIQ         = "get_accounts"
-)
-
 // IM用户
 type IMUser struct {
 	UserId          string         `json:"user_id,omitempty"`          // 平台用户ID，如：微信ID
@@ -74,10 +66,6 @@ type GroupMember struct {
 	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
 }
 
-func (client *Client) AddGroupMember(member *GroupMember) error {
-	return client.SendMessage(NewMessageRequest(AddGroupMemberRequest, "", "", member))
-}
-
 // 消息
 type Message struct {
 	MessageId        string           `json:"message_id,omitempty"`        // 平台消息ID
@@ -93,7 +81,7 @@ type Message struct {
 }
 
 func (client *Client) PostMessage(message *Message) error {
-	return client.SendMessage(NewMessageRequest(PostMessageRequest, "", "", message))
+	return client.SendMessage(NewMessageRequest(ProviderEventNewMessage, "", "", message))
 }
 
 // 消息内容
