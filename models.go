@@ -80,10 +80,6 @@ type Message struct {
 	PrivateMetadata  map[string]any   `json:"private_metadata,omitempty"`  // 私有元数据
 }
 
-func (client *Client) PostMessage(message *Message) error {
-	return client.SendMessage(NewMessageRequest(ProviderEventNewMessage, "", "", message))
-}
-
 // 消息内容
 type MessagePayload struct {
 	Type MessageType `json:"type,omitempty"` // 消息类型
