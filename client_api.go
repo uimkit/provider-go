@@ -1,6 +1,9 @@
 package uim
 
-import cloudevents "github.com/cloudevents/sdk-go/v2"
+import (
+	cloudevents "github.com/cloudevents/sdk-go/v2"
+	"github.com/google/uuid"
+)
 
 type GroupMemberRequest struct {
 	Member *GroupMember
@@ -8,6 +11,7 @@ type GroupMemberRequest struct {
 
 func (client *Client) AddGroupMember(member *GroupMember) error {
 	ce := cloudevents.NewEvent()
+	ce.SetID(uuid.NewString())
 	ce.SetSource(UIMProviderEventSource)
 	ce.SetType(AddGroupMemberRequest)
 	ce.SetData(cloudevents.ApplicationJSON, GroupMemberRequest{
@@ -19,6 +23,7 @@ func (client *Client) AddGroupMember(member *GroupMember) error {
 
 func (client *Client) NewMessage(message *Message) error {
 	ce := cloudevents.NewEvent()
+	ce.SetID(uuid.NewString())
 	ce.SetSource(UIMProviderEventSource)
 	ce.SetType(ProviderEventNewMessage)
 	ce.SetData(cloudevents.ApplicationJSON, message)
@@ -28,6 +33,7 @@ func (client *Client) NewMessage(message *Message) error {
 
 func (client *Client) AddAccount(account *IMAccount) error {
 	ce := cloudevents.NewEvent()
+	ce.SetID(uuid.NewString())
 	ce.SetSource(UIMProviderEventSource)
 	ce.SetType(ProviderEventAddAccount)
 	ce.SetData(cloudevents.ApplicationJSON, account)
