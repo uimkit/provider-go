@@ -11,8 +11,11 @@ import (
 )
 
 const (
+	// 从 UIM 传递过来的事件
 	UIMEventSendMessage   = "uim.send_message"   // 发送消息
 	UIMEventFriendRequest = "uim.friend_request" // 好友请求
+	// 传递 给 UIM 的事件
+	ChatEventNewMessage = "chat.new_message"
 )
 
 func (c *Client) WebhookHandler() http.HandlerFunc {
