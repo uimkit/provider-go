@@ -8,6 +8,7 @@ type GroupMemberRequest struct {
 
 func (client *Client) AddGroupMember(member *GroupMember) error {
 	ce := cloudevents.NewEvent()
+	ce.SetSource(UIMProviderEventSource)
 	ce.SetType(AddGroupMemberRequest)
 	ce.SetData(cloudevents.ApplicationJSON, GroupMemberRequest{
 		Member: member,

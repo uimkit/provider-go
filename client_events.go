@@ -11,6 +11,10 @@ import (
 )
 
 const (
+	UIMProviderEventSource = "uim.provider/source"
+)
+
+const (
 	// 从 UIM 传递过来的事件
 	UIMEventSendMessage   = "uim.send_message"   // 发送消息
 	UIMEventFriendRequest = "uim.friend_request" // 好友请求

@@ -48,6 +48,7 @@ func TestEvent(t *testing.T) {
 	ce := cloudevents.NewEvent()
 	ce.SetType(UIMEventSendMessage)
 	ce.SetData(cloudevents.ApplicationJSON, message)
+	ce.SetSource(UIMEventSource)
 
 	client, err := NewClient()
 	if err != nil {
