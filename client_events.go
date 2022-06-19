@@ -23,7 +23,7 @@ const (
 // 传递 给 UIM 的事件
 const (
 	ProviderEventNewMessage = "provider.new_message"
-	AddAccountRequest       = "add_account"
+	ProviderEventAddAccount = "provider.new_account"
 	AddGroupRequest         = "add_group"
 	AddGroupMemberRequest   = "add_group_member"
 	GetAccountsIQ           = "get_accounts"

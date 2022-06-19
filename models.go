@@ -33,10 +33,6 @@ type IMAccount struct {
 	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
 }
 
-func (client *Client) AddAccount(account *IMAccount) error {
-	return client.SendMessage(NewMessageRequest(AddAccountRequest, "", "", account))
-}
-
 // 群组
 type Group struct {
 	GroupId         string         `json:"group_id,omitempty"`         // 平台群组ID
