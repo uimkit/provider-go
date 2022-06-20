@@ -46,10 +46,6 @@ type Group struct {
 	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
 }
 
-func (client *Client) AddGroup(group *Group) error {
-	return client.SendMessage(NewMessageRequest(AddGroupRequest, "", "", group))
-}
-
 // 群组成员
 type GroupMember struct {
 	GroupId         string         `json:"group_id,omitempty"`         // 平台群组ID
