@@ -181,6 +181,7 @@ type ContactUpdate struct {
 // 查询联系人列表
 type ListContacts struct {
 	QueryId string `json:"query_id,omitempty"` // 查询ID，用于匹配异步请求
+	UserId  string `json:"user_id,omitempty"`  // 联系人归属账号的平台用户ID，如：微信ID
 	Limit   int    `json:"limit,omitempty"`    // 查询数量
 	After   string `json:"after,omitempty"`    // 上次查询返回 next，重新开始查询为空
 }
@@ -241,6 +242,7 @@ type GroupUpdate struct {
 // 查询群组列表
 type ListGroups struct {
 	QueryId string `json:"query_id,omitempty"` // 查询ID，用于匹配异步请求
+	UserId  string `json:"user_id,omitempty"`  // 群组归属账号的平台用户ID，如：微信ID
 	Limit   int    `json:"limit,omitempty"`    // 查询数量
 	After   string `json:"after,omitempty"`    // 上次查询返回 next，重新开始查询为空
 }
@@ -328,6 +330,7 @@ type GroupMemberUpdate struct {
 // 查询群成员列表
 type ListGroupMembers struct {
 	QueryId string `json:"query_id,omitempty"` // 查询ID，用于匹配异步请求
+	GroupId string `json:"group_id,omitempty"` // 平台群组ID
 	Limit   int    `json:"limit,omitempty"`    // 查询数量
 	After   string `json:"after,omitempty"`    // 上次查询返回 next，重新开始查询为空
 }
