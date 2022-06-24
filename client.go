@@ -31,27 +31,42 @@ var DefaultUserAgent = fmt.Sprintf("UIMKit (%s; %s) Golang/%s Core/%s", runtime.
 
 const DefaultDomain = "api.uimkit.chat/provider/v1"
 
-type MessageHandler func(message *Message) error
+type SendMessageHandler func(message *SendMessage) error
+type ApplyFriendHandler func(apply *NewFriendApply) error
+type ApproveFriendApplyHandler func(apply *ApproveFriendApply) error
+type NewGroupHandler func(group *NewGroup) error
+type ApplyJoinGroupHandler func(apply *NewJoinGroupApply) error
+type ApproveJoinGroupApplyHandler func(apply *ApproveJoinGroupApply) error
+type InviteToGroupHandler func(invite *InviteToGroup) error
+type AcceptGroupInvitationHandler func(invite *AcceptGroupInvitation) error
 
 type Client struct {
-	Domain         string
-	isInsecure     bool
-	httpProxy      string
-	httpsProxy     string
-	noProxy        string
-	readTimeout    time.Duration
-	connectTimeout time.Duration
-	userAgent      map[string]string
-	config         *Config
-	httpClient     *http.Client
-	logger         *Logger
-	asyncTaskQueue chan func()
-	isOpenAsync    bool
+	Domain              string
+	isInsecure          bool
+	httpProxy           string
+	httpsProxy          string
+	noProxy             string
+	readTimeout         time.Duration
+	connectTimeout      time.Duration
+	userAgent           map[string]string
+	config              *Config
+	httpClient          *http.Client
+	logger              *Logger
+	asyncTaskQueue      chan func()
+	isOpenAsync         bool
+	providerEventSource string
 
 	AppId  string
 	Secret string
 
-	messageHandlers []MessageHandler
+	sendMessageHandlers           []SendMessageHandler
+	applyFriendHandlers           []ApplyFriendHandler
+	approveFriendApplyHandlers    []ApproveFriendApplyHandler
+	newGroupHandlers              []NewGroupHandler
+	applyJoinGroupHandlers        []ApplyJoinGroupHandler
+	approveJoinGroupApplyHandlers []ApproveJoinGroupApplyHandler
+	inviteToGroupHandlers         []InviteToGroupHandler
+	acceptGroupInvitationHandlers []AcceptGroupInvitationHandler
 }
 
 func (client *Client) SetHTTPSInsecure(isInsecure bool) {
@@ -130,6 +145,11 @@ func (client *Client) InitWithOptions(config *Config) (err error) {
 	if config.EnableAsync {
 		client.EnableAsync(config.GoRoutinePoolSize, config.MaxTaskQueueSize)
 	}
+
+	if config.Provider != "" && config.Strategy != "" {
+		client.providerEventSource = fmt.Sprintf(ProviderEventSource, config.Provider, config.Strategy)
+	}
+
 	return
 }
 

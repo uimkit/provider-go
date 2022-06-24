@@ -32,11 +32,12 @@ func TestWebhook(t *testing.T) {
 }
 
 func TestEvent(t *testing.T) {
+	sentAt := time.Now()
 	message := &Message{
 		MessageId:        "1",
 		ConversationType: ConversationTypePrivate,
 		Seq:              1,
-		SentAt:           time.Now(),
+		SentAt:           &sentAt,
 		Payload: &MessagePayload{
 			Type: MessageTypeText,
 			Body: &TextMessageBody{
@@ -55,9 +56,8 @@ func TestEvent(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	client.OnSendMessage(func(message *Message) error {
+	client.OnSendMessage(func(message *SendMessage) error {
 		t.Logf("OnSendMessage: %v\n", message)
-
 		return nil
 	})
 

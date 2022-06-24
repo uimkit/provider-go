@@ -6,6 +6,8 @@ import (
 )
 
 type Config struct {
+	Provider          string            `default:""`
+	Strategy          string            `default:""`
 	AutoRetry         bool              `default:"true"`
 	MaxRetryTime      int               `default:"3"`
 	UserAgent         string            `default:""`
