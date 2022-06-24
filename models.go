@@ -35,7 +35,7 @@ type IMUser struct {
 }
 
 // IM用户变更
-type UpdateIMUser struct {
+type IMUserUpdate struct {
 	UserId          string         `json:"user_id,omitempty"`          // 平台用户ID，如：微信ID
 	CustomId        *string        `json:"custom_id,omitempty"`        // 用户自定义ID，如：微信号
 	Username        *string        `json:"username,omitempty"`         // 用户账户
@@ -78,8 +78,8 @@ type IMAccount struct {
 }
 
 // 账号变更
-type UpdateIMAccount struct {
-	User            *UpdateIMUser  `json:"user,omitempty"`             // 用户信息
+type IMAccountUpdate struct {
+	User            *IMUserUpdate  `json:"user,omitempty"`             // 用户信息
 	Presence        *Presence      `json:"presence,omitempty"`         // 状态
 	Metadata        map[string]any `json:"metadata,omitempty"`         // 公开元数据
 	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
@@ -121,9 +121,9 @@ type Contact struct {
 }
 
 // 联系人变更
-type UpdateContact struct {
+type ContactUpdate struct {
 	UserId          string         `json:"user_id,omitempty"`          // 联系人归属账号的平台用户ID，如：微信ID
-	ContactUser     *UpdateIMUser  `json:"contact_user,omitempty"`     // 联系人的用户信息
+	ContactUser     *IMUserUpdate  `json:"contact_user,omitempty"`     // 联系人的用户信息
 	Alias           *string        `json:"alias,omitempty"`            // 备注名
 	Remark          *string        `json:"remark,omitempty"`           // 备注说明
 	Tags            []string       `json:"tags,omitempty"`             // 标签
@@ -157,7 +157,7 @@ type NewGroup struct {
 }
 
 // 群组变更
-type UpdateGroup struct {
+type GroupUpdate struct {
 	UserId          string         `json:"user_id,omitempty"`          // 群组归属账号的平台用户ID，如：微信ID
 	GroupId         string         `json:"group_id,omitempty"`         // 平台群组ID
 	Owner           *IMUser        `json:"owner,omitempty"`            // 群主信息
@@ -231,10 +231,10 @@ type GroupMember struct {
 }
 
 // 更新群组成员
-type UpdateGroupMember struct {
+type GroupMemberUpdate struct {
 	GroupId         string         `json:"group_id,omitempty"`         // 平台群组ID
 	MemberId        string         `json:"member_id,omitempty"`        // 平台群成员ID
-	User            *UpdateIMUser  `json:"user,omitempty"`             // 群成员的用户信息
+	User            *IMUserUpdate  `json:"user,omitempty"`             // 群成员的用户信息
 	IsOwner         *bool          `json:"is_owner,omitempty"`         // 是否群主
 	IsAdmin         *bool          `json:"is_admin,omitempty"`         // 是否管理员
 	Alias           *string        `json:"alias,omitempty"`            // 群内备注名

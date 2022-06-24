@@ -16,7 +16,7 @@ func (client *Client) NewAccount(account *IMAccount) error {
 }
 
 // 更新账号
-func (client *Client) UpdateAccount(account *UpdateIMAccount) error {
+func (client *Client) UpdateAccount(account *IMAccountUpdate) error {
 	ce := cloudevents.NewEvent()
 	ce.SetID(uuid.NewString())
 	ce.SetSource(client.providerEventSource)
@@ -46,7 +46,7 @@ func (client *Client) NewContact(contact *Contact) error {
 }
 
 // 更新好友
-func (client *Client) UpdateContact(contact *UpdateContact) error {
+func (client *Client) UpdateContact(contact *ContactUpdate) error {
 	ce := cloudevents.NewEvent()
 	ce.SetID(uuid.NewString())
 	ce.SetSource(client.providerEventSource)
@@ -66,7 +66,7 @@ func (client *Client) NewGroup(group *Group) error {
 }
 
 // 更新群组
-func (client *Client) UpdateGroup(group *UpdateGroup) error {
+func (client *Client) UpdateGroup(group *GroupUpdate) error {
 	ce := cloudevents.NewEvent()
 	ce.SetID(uuid.NewString())
 	ce.SetSource(client.providerEventSource)
@@ -106,7 +106,7 @@ func (client *Client) NewGroupMember(member *GroupMember) error {
 }
 
 // 更新群组成员
-func (client *Client) UpdateGroupMember(member *UpdateGroupMember) error {
+func (client *Client) UpdateGroupMember(member *GroupMemberUpdate) error {
 	ce := cloudevents.NewEvent()
 	ce.SetID(uuid.NewString())
 	ce.SetSource(client.providerEventSource)
