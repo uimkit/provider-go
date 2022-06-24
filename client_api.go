@@ -65,6 +65,16 @@ func (client *Client) ContactUpdated(contact *ContactUpdate) error {
 	return client.SendEvent(&ce)
 }
 
+// 好友列表
+func (client *Client) ContactList(list *ContactList) error {
+	ce := cloudevents.NewEvent()
+	ce.SetID(uuid.NewString())
+	ce.SetSource(client.providerEventSource)
+	ce.SetType(ProviderEventContactList)
+	ce.SetData(cloudevents.ApplicationJSON, list)
+	return client.SendEvent(&ce)
+}
+
 // 新建群组
 func (client *Client) NewGroup(group *Group) error {
 	ce := cloudevents.NewEvent()
@@ -82,6 +92,16 @@ func (client *Client) GroupUpdated(group *GroupUpdate) error {
 	ce.SetSource(client.providerEventSource)
 	ce.SetType(ProviderEventGroupUpdated)
 	ce.SetData(cloudevents.ApplicationJSON, group)
+	return client.SendEvent(&ce)
+}
+
+// 群组列表
+func (client *Client) GroupList(list *GroupList) error {
+	ce := cloudevents.NewEvent()
+	ce.SetID(uuid.NewString())
+	ce.SetSource(client.providerEventSource)
+	ce.SetType(ProviderEventGroupList)
+	ce.SetData(cloudevents.ApplicationJSON, list)
 	return client.SendEvent(&ce)
 }
 
@@ -122,6 +142,16 @@ func (client *Client) GroupMemberUpdated(member *GroupMemberUpdate) error {
 	ce.SetSource(client.providerEventSource)
 	ce.SetType(ProviderEventGroupMemberUpdated)
 	ce.SetData(cloudevents.ApplicationJSON, member)
+	return client.SendEvent(&ce)
+}
+
+// 群成员列表
+func (client *Client) GroupMemberList(list *GroupMemberList) error {
+	ce := cloudevents.NewEvent()
+	ce.SetID(uuid.NewString())
+	ce.SetSource(client.providerEventSource)
+	ce.SetType(ProviderEventGroupMemberList)
+	ce.SetData(cloudevents.ApplicationJSON, list)
 	return client.SendEvent(&ce)
 }
 

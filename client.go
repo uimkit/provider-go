@@ -35,14 +35,17 @@ type SendMessageHandler func(message *SendMessage) error
 type ListAccountsHandler func(query *ListIMAccounts) error
 type UpdateUserHandler func(user *UpdateIMUser) error
 type UpdateContactHandler func(contact *UpdateContact) error
+type ListContactsHandler func(query *ListContacts) error
 type ApplyFriendHandler func(apply *NewFriendApply) error
 type ApproveFriendApplyHandler func(apply *ApproveFriendApply) error
 type NewGroupHandler func(group *NewGroup) error
 type UpdateGroupHandler func(group *UpdateGroup) error
+type ListGroupsHandler func(query *ListGroups) error
 type ApplyJoinGroupHandler func(apply *NewJoinGroupApply) error
 type ApproveJoinGroupApplyHandler func(apply *ApproveJoinGroupApply) error
 type InviteToGroupHandler func(invite *InviteToGroup) error
 type AcceptGroupInvitationHandler func(invite *AcceptGroupInvitation) error
+type ListGroupMembersHandler func(query *ListGroupMembers) error
 
 type Client struct {
 	Domain              string
@@ -67,14 +70,17 @@ type Client struct {
 	listAccountsHandlers          []ListAccountsHandler
 	updateUserHandlers            []UpdateUserHandler
 	updateContactHandlers         []UpdateContactHandler
+	listContactsHandlers          []ListContactsHandler
 	applyFriendHandlers           []ApplyFriendHandler
 	approveFriendApplyHandlers    []ApproveFriendApplyHandler
 	newGroupHandlers              []NewGroupHandler
 	updateGroupHandlers           []UpdateGroupHandler
+	listGroupsHandlers            []ListGroupsHandler
 	applyJoinGroupHandlers        []ApplyJoinGroupHandler
 	approveJoinGroupApplyHandlers []ApproveJoinGroupApplyHandler
 	inviteToGroupHandlers         []InviteToGroupHandler
 	acceptGroupInvitationHandlers []AcceptGroupInvitationHandler
+	listGroupMembersHandlers      []ListGroupMembersHandler
 }
 
 func (client *Client) SetHTTPSInsecure(isInsecure bool) {

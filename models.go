@@ -178,6 +178,20 @@ type ContactUpdate struct {
 	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
 }
 
+// 查询联系人列表
+type ListContacts struct {
+	QueryId string `json:"query_id,omitempty"` // 查询ID，用于匹配异步请求
+	Limit   int    `json:"limit,omitempty"`    // 查询数量
+	After   string `json:"after,omitempty"`    // 上次查询返回 next，重新开始查询为空
+}
+
+// 联系人列表
+type ContactList struct {
+	QueryId string     `json:"query_id,omitempty"` // 请求的查询ID，用于匹配异步请求
+	Data    []*Contact `json:"data,omitempty"`     // 数据列表
+	Next    string     `json:"next,omitempty"`     // 游标，用于下次查询请求的 after 参数
+}
+
 // 群组
 type Group struct {
 	UserId          string         `json:"user_id,omitempty"`          // 群组归属账号的平台用户ID，如：微信ID
@@ -222,6 +236,20 @@ type GroupUpdate struct {
 	Description     *string        `json:"description,omitempty"`      // 群介绍
 	Metadata        map[string]any `json:"metadata,omitempty"`         // 公开元数据
 	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
+}
+
+// 查询群组列表
+type ListGroups struct {
+	QueryId string `json:"query_id,omitempty"` // 查询ID，用于匹配异步请求
+	Limit   int    `json:"limit,omitempty"`    // 查询数量
+	After   string `json:"after,omitempty"`    // 上次查询返回 next，重新开始查询为空
+}
+
+// 群组列表
+type GroupList struct {
+	QueryId string   `json:"query_id,omitempty"` // 请求的查询ID，用于匹配异步请求
+	Data    []*Group `json:"data,omitempty"`     // 数据列表
+	Next    string   `json:"next,omitempty"`     // 游标，用于下次查询请求的 after 参数
 }
 
 // 入群邀请
@@ -295,6 +323,20 @@ type GroupMemberUpdate struct {
 	Alias           *string        `json:"alias,omitempty"`            // 群内备注名
 	Metadata        map[string]any `json:"metadata,omitempty"`         // 公开元数据
 	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
+}
+
+// 查询群成员列表
+type ListGroupMembers struct {
+	QueryId string `json:"query_id,omitempty"` // 查询ID，用于匹配异步请求
+	Limit   int    `json:"limit,omitempty"`    // 查询数量
+	After   string `json:"after,omitempty"`    // 上次查询返回 next，重新开始查询为空
+}
+
+// 群成员列表
+type GroupMemberList struct {
+	QueryId string         `json:"query_id,omitempty"` // 请求的查询ID，用于匹配异步请求
+	Data    []*GroupMember `json:"data,omitempty"`     // 数据列表
+	Next    string         `json:"next,omitempty"`     // 游标，用于下次查询请求的 after 参数
 }
 
 // 会话类型
