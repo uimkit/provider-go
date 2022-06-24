@@ -34,6 +34,26 @@ type IMUser struct {
 	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
 }
 
+// 更新账号用户资料
+type UpdateIMUser struct {
+	UserId    string     `json:"user_id,omitempty"`   // 平台用户ID，如：微信ID
+	Username  *string    `json:"username,omitempty"`  // 用户账户
+	Name      *string    `json:"name,omitempty"`      // 名称
+	Mobile    *string    `json:"mobile,omitempty"`    // 手机号
+	Email     *string    `json:"email,omitempty"`     // 邮箱
+	Avatar    *string    `json:"avatar,omitempty"`    // 头像URL
+	QRCode    *string    `json:"qrcode,omitempty"`    // 二维码URL
+	Gender    *Gender    `json:"gender,omitempty"`    // 性别
+	Country   *string    `json:"country,omitempty"`   // 国家
+	Province  *string    `json:"province,omitempty"`  // 省份
+	City      *string    `json:"city,omitempty"`      // 城市
+	District  *string    `json:"district,omitempty"`  // 区
+	Address   *string    `json:"address,omitempty"`   // 地址
+	Signature *string    `json:"signature,omitempty"` // 签名
+	Birthday  *time.Time `json:"birthday,omitempty"`  // 生日
+	Language  *string    `json:"language,omitempty"`  // 语言
+}
+
 // IM用户变更
 type IMUserUpdate struct {
 	UserId          string         `json:"user_id,omitempty"`          // 平台用户ID，如：微信ID
@@ -120,6 +140,17 @@ type Contact struct {
 	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
 }
 
+// 更新联系人
+type UpdateContact struct {
+	UserId        string   `json:"user_id,omitempty"`         // 操作账号的平台用户ID，如：微信ID
+	ContactUserId string   `json:"contact_user_id,omitempty"` // 联系人的平台用户ID
+	Alias         *string  `json:"alias,omitempty"`           // 备注名
+	Remark        *string  `json:"remark,omitempty"`          // 备注说明
+	Tags          []string `json:"tags,omitempty"`            // 标签
+	Blocked       *bool    `json:"blocked,omitempty"`         // 是否拉黑
+	Marked        *bool    `json:"marked,omitempty"`          // 是否星标
+}
+
 // 联系人变更
 type ContactUpdate struct {
 	UserId          string         `json:"user_id,omitempty"`          // 联系人归属账号的平台用户ID，如：微信ID
@@ -154,6 +185,16 @@ type NewGroup struct {
 	Announcement string   `json:"announcement,omitempty"` // 群公告
 	Description  string   `json:"description,omitempty"`  // 群介绍
 	UserIds      []string `json:"user_ids,omitempty"`     // 初始邀请入群的用户列表
+}
+
+// 修改群组资料
+type UpdateGroup struct {
+	UserId       string  `json:"user_id,omitempty"`      // 操作账号的平台用户ID，如：微信ID
+	GroupId      string  `json:"group_id,omitempty"`     // 平台群组ID
+	Name         *string `json:"name,omitempty"`         // 名称
+	Avatar       *string `json:"avatar,omitempty"`       // 头像URL
+	Announcement *string `json:"announcement,omitempty"` // 群公告
+	Description  *string `json:"description,omitempty"`  // 群介绍
 }
 
 // 群组变更

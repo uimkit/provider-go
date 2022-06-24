@@ -18,9 +18,12 @@ const (
 // UIM传递给Provider的事件
 const (
 	UIMEventSendMessage           = "uim.send_message"             // 发送消息
+	UIMEventUpdateUser            = "uim.update_user"              // 更新账号用户资料
+	UIMEventUpdateContact         = "uim.update_contact"           // 更新联系人
 	UIMEventApplyFriend           = "uim.apply_friend"             // 添加好友
 	UIMEventApproveFriendApply    = "uim.approve_friend_apply"     // 通过好友请求
 	UIMEventNewGroup              = "uim.new_group"                // 创建群组
+	UIMEventUpdateGroup           = "uim.update_group"             // 更新群组
 	UIMEventInviteToGroup         = "uim.invite_to_group"          // 邀请加入群组
 	UIMEventAcceptGroupInvitation = "uim.accept_group_invitation"  // 接受入群邀请
 	UIMEventApplyJoinGroup        = "uim.apply_join_group"         // 申请加入群组
@@ -84,6 +87,24 @@ func (c *Client) Webhook(header http.Header, body []byte) (*cloudevents.Event, e
 	return nil, errors.New("invalid webhook")
 }
 
+func (c *Client) triggerUpdateUser(user *UpdateIMUser) error {
+	for _, handler := range c.updateUserHandlers {
+		if err := handler(user); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (c *Client) triggerUpdateContact(contact *UpdateContact) error {
+	for _, handler := range c.updateContactHandlers {
+		if err := handler(contact); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func (c *Client) triggerSendMessage(message *SendMessage) error {
 	for _, handler := range c.sendMessageHandlers {
 		if err := handler(message); err != nil {
@@ -113,6 +134,15 @@ func (c *Client) triggerApproveFriendApply(apply *ApproveFriendApply) error {
 
 func (c *Client) triggerNewGroup(group *NewGroup) error {
 	for _, handler := range c.newGroupHandlers {
+		if err := handler(group); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (c *Client) triggerUpdateGroup(group *UpdateGroup) error {
+	for _, handler := range c.updateGroupHandlers {
 		if err := handler(group); err != nil {
 			return err
 		}
@@ -156,6 +186,14 @@ func (c *Client) triggerAcceptGroupInvitation(invite *AcceptGroupInvitation) err
 	return nil
 }
 
+func (c *Client) OnUpdateUser(handler UpdateUserHandler) {
+	c.updateUserHandlers = append(c.updateUserHandlers, handler)
+}
+
+func (c *Client) OnUpdateContact(handler UpdateContactHandler) {
+	c.updateContactHandlers = append(c.updateContactHandlers, handler)
+}
+
 func (c *Client) OnSendMessage(handler SendMessageHandler) {
 	c.sendMessageHandlers = append(c.sendMessageHandlers, handler)
 }
@@ -170,6 +208,10 @@ func (c *Client) OnApproveFriendApply(handler ApproveFriendApplyHandler) {
 
 func (c *Client) OnNewGroup(handler NewGroupHandler) {
 	c.newGroupHandlers = append(c.newGroupHandlers, handler)
+}
+
+func (c *Client) OnUpdateGroup(handler UpdateGroupHandler) {
+	c.updateGroupHandlers = append(c.updateGroupHandlers, handler)
 }
 
 func (c *Client) OnApplyJoinGroup(handler ApplyJoinGroupHandler) {
@@ -196,6 +238,18 @@ func (c *Client) processEvent(event *cloudevents.Event) error {
 			return err
 		}
 		return c.triggerSendMessage(message)
+	case UIMEventUpdateUser:
+		var user *UpdateIMUser
+		if err := event.DataAs(&user); err != nil {
+			return err
+		}
+		return c.triggerUpdateUser(user)
+	case UIMEventUpdateContact:
+		var contact *UpdateContact
+		if err := event.DataAs(&contact); err != nil {
+			return err
+		}
+		return c.triggerUpdateContact(contact)
 	case UIMEventApplyFriend:
 		var apply *NewFriendApply
 		if err := event.DataAs(&apply); err != nil {
@@ -214,6 +268,12 @@ func (c *Client) processEvent(event *cloudevents.Event) error {
 			return err
 		}
 		return c.triggerNewGroup(group)
+	case UIMEventUpdateGroup:
+		var group *UpdateGroup
+		if err := event.DataAs(&group); err != nil {
+			return err
+		}
+		return c.triggerUpdateGroup(group)
 	case UIMEventApplyJoinGroup:
 		var apply *NewJoinGroupApply
 		if err := event.DataAs(&apply); err != nil {

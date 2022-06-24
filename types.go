@@ -8,14 +8,6 @@ const (
 	CommentTypeText                         // 文本评论
 )
 
-// 关系类型
-type RelationType string
-
-const (
-	RelationTypeFriendship RelationType = "friendship" // 好友关系
-	RelationTypeFollowing  RelationType = "following"  // 关注关系
-)
-
 // 动态类型
 type MomentType int
 
