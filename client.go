@@ -32,6 +32,7 @@ var DefaultUserAgent = fmt.Sprintf("UIMKit (%s; %s) Golang/%s Core/%s", runtime.
 const DefaultDomain = "api.uimkit.chat/provider/v1"
 
 type SendMessageHandler func(message *SendMessage) error
+type ListAccountsHandler func(query *ListIMAccounts) error
 type UpdateUserHandler func(user *UpdateIMUser) error
 type UpdateContactHandler func(contact *UpdateContact) error
 type ApplyFriendHandler func(apply *NewFriendApply) error
@@ -63,6 +64,7 @@ type Client struct {
 	Secret string
 
 	sendMessageHandlers           []SendMessageHandler
+	listAccountsHandlers          []ListAccountsHandler
 	updateUserHandlers            []UpdateUserHandler
 	updateContactHandlers         []UpdateContactHandler
 	applyFriendHandlers           []ApplyFriendHandler

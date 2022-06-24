@@ -105,6 +105,20 @@ type IMAccountUpdate struct {
 	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
 }
 
+// 查询账号列表
+type ListIMAccounts struct {
+	QueryId string `json:"query_id,omitempty"` // 查询ID，用于匹配异步请求
+	Limit   int    `json:"limit,omitempty"`    // 查询数量
+	After   string `json:"after,omitempty"`    // 上次查询返回 next，重新开始查询为空
+}
+
+// 账号列表
+type IMAccountList struct {
+	QueryId string       `json:"query_id,omitempty"` // 请求的查询ID，用于匹配异步请求
+	Data    []*IMAccount `json:"data,omitempty"`     // 数据列表
+	Next    string       `json:"next,omitempty"`     // 游标，用于下次查询请求的 after 参数
+}
+
 // 好友申请
 type FriendApply struct {
 	ID           string     `json:"id,omitempty"`            // 申请ID

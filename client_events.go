@@ -18,6 +18,7 @@ const (
 // UIM传递给Provider的事件
 const (
 	UIMEventSendMessage           = "uim.send_message"             // 发送消息
+	UIMEventListAccounts          = "uim.list_accounts"            // 查询账号列表
 	UIMEventUpdateUser            = "uim.update_user"              // 更新账号用户资料
 	UIMEventUpdateContact         = "uim.update_contact"           // 更新联系人
 	UIMEventApplyFriend           = "uim.apply_friend"             // 添加好友
@@ -34,6 +35,7 @@ const (
 // Provider传递给UIM的事件
 const (
 	ProviderEventNewAccount         = "provider.new_account"          // 添加账号
+	ProviderEventAccountList        = "provider.account_list"         // 账号列表
 	ProviderEventAccountUpdated     = "provider.account_updated"      // 账号更新
 	ProviderEventNewFriendApply     = "provider.new_friend_apply"     // 收到好友请求
 	ProviderEventNewContact         = "provider.new_contact"          // 添加好友
@@ -85,6 +87,15 @@ func (c *Client) Webhook(header http.Header, body []byte) (*cloudevents.Event, e
 		}
 	}
 	return nil, errors.New("invalid webhook")
+}
+
+func (c *Client) triggerListAccounts(query *ListIMAccounts) error {
+	for _, handler := range c.listAccountsHandlers {
+		if err := handler(query); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (c *Client) triggerUpdateUser(user *UpdateIMUser) error {
@@ -186,6 +197,10 @@ func (c *Client) triggerAcceptGroupInvitation(invite *AcceptGroupInvitation) err
 	return nil
 }
 
+func (c *Client) OnListAccounts(handler ListAccountsHandler) {
+	c.listAccountsHandlers = append(c.listAccountsHandlers, handler)
+}
+
 func (c *Client) OnUpdateUser(handler UpdateUserHandler) {
 	c.updateUserHandlers = append(c.updateUserHandlers, handler)
 }
@@ -238,6 +253,12 @@ func (c *Client) processEvent(event *cloudevents.Event) error {
 			return err
 		}
 		return c.triggerSendMessage(message)
+	case UIMEventListAccounts:
+		var query *ListIMAccounts
+		if err := event.DataAs(&query); err != nil {
+			return err
+		}
+		return c.triggerListAccounts(query)
 	case UIMEventUpdateUser:
 		var user *UpdateIMUser
 		if err := event.DataAs(&user); err != nil {
