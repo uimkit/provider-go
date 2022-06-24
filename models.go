@@ -289,6 +289,19 @@ type SendMessage struct {
 	Payload          *MessagePayload  `json:"payload,omitempty"`           // 消息内容
 }
 
+// 消息类型
+type MessageType int
+
+const (
+	MessageTypeUndefined MessageType = iota // 未定义消息
+	MessageTypeText                         // 文本消息
+	MessageTypeImage                        // 图片消息
+	MessageTypeVoice                        // 语音消息
+	MessageTypeVideo                        // 视频消息
+	MessageTypeLink                         // 链接消息
+	MessageTypeLocation                     // 位置消息
+)
+
 // 消息内容
 type MessagePayload struct {
 	Type MessageType `json:"type,omitempty"` // 消息类型

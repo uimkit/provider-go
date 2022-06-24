@@ -28,16 +28,3 @@ const (
 	MomentTypeWebcast                     // 直播
 	MomentTypeFeed                        // 视频号
 )
-
-// 消息类型
-type MessageType int
-
-const (
-	MessageTypeUndefined MessageType = iota // 未定义消息
-	MessageTypeText                         // 文本消息
-	MessageTypeImage                        // 图片消息
-	MessageTypeVoice                        // 语音消息
-	MessageTypeVideo                        // 视频消息
-	MessageTypeLink                         // 链接消息
-	MessageTypeLocation                     // 位置消息
-)
