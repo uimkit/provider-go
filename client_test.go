@@ -12,11 +12,7 @@ import (
 )
 
 func TestWebhook(t *testing.T) {
-	client, err := NewClient()
-	if err != nil {
-		t.Fatal(err)
-	}
-
+	client := NewClient("", "")
 	ts := httptest.NewServer(http.NotFoundHandler())
 	defer ts.Close()
 
@@ -49,19 +45,16 @@ func TestEvent(t *testing.T) {
 	ce := cloudevents.NewEvent()
 	ce.SetType(UIMEventSendMessage)
 	ce.SetData(cloudevents.ApplicationJSON, message)
-	ce.SetSource(UIMEventSource)
+	ce.SetSource("uim")
 
-	client, err := NewClient()
-	if err != nil {
-		t.Fatal(err)
-	}
+	client := NewClient("", "")
 
 	client.OnSendMessage(func(message *SendMessage) error {
 		t.Logf("OnSendMessage: %v\n", message)
 		return nil
 	})
 
-	if err = client.processEvent(&ce); err != nil {
+	if err := client.processEvent(&ce); err != nil {
 		t.Fatal(err)
 		return
 	}

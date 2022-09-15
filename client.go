@@ -24,7 +24,7 @@ func init() {
 
 // Version this value will be replaced while build: -ldflags="-X provider.version=x.x.x"
 var Version = "0.0.1"
-var defaultConnectTimeout = 5 * time.Second
+var defaultConnectTimeout = 30 * time.Second
 var defaultReadTimeout = 10 * time.Second
 
 var DefaultUserAgent = fmt.Sprintf("UIMKit (%s; %s) Golang/%s Core/%s", runtime.GOOS, runtime.GOARCH, strings.Trim(runtime.Version(), "go"), Version)
@@ -48,24 +48,14 @@ type AcceptGroupInvitationHandler func(invite *AcceptGroupInvitation) error
 type ListGroupMembersHandler func(query *ListGroupMembers) error
 
 type Client struct {
-	Domain              string
-	isInsecure          bool
-	httpProxy           string
-	httpsProxy          string
-	noProxy             string
-	readTimeout         time.Duration
-	connectTimeout      time.Duration
-	userAgent           map[string]string
-	config              *Config
-	httpClient          *http.Client
-	logger              *Logger
-	asyncTaskQueue      chan func()
-	isOpenAsync         bool
-	providerEventSource string
-
-	AppId  string
-	Secret string
-
+	appId                         string
+	secret                        string
+	eventSource                   string
+	options                       *Options
+	httpClient                    *http.Client
+	logger                        *Logger
+	asyncTaskQueue                chan func()
+	isOpenAsync                   bool
 	sendMessageHandlers           []SendMessageHandler
 	listAccountsHandlers          []ListAccountsHandler
 	updateUserHandlers            []UpdateUserHandler
@@ -83,102 +73,18 @@ type Client struct {
 	listGroupMembersHandlers      []ListGroupMembersHandler
 }
 
-func (client *Client) SetHTTPSInsecure(isInsecure bool) {
-	client.isInsecure = isInsecure
-}
-
-func (client *Client) GetHTTPSInsecure() bool {
-	return client.isInsecure
-}
-
-func (client *Client) SetHttpsProxy(httpsProxy string) {
-	client.httpsProxy = httpsProxy
-}
-
-func (client *Client) GetHttpsProxy() string {
-	return client.httpsProxy
-}
-
-func (client *Client) SetHttpProxy(httpProxy string) {
-	client.httpProxy = httpProxy
-}
-
-func (client *Client) GetHttpProxy() string {
-	return client.httpProxy
-}
-
-func (client *Client) SetNoProxy(noProxy string) {
-	client.noProxy = noProxy
-}
-
-func (client *Client) GetNoProxy() string {
-	return client.noProxy
-}
-
-func (client *Client) SetTransport(transport http.RoundTripper) {
-	if client.httpClient == nil {
-		client.httpClient = &http.Client{}
-	}
-	client.httpClient.Transport = transport
-}
-
-func (client *Client) SetReadTimeout(readTimeout time.Duration) {
-	client.readTimeout = readTimeout
-}
-
-func (client *Client) SetConnectTimeout(connectTimeout time.Duration) {
-	client.connectTimeout = connectTimeout
-}
-
-func (client *Client) GetReadTimeout() time.Duration {
-	return client.readTimeout
-}
-
-func (client *Client) GetConnectTimeout() time.Duration {
-	return client.connectTimeout
-}
-
-func (client *Client) GetConfig() *Config {
-	return client.config
-}
-
-func (client *Client) InitWithOptions(config *Config) (err error) {
-	client.config = config
-
-	client.httpClient = &http.Client{}
-	if config.Transport != nil {
-		client.httpClient.Transport = config.Transport
-	} else if config.HttpTransport != nil {
-		client.httpClient.Transport = config.HttpTransport
-	}
-
-	if config.Timeout > 0 {
-		client.httpClient.Timeout = config.Timeout
-	}
-
-	if config.EnableAsync {
-		client.EnableAsync(config.GoRoutinePoolSize, config.MaxTaskQueueSize)
-	}
-
-	if config.Provider != "" && config.Strategy != "" {
-		client.providerEventSource = fmt.Sprintf(ProviderEventSource, config.Provider, config.Strategy)
-	}
-
-	return
-}
-
 func (client *Client) getHttpProxy(scheme string) (proxy *url.URL, err error) {
 	if strings.ToUpper(scheme) == HTTPS {
-		if client.GetHttpsProxy() != "" {
-			proxy, err = url.Parse(client.httpsProxy)
+		if client.options.HttpsProxy != "" {
+			proxy, err = url.Parse(client.options.HttpsProxy)
 		} else if rawurl := os.Getenv("HTTPS_PROXY"); rawurl != "" {
 			proxy, err = url.Parse(rawurl)
 		} else if rawurl := os.Getenv("https_proxy"); rawurl != "" {
 			proxy, err = url.Parse(rawurl)
 		}
 	} else {
-		if client.GetHttpProxy() != "" {
-			proxy, err = url.Parse(client.httpProxy)
+		if client.options.HttpProxy != "" {
+			proxy, err = url.Parse(client.options.HttpProxy)
 		} else if rawurl := os.Getenv("HTTP_PROXY"); rawurl != "" {
 			proxy, err = url.Parse(rawurl)
 		} else if rawurl := os.Getenv("http_proxy"); rawurl != "" {
@@ -190,8 +96,8 @@ func (client *Client) getHttpProxy(scheme string) (proxy *url.URL, err error) {
 
 func (client *Client) getNoProxy(scheme string) []string {
 	var urls []string
-	if client.GetNoProxy() != "" {
-		urls = strings.Split(client.noProxy, ",")
+	if client.options.NoProxy != "" {
+		urls = strings.Split(client.options.NoProxy, ",")
 	} else if rawurl := os.Getenv("NO_PROXY"); rawurl != "" {
 		urls = strings.Split(rawurl, ",")
 	} else if rawurl := os.Getenv("no_proxy"); rawurl != "" {
@@ -200,23 +106,13 @@ func (client *Client) getNoProxy(scheme string) []string {
 	return urls
 }
 
-func getSendUserAgent(configUserAgent string, clientUserAgent, requestUserAgent map[string]string) string {
+func getSendUserAgent(clientUserAgent string, requestUserAgent map[string]string) string {
 	realUserAgent := ""
-	for key1, value1 := range clientUserAgent {
-		for key2 := range requestUserAgent {
-			if key1 == key2 {
-				key1 = ""
-			}
-		}
-		if key1 != "" {
-			realUserAgent += fmt.Sprintf(" %s/%s", key1, value1)
-		}
-	}
 	for key, value := range requestUserAgent {
 		realUserAgent += fmt.Sprintf(" %s/%s", key, value)
 	}
-	if configUserAgent != "" {
-		return realUserAgent + fmt.Sprintf(" Extra/%s", configUserAgent)
+	if clientUserAgent != "" {
+		return realUserAgent + fmt.Sprintf(" Extra/%s", clientUserAgent)
 	}
 	return realUserAgent
 }
@@ -225,13 +121,13 @@ func (client *Client) getHTTPSInsecure(request Request) (insecure bool) {
 	if request.GetHTTPSInsecure() != nil {
 		insecure = *request.GetHTTPSInsecure()
 	} else {
-		insecure = client.GetHTTPSInsecure()
+		insecure = client.options.IsInsecure
 	}
 	return insecure
 }
 
 // EnableAsync enable the async task queue
-func (client *Client) EnableAsync(routinePoolSize, maxTaskQueueSize int) {
+func (client *Client) enableAsync(routinePoolSize, maxTaskQueueSize int) {
 	if client.isOpenAsync {
 		fmt.Println("warning: Please not call EnableAsync repeatedly")
 		return
@@ -281,8 +177,8 @@ func (client *Client) buildRequest(request Request) (httpRequest *http.Request, 
 
 	// resolve endpoint
 	endpoint := request.GetDomain()
-	if endpoint == "" && client.Domain != "" {
-		endpoint = client.Domain
+	if endpoint == "" && client.options.Domain != "" {
+		endpoint = client.options.Domain
 	}
 	if endpoint == "" {
 		endpoint = DefaultDomain
@@ -290,7 +186,7 @@ func (client *Client) buildRequest(request Request) (httpRequest *http.Request, 
 	request.SetDomain(endpoint)
 
 	if request.GetScheme() == "" {
-		request.SetScheme(client.config.Scheme)
+		request.SetScheme(client.options.Scheme)
 	}
 	// init request params
 	err = initParams(request)
@@ -305,29 +201,11 @@ func (client *Client) buildRequest(request Request) (httpRequest *http.Request, 
 
 	httpRequest, err = buildHttpRequest(request)
 	if err == nil {
-		userAgent := DefaultUserAgent + getSendUserAgent(client.config.UserAgent, client.userAgent, request.GetUserAgent())
+		userAgent := DefaultUserAgent + getSendUserAgent(client.options.UserAgent, request.GetUserAgent())
 		httpRequest.Header.Set("User-Agent", userAgent)
 	}
 
 	return
-}
-
-func (client *Client) AppendUserAgent(key, value string) {
-	if client.userAgent == nil {
-		client.userAgent = make(map[string]string)
-	}
-	newkey := true
-	if strings.ToLower(key) != "core" && strings.ToLower(key) != "go" {
-		for tag := range client.userAgent {
-			if tag == key {
-				client.userAgent[tag] = value
-				newkey = false
-			}
-		}
-		if newkey {
-			client.userAgent[key] = value
-		}
-	}
 }
 
 func (client *Client) getTimeout(request Request) (time.Duration, time.Duration) {
@@ -336,23 +214,23 @@ func (client *Client) getTimeout(request Request) (time.Duration, time.Duration)
 
 	reqReadTimeout := request.GetReadTimeout()
 	reqConnectTimeout := request.GetConnectTimeout()
-	if reqReadTimeout != 0*time.Millisecond {
+	if reqReadTimeout > 0 {
 		readTimeout = reqReadTimeout
-	} else if client.readTimeout != 0*time.Millisecond {
-		readTimeout = client.readTimeout
-	} else if client.httpClient.Timeout != 0 {
+	} else if client.options.ReadTimeout > 0 {
+		readTimeout = client.options.ReadTimeout
+	} else if client.httpClient.Timeout > 0 {
 		readTimeout = client.httpClient.Timeout
 	}
 
-	if reqConnectTimeout != 0*time.Millisecond {
+	if reqConnectTimeout > 0 {
 		connectTimeout = reqConnectTimeout
-	} else if client.connectTimeout != 0*time.Millisecond {
-		connectTimeout = client.connectTimeout
+	} else if client.options.ConnectTimeout > 0 {
+		connectTimeout = client.options.ConnectTimeout
 	}
 	return readTimeout, connectTimeout
 }
 
-func Timeout(connectTimeout time.Duration) func(cxt context.Context, net, addr string) (c net.Conn, err error) {
+func timeoutDialer(connectTimeout time.Duration) func(cxt context.Context, net, addr string) (c net.Conn, err error) {
 	return func(ctx context.Context, network, address string) (net.Conn, error) {
 		return (&net.Dialer{
 			Timeout:   connectTimeout,
@@ -365,11 +243,11 @@ func (client *Client) setTimeout(request Request) {
 	readTimeout, connectTimeout := client.getTimeout(request)
 	client.httpClient.Timeout = readTimeout
 	if trans, ok := client.httpClient.Transport.(*http.Transport); ok && trans != nil {
-		trans.DialContext = Timeout(connectTimeout)
+		trans.DialContext = timeoutDialer(connectTimeout)
 		client.httpClient.Transport = trans
 	} else if client.httpClient.Transport == nil {
 		client.httpClient.Transport = &http.Transport{
-			DialContext: Timeout(connectTimeout),
+			DialContext: timeoutDialer(connectTimeout),
 		}
 	}
 }
@@ -393,7 +271,7 @@ func (client *Client) DoAction(request Request, response Response) (err error) {
 	}
 	noProxy := client.getNoProxy(httpRequest.URL.Scheme)
 
-	var flag bool
+	var withoutProxy bool
 	for _, value := range noProxy {
 		if strings.HasPrefix(value, "*") {
 			value = fmt.Sprintf(".%s", value)
@@ -403,7 +281,7 @@ func (client *Client) DoAction(request Request, response Response) (err error) {
 			return err
 		}
 		if noProxyReg.MatchString(httpRequest.Host) {
-			flag = true
+			withoutProxy = true
 			break
 		}
 	}
@@ -418,14 +296,14 @@ func (client *Client) DoAction(request Request, response Response) (err error) {
 				InsecureSkipVerify: client.getHTTPSInsecure(request),
 			}
 		}
-		if proxy != nil && !flag {
+		if proxy != nil && !withoutProxy {
 			trans.Proxy = http.ProxyURL(proxy)
 		}
 		client.httpClient.Transport = trans
 	}
 
 	var httpResponse *http.Response
-	for retryTimes := 0; retryTimes <= client.config.MaxRetryTime; retryTimes++ {
+	for retryTimes := 0; retryTimes <= client.options.MaxRetryTime; retryTimes++ {
 		if retryTimes > 0 {
 			client.printLog(fieldMap, err)
 			initLogMsg(fieldMap)
@@ -459,9 +337,9 @@ func (client *Client) DoAction(request Request, response Response) (err error) {
 		// receive error
 		if err != nil {
 			debug(" Error: %s.", err.Error())
-			if !client.config.AutoRetry {
+			if !client.options.AutoRetry {
 				return
-			} else if retryTimes >= client.config.MaxRetryTime {
+			} else if retryTimes >= client.options.MaxRetryTime {
 				// timeout but reached the max retry times, return
 				times := strconv.Itoa(retryTimes + 1)
 				timeoutErrorMsg := fmt.Sprintf(TimeoutErrorMessage, times, times)
@@ -480,7 +358,7 @@ func (client *Client) DoAction(request Request, response Response) (err error) {
 		}
 
 		//  if status code >= 500 or timeout, will trigger retry
-		if client.config.AutoRetry && (err != nil || isServerError(httpResponse)) {
+		if client.options.AutoRetry && (err != nil || isServerError(httpResponse)) {
 			client.setTimeout(request)
 			// rewrite signatureNonce and signature
 			httpRequest, err = client.buildRequest(request)
@@ -559,13 +437,32 @@ func isServerError(httpResponse *http.Response) bool {
 	return httpResponse.StatusCode >= http.StatusInternalServerError
 }
 
-func NewClient() (client *Client, err error) {
-	client, err = NewClientWithOptions(NewConfig())
-	return
-}
+func NewClient(appId, secret string, opts ...Option) (client *Client) {
+	client = &Client{
+		appId:   appId,
+		secret:  secret,
+		options: NewOptions(),
+	}
+	for _, opt := range opts {
+		opt(client.options)
+	}
+	options := client.options
 
-func NewClientWithOptions(config *Config) (client *Client, err error) {
-	client = &Client{}
-	err = client.InitWithOptions(config)
-	return
+	client.eventSource = fmt.Sprintf("provider.source/%s/%s", options.Provider, options.Strategy)
+
+	client.httpClient = &http.Client{}
+	if options.Transport != nil {
+		client.httpClient.Transport = options.Transport
+	} else if options.HttpTransport != nil {
+		client.httpClient.Transport = options.HttpTransport
+	}
+	if options.ReadTimeout > 0 {
+		client.httpClient.Timeout = options.ReadTimeout
+	}
+
+	if options.EnableAsync {
+		client.enableAsync(options.GoRoutinePoolSize, options.MaxTaskQueueSize)
+	}
+
+	return client
 }

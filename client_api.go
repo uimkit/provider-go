@@ -9,7 +9,7 @@ import (
 func (client *Client) NewAccount(account *IMAccount) error {
 	ce := cloudevents.NewEvent()
 	ce.SetID(uuid.NewString())
-	ce.SetSource(client.providerEventSource)
+	ce.SetSource(client.eventSource)
 	ce.SetType(ProviderEventNewAccount)
 	ce.SetData(cloudevents.ApplicationJSON, account)
 	return client.SendEvent(&ce)
@@ -19,7 +19,7 @@ func (client *Client) NewAccount(account *IMAccount) error {
 func (client *Client) AccountUpdated(account *IMAccountUpdate) error {
 	ce := cloudevents.NewEvent()
 	ce.SetID(uuid.NewString())
-	ce.SetSource(client.providerEventSource)
+	ce.SetSource(client.eventSource)
 	ce.SetType(ProviderEventAccountUpdated)
 	ce.SetData(cloudevents.ApplicationJSON, account)
 	return client.SendEvent(&ce)
@@ -29,7 +29,7 @@ func (client *Client) AccountUpdated(account *IMAccountUpdate) error {
 func (client *Client) AccountList(list *IMAccountList) error {
 	ce := cloudevents.NewEvent()
 	ce.SetID(uuid.NewString())
-	ce.SetSource(client.providerEventSource)
+	ce.SetSource(client.eventSource)
 	ce.SetType(ProviderEventAccountList)
 	ce.SetData(cloudevents.ApplicationJSON, list)
 	return client.SendEvent(&ce)
@@ -39,7 +39,7 @@ func (client *Client) AccountList(list *IMAccountList) error {
 func (client *Client) NewFriendApply(apply *FriendApply) error {
 	ce := cloudevents.NewEvent()
 	ce.SetID(uuid.NewString())
-	ce.SetSource(client.providerEventSource)
+	ce.SetSource(client.eventSource)
 	ce.SetType(ProviderEventNewFriendApply)
 	ce.SetData(cloudevents.ApplicationJSON, apply)
 	return client.SendEvent(&ce)
@@ -49,7 +49,7 @@ func (client *Client) NewFriendApply(apply *FriendApply) error {
 func (client *Client) NewContact(contact *Contact) error {
 	ce := cloudevents.NewEvent()
 	ce.SetID(uuid.NewString())
-	ce.SetSource(client.providerEventSource)
+	ce.SetSource(client.eventSource)
 	ce.SetType(ProviderEventNewContact)
 	ce.SetData(cloudevents.ApplicationJSON, contact)
 	return client.SendEvent(&ce)
@@ -59,7 +59,7 @@ func (client *Client) NewContact(contact *Contact) error {
 func (client *Client) ContactUpdated(contact *ContactUpdate) error {
 	ce := cloudevents.NewEvent()
 	ce.SetID(uuid.NewString())
-	ce.SetSource(client.providerEventSource)
+	ce.SetSource(client.eventSource)
 	ce.SetType(ProviderEventContactUpdated)
 	ce.SetData(cloudevents.ApplicationJSON, contact)
 	return client.SendEvent(&ce)
@@ -69,7 +69,7 @@ func (client *Client) ContactUpdated(contact *ContactUpdate) error {
 func (client *Client) ContactList(list *ContactList) error {
 	ce := cloudevents.NewEvent()
 	ce.SetID(uuid.NewString())
-	ce.SetSource(client.providerEventSource)
+	ce.SetSource(client.eventSource)
 	ce.SetType(ProviderEventContactList)
 	ce.SetData(cloudevents.ApplicationJSON, list)
 	return client.SendEvent(&ce)
@@ -79,7 +79,7 @@ func (client *Client) ContactList(list *ContactList) error {
 func (client *Client) NewGroup(group *Group) error {
 	ce := cloudevents.NewEvent()
 	ce.SetID(uuid.NewString())
-	ce.SetSource(client.providerEventSource)
+	ce.SetSource(client.eventSource)
 	ce.SetType(ProviderEventNewGroup)
 	ce.SetData(cloudevents.ApplicationJSON, group)
 	return client.SendEvent(&ce)
@@ -89,7 +89,7 @@ func (client *Client) NewGroup(group *Group) error {
 func (client *Client) GroupUpdated(group *GroupUpdate) error {
 	ce := cloudevents.NewEvent()
 	ce.SetID(uuid.NewString())
-	ce.SetSource(client.providerEventSource)
+	ce.SetSource(client.eventSource)
 	ce.SetType(ProviderEventGroupUpdated)
 	ce.SetData(cloudevents.ApplicationJSON, group)
 	return client.SendEvent(&ce)
@@ -99,7 +99,7 @@ func (client *Client) GroupUpdated(group *GroupUpdate) error {
 func (client *Client) GroupList(list *GroupList) error {
 	ce := cloudevents.NewEvent()
 	ce.SetID(uuid.NewString())
-	ce.SetSource(client.providerEventSource)
+	ce.SetSource(client.eventSource)
 	ce.SetType(ProviderEventGroupList)
 	ce.SetData(cloudevents.ApplicationJSON, list)
 	return client.SendEvent(&ce)
@@ -109,7 +109,7 @@ func (client *Client) GroupList(list *GroupList) error {
 func (client *Client) NewGroupInvitation(invitation *GroupInvitation) error {
 	ce := cloudevents.NewEvent()
 	ce.SetID(uuid.NewString())
-	ce.SetSource(client.providerEventSource)
+	ce.SetSource(client.eventSource)
 	ce.SetType(ProviderEventNewGroupInvitation)
 	ce.SetData(cloudevents.ApplicationJSON, invitation)
 	return client.SendEvent(&ce)
@@ -119,7 +119,7 @@ func (client *Client) NewGroupInvitation(invitation *GroupInvitation) error {
 func (client *Client) NewJoinGroupApply(apply *JoinGroupApply) error {
 	ce := cloudevents.NewEvent()
 	ce.SetID(uuid.NewString())
-	ce.SetSource(client.providerEventSource)
+	ce.SetSource(client.eventSource)
 	ce.SetType(ProviderEventNewJoinGroupApply)
 	ce.SetData(cloudevents.ApplicationJSON, apply)
 	return client.SendEvent(&ce)
@@ -129,7 +129,7 @@ func (client *Client) NewJoinGroupApply(apply *JoinGroupApply) error {
 func (client *Client) NewGroupMember(member *GroupMember) error {
 	ce := cloudevents.NewEvent()
 	ce.SetID(uuid.NewString())
-	ce.SetSource(client.providerEventSource)
+	ce.SetSource(client.eventSource)
 	ce.SetType(ProviderEventNewGroupMember)
 	ce.SetData(cloudevents.ApplicationJSON, member)
 	return client.SendEvent(&ce)
@@ -139,7 +139,7 @@ func (client *Client) NewGroupMember(member *GroupMember) error {
 func (client *Client) GroupMemberUpdated(member *GroupMemberUpdate) error {
 	ce := cloudevents.NewEvent()
 	ce.SetID(uuid.NewString())
-	ce.SetSource(client.providerEventSource)
+	ce.SetSource(client.eventSource)
 	ce.SetType(ProviderEventGroupMemberUpdated)
 	ce.SetData(cloudevents.ApplicationJSON, member)
 	return client.SendEvent(&ce)
@@ -149,7 +149,7 @@ func (client *Client) GroupMemberUpdated(member *GroupMemberUpdate) error {
 func (client *Client) GroupMemberList(list *GroupMemberList) error {
 	ce := cloudevents.NewEvent()
 	ce.SetID(uuid.NewString())
-	ce.SetSource(client.providerEventSource)
+	ce.SetSource(client.eventSource)
 	ce.SetType(ProviderEventGroupMemberList)
 	ce.SetData(cloudevents.ApplicationJSON, list)
 	return client.SendEvent(&ce)
@@ -159,7 +159,7 @@ func (client *Client) GroupMemberList(list *GroupMemberList) error {
 func (client *Client) NewMessage(message *Message) error {
 	ce := cloudevents.NewEvent()
 	ce.SetID(uuid.NewString())
-	ce.SetSource(client.providerEventSource)
+	ce.SetSource(client.eventSource)
 	ce.SetType(ProviderEventNewMessage)
 	ce.SetData(cloudevents.ApplicationJSON, message)
 	return client.SendEvent(&ce)

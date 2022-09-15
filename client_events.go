@@ -10,11 +10,6 @@ import (
 	cloudevents "github.com/cloudevents/sdk-go/v2"
 )
 
-const (
-	ProviderEventSource = "provider.source/%s/%s" // Provider事件源
-	UIMEventSource      = "uim.source"            // UIM事件源
-)
-
 // UIM传递给Provider的事件
 const (
 	UIMEventSendMessage           = "uim.send_message"             // 发送消息
@@ -83,7 +78,7 @@ func (c *Client) WebhookHandler() http.HandlerFunc {
 
 func (c *Client) Webhook(header http.Header, body []byte) (*cloudevents.Event, error) {
 	for _, token := range header[http.CanonicalHeaderKey("X-UIM-Key")] {
-		if token == c.AppId && checkSignature(header.Get("X-UIM-Signature"), c.Secret, body) {
+		if token == c.appId && checkSignature(header.Get("X-UIM-Signature"), c.secret, body) {
 			var event *cloudevents.Event
 			err := json.Unmarshal(body, event)
 			if err != nil {
