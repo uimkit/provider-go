@@ -352,6 +352,15 @@ func initParams(request Request) (err error) {
 	return
 }
 
+// 通过字段标签填充请求数据，支持标签 name、position、type。其中：
+// name 代表字段名，必填。
+// position 是参数位置，必填，有 header 作为 HTTP 头，query 作为 query 参数，body 作为 form 表单参数，path 作为路径参数。
+// type 用来表明字段的数据类型，可选。数据类型包括：
+// 为空默认代表字符串，如果值实际是 map，则为 json.Marshal 序列化后的 json 字符串；
+// Json 代表字段值可以通过 json.Marshal 序列化为 json 字符串；
+// Struct 代表字段值是嵌套对象；
+// Map 代表字段值是 map；
+// Repeated 代表字段值是 slice 或指向 slice 的指针。
 func flatRepeatedList(dataValue reflect.Value, request Request, position, prefix string) (err error) {
 	dataType := dataValue.Type()
 	for i := 0; i < dataType.NumField(); i++ {
@@ -438,7 +447,7 @@ func handleRepeatedParams(request Request, dataValue reflect.Value, prefix, name
 	return nil
 }
 
-func handleParam(request Request, dataValue reflect.Value, prefix, key, fieldPosition string) (err error) {
+func handleParam(request Request, dataValue reflect.Value, key, fieldPosition string) (err error) {
 	if dataValue.Type().String() == "[]string" {
 		if dataValue.IsNil() {
 			return
@@ -482,12 +491,12 @@ func handleMap(request Request, dataValue reflect.Value, prefix, name, fieldPosi
 			key := prefix + name + ".#" + strconv.Itoa(k.Len()) + "#" + k.String()
 			if v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface {
 				elementValue := v.Elem()
-				err = handleParam(request, elementValue, prefix, key, fieldPosition)
+				err = handleParam(request, elementValue, key, fieldPosition)
 				if err != nil {
 					return err
 				}
 			} else if v.IsValid() && v.IsNil() {
-				err = handleParam(request, v, prefix, key, fieldPosition)
+				err = handleParam(request, v, key, fieldPosition)
 				if err != nil {
 					return err
 				}

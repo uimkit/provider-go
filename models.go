@@ -128,6 +128,15 @@ type FriendApply struct {
 	AppliedAt    *time.Time `json:"applied_at,omitempty"`    // 申请时间
 }
 
+// 好友申请回复
+type FriendReply struct {
+	ID           string     `json:"id,omitempty"`            // 申请ID
+	UserId       string     `json:"user_id,omitempty"`       // 接收申请的平台用户ID，如：微信ID
+	ApplyUser    *IMUser    `json:"apply_user,omitempty"`    // 申请人信息
+	HelloMessage string     `json:"hello_message,omitempty"` // 打招呼留言
+	AppliedAt    *time.Time `json:"applied_at,omitempty"`    // 申请时间
+}
+
 // 申请添加好友
 type NewFriendApply struct {
 	UserId       string   `json:"user_id,omitempty"`       // 发起申请的平台用户ID，如：微信ID
@@ -176,6 +185,10 @@ type ContactUpdate struct {
 	Marked          *bool          `json:"marked,omitempty"`           // 是否星标
 	Metadata        map[string]any `json:"metadata,omitempty"`         // 公开元数据
 	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
+}
+
+// 联系人删除
+type ContactDeleted struct {
 }
 
 // 查询联系人列表
@@ -237,6 +250,10 @@ type GroupUpdate struct {
 	Description     *string        `json:"description,omitempty"`      // 群介绍
 	Metadata        map[string]any `json:"metadata,omitempty"`         // 公开元数据
 	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
+}
+
+// 群组删除
+type GroupDelete struct {
 }
 
 // 查询群组列表
@@ -327,6 +344,10 @@ type GroupMemberUpdate struct {
 	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
 }
 
+// 群组成员删除
+type GroupMemberDelete struct {
+}
+
 // 查询群成员列表
 type ListGroupMembers struct {
 	QueryId string `json:"query_id,omitempty"` // 查询ID，用于匹配异步请求
@@ -375,6 +396,9 @@ type Message struct {
 	Revoked          bool             `json:"revoked,omitempty"`           // 是否撤回
 	Metadata         map[string]any   `json:"metadata,omitempty"`          // 公开元数据
 	PrivateMetadata  map[string]any   `json:"private_metadata,omitempty"`  // 私有元数据
+}
+
+type MessageUpdate struct {
 }
 
 // 发送消息
@@ -472,3 +496,35 @@ const (
 	MomentTypeWebcast                     // 直播
 	MomentTypeFeed                        // 视频号
 )
+
+type Moment struct {
+}
+
+type MomentUpdate struct {
+}
+
+type MomentDelete struct{}
+
+type MomentComment struct{}
+
+type MomentCommentUpdate struct {
+}
+
+type MomentCommentDelete struct {
+}
+
+type MomentLike struct {
+}
+
+type MomentLikeDelete struct{}
+
+type Metafield struct{}
+
+type MetafieldUpdate struct{}
+
+type GetMetafield struct {
+}
+
+type GetMetafieldResponse struct {
+	BaseResponse
+}

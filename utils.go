@@ -22,7 +22,7 @@ func getUrlFormedMap(source map[string]string) (urlEncoded string) {
 	return
 }
 
-func initStructWithDefaultTag(bean interface{}) {
+func initStructWithDefaultTag(bean any) {
 	configType := reflect.TypeOf(bean)
 	for i := 0; i < configType.Elem().NumField(); i++ {
 		field := configType.Elem().Field(i)
@@ -47,7 +47,7 @@ func initStructWithDefaultTag(bean interface{}) {
 	}
 }
 
-func toString(object interface{}) string {
+func toString(object any) string {
 	byt, err := json.Marshal(object)
 	if err != nil {
 		return ""

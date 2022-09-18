@@ -5,6 +5,7 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net"
 	"net/http"
 	"net/url"
@@ -13,7 +14,11 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
+
+	cloudevents "github.com/cloudevents/sdk-go/v2"
+	"github.com/google/uuid"
 )
 
 var debug Debug
@@ -22,55 +27,27 @@ func init() {
 	debug = getDebug("sdk")
 }
 
-// Version this value will be replaced while build: -ldflags="-X provider.version=x.x.x"
+// Version will be replaced while build: -ldflags="-X uim.Version=x.x.x"
 var Version = "0.0.1"
+var DefaultUserAgent = fmt.Sprintf("UIMKit (%s; %s) Golang/%s Core/%s", runtime.GOOS, runtime.GOARCH, strings.Trim(runtime.Version(), "go"), Version)
+var DefaultDomain = "api.uimkit.chat/provider/v1"
+
 var defaultConnectTimeout = 30 * time.Second
 var defaultReadTimeout = 10 * time.Second
 
-var DefaultUserAgent = fmt.Sprintf("UIMKit (%s; %s) Golang/%s Core/%s", runtime.GOOS, runtime.GOARCH, strings.Trim(runtime.Version(), "go"), Version)
-
-const DefaultDomain = "api.uimkit.chat/provider/v1"
-
-type SendMessageHandler func(message *SendMessage) error
-type ListAccountsHandler func(query *ListIMAccounts) error
-type UpdateUserHandler func(user *UpdateIMUser) error
-type UpdateContactHandler func(contact *UpdateContact) error
-type ListContactsHandler func(query *ListContacts) error
-type ApplyFriendHandler func(apply *NewFriendApply) error
-type ApproveFriendApplyHandler func(apply *ApproveFriendApply) error
-type NewGroupHandler func(group *NewGroup) error
-type UpdateGroupHandler func(group *UpdateGroup) error
-type ListGroupsHandler func(query *ListGroups) error
-type ApplyJoinGroupHandler func(apply *NewJoinGroupApply) error
-type ApproveJoinGroupApplyHandler func(apply *ApproveJoinGroupApply) error
-type InviteToGroupHandler func(invite *InviteToGroup) error
-type AcceptGroupInvitationHandler func(invite *AcceptGroupInvitation) error
-type ListGroupMembersHandler func(query *ListGroupMembers) error
+type EventHandler func(*cloudevents.Event) (any, error)
 
 type Client struct {
-	appId                         string
-	secret                        string
-	eventSource                   string
-	options                       *Options
-	httpClient                    *http.Client
-	logger                        *Logger
-	asyncTaskQueue                chan func()
-	isOpenAsync                   bool
-	sendMessageHandlers           []SendMessageHandler
-	listAccountsHandlers          []ListAccountsHandler
-	updateUserHandlers            []UpdateUserHandler
-	updateContactHandlers         []UpdateContactHandler
-	listContactsHandlers          []ListContactsHandler
-	applyFriendHandlers           []ApplyFriendHandler
-	approveFriendApplyHandlers    []ApproveFriendApplyHandler
-	newGroupHandlers              []NewGroupHandler
-	updateGroupHandlers           []UpdateGroupHandler
-	listGroupsHandlers            []ListGroupsHandler
-	applyJoinGroupHandlers        []ApplyJoinGroupHandler
-	approveJoinGroupApplyHandlers []ApproveJoinGroupApplyHandler
-	inviteToGroupHandlers         []InviteToGroupHandler
-	acceptGroupInvitationHandlers []AcceptGroupInvitationHandler
-	listGroupMembersHandlers      []ListGroupMembersHandler
+	appId          string
+	secret         string
+	eventSource    string
+	options        *Options
+	httpClient     *http.Client
+	logger         *Logger
+	asyncTaskQueue chan func()
+	isOpenAsync    bool
+	eventLock      sync.RWMutex
+	eventHandlers  map[string]EventHandler
 }
 
 func (client *Client) getHttpProxy(scheme string) (proxy *url.URL, err error) {
@@ -106,11 +83,12 @@ func (client *Client) getNoProxy(scheme string) []string {
 	return urls
 }
 
-func getSendUserAgent(clientUserAgent string, requestUserAgent map[string]string) string {
+func (client *Client) getSendUserAgent(requestUserAgent map[string]string) string {
 	realUserAgent := ""
 	for key, value := range requestUserAgent {
 		realUserAgent += fmt.Sprintf(" %s/%s", key, value)
 	}
+	clientUserAgent := client.options.UserAgent
 	if clientUserAgent != "" {
 		return realUserAgent + fmt.Sprintf(" Extra/%s", clientUserAgent)
 	}
@@ -175,6 +153,11 @@ func (client *Client) buildRequest(request Request) (httpRequest *http.Request, 
 	// add clientVersion
 	request.GetHeaders()["x-sdk-core-version"] = Version
 
+	// accept format
+	if accept := request.GetAcceptFormat(); accept != "" {
+		request.GetHeaders()["accept"] = request.GetAcceptFormat()
+	}
+
 	// resolve endpoint
 	endpoint := request.GetDomain()
 	if endpoint == "" && client.options.Domain != "" {
@@ -201,7 +184,7 @@ func (client *Client) buildRequest(request Request) (httpRequest *http.Request, 
 
 	httpRequest, err = buildHttpRequest(request)
 	if err == nil {
-		userAgent := DefaultUserAgent + getSendUserAgent(client.options.UserAgent, request.GetUserAgent())
+		userAgent := DefaultUserAgent + client.getSendUserAgent(request.GetUserAgent())
 		httpRequest.Header.Set("User-Agent", userAgent)
 	}
 
@@ -383,6 +366,107 @@ func (client *Client) DoAction(request Request, response Response) (err error) {
 		err = wrapServerError(serverErr, wrapInfo)
 	}
 	return
+}
+
+func (client *Client) newEvent(eventType string, data any) *cloudevents.Event {
+	ce := cloudevents.NewEvent()
+	ce.SetID(uuid.NewString())
+	ce.SetSource(client.eventSource)
+	ce.SetType(eventType)
+	ce.SetData(cloudevents.ApplicationJSON, data)
+	return &ce
+}
+
+func (client *Client) SendEvent(event *cloudevents.Event) (err error) {
+	content, _ := json.Marshal(event)
+	req := NewBaseRequest()
+	req.SetContent(content)
+	return client.DoAction(req, &BaseResponse{})
+}
+
+func (client *Client) InvokeCommand(command *cloudevents.Event, resp Response) (Response, error) {
+	content, _ := json.Marshal(command)
+	req := NewBaseRequest()
+	req.SetContent(content)
+	err := client.DoAction(req, resp)
+	return resp, err
+}
+
+func castCommandResponse[T Response](resp Response, err error) (T, error) {
+	return resp.(T), err
+}
+
+func (c *Client) OnEvent(event string, handler EventHandler) {
+	c.eventLock.Lock()
+	defer c.eventLock.Unlock()
+	c.eventHandlers[event] = handler
+}
+
+func castEventHandler[D any](handler func(*D) error) EventHandler {
+	return func(event *cloudevents.Event) (any, error) {
+		data := new(D)
+		if err := event.DataAs(data); err != nil {
+			return nil, err
+		}
+		err := handler(data)
+		return nil, err
+	}
+}
+
+func castCommandHandler[D any, R any](handler func(*D) (*R, error)) EventHandler {
+	return func(event *cloudevents.Event) (any, error) {
+		data := new(D)
+		if err := event.DataAs(data); err != nil {
+			return nil, err
+		}
+		return handler(data)
+	}
+}
+
+func (c *Client) EventHandler() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		c.eventLock.RLock()
+		defer c.eventLock.RUnlock()
+
+		body, _ := ioutil.ReadAll(r.Body)
+		event := cloudevents.NewEvent()
+		err := json.Unmarshal(body, &event)
+		if err != nil {
+			debug("Handle event error: %s.", err.Error())
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		if handler, ok := c.eventHandlers[event.Type()]; ok {
+			if resp, err := handler(&event); err == nil {
+				if resp == nil {
+					debug("Handle event success: %+v.", &event)
+					w.WriteHeader(http.StatusOK)
+					return
+
+				} else {
+					debug("Handle event success: %+v, resp: %+v.", &event, resp)
+					switch r.Header.Get("accept") {
+					default: // Json
+						body, _ := json.Marshal(resp)
+						_, _ = w.Write(body)
+					}
+					w.WriteHeader(http.StatusOK)
+					return
+				}
+
+			} else {
+				debug("Handle event error: %+v.", err)
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+
+		} else {
+			debug("Handle unknown event: %s.", event.Type())
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+	}
 }
 
 func buildHttpRequest(request Request) (httpRequest *http.Request, err error) {

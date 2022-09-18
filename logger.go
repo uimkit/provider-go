@@ -98,7 +98,7 @@ func (client *Client) printLog(fieldMap map[string]string, err error) {
 	}
 }
 
-type Debug func(format string, v ...interface{})
+type Debug func(format string, v ...any)
 
 func getDebug(flag string) Debug {
 	enable := false
@@ -112,7 +112,7 @@ func getDebug(flag string) Debug {
 		}
 	}
 
-	return func(format string, v ...interface{}) {
+	return func(format string, v ...any) {
 		if enable {
 			fmt.Println(fmt.Sprintf(format, v...))
 		}
