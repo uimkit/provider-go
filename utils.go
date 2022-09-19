@@ -32,7 +32,7 @@ func initStructWithDefaultTag(bean any) {
 		}
 		setter := reflect.ValueOf(bean).Elem().Field(i)
 		switch field.Type.String() {
-		case "int":
+		case "int", "int32", "int64":
 			intValue, _ := strconv.ParseInt(defaultValue, 10, 64)
 			setter.SetInt(intValue)
 		case "time.Duration":

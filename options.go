@@ -8,25 +8,27 @@ import (
 type Options struct {
 	AppId             string            `default:""`
 	Secret            string            `default:""`
-	Domain            string            `default:""`
+	Scheme            string            `default:"HTTPS"`
+	Domain            string            `default:"api.uimkit.chat"`
+	Port              int32             `default:""`
+	BasePath          string            `default:"/providers/v1"`
 	Provider          string            `default:""`
 	Strategy          string            `default:""`
 	IsInsecure        bool              `default:"false"`
 	HttpProxy         string            `default:""`
 	HttpsProxy        string            `default:""`
 	NoProxy           string            `default:""`
-	AutoRetry         bool              `default:"true"`
-	MaxRetryTime      int               `default:"3"`
+	AutoRetry         bool              `default:"false"`
+	MaxRetryTime      int32             `default:"3"`
 	UserAgent         string            `default:""`
 	Debug             bool              `default:"false"`
 	HttpTransport     *http.Transport   `default:""`
 	Transport         http.RoundTripper `default:""`
 	EnableAsync       bool              `default:"false"`
-	MaxTaskQueueSize  int               `default:"1000"`
-	GoRoutinePoolSize int               `default:"5"`
-	Scheme            string            `default:"HTTPS"`
-	ReadTimeout       time.Duration     `default:"30"`
-	ConnectTimeout    time.Duration     `default:"10"`
+	MaxTaskQueueSize  int32             `default:"1000"`
+	GoRoutinePoolSize int32             `default:"5"`
+	ReadTimeout       time.Duration     `default:"30000000000"` // 30s
+	ConnectTimeout    time.Duration     `default:"10000000000"` // 10s
 }
 
 func NewOptions() (options *Options) {
@@ -47,6 +49,18 @@ func WithAppSecret(appId, secret string) Option {
 func WithDomain(domain string) Option {
 	return func(o *Options) {
 		o.Domain = domain
+	}
+}
+
+func WithPort(port int32) Option {
+	return func(o *Options) {
+		o.Port = port
+	}
+}
+
+func WithBasePath(basePath string) Option {
+	return func(o *Options) {
+		o.BasePath = basePath
 	}
 }
 
@@ -75,7 +89,7 @@ func WithProxy(httpProxy, httpsProxy, noProxy string) Option {
 	}
 }
 
-func WithAutoRetry(isAutoRetry bool, maxRetryTime int) Option {
+func WithAutoRetry(isAutoRetry bool, maxRetryTime int32) Option {
 	return func(o *Options) {
 		o.AutoRetry = isAutoRetry
 		o.MaxRetryTime = maxRetryTime
@@ -94,7 +108,7 @@ func WithDebug(isDebug bool) Option {
 	}
 }
 
-func WithTimeout(readTimeout, connectTimeout, timeout time.Duration) Option {
+func WithTimeout(readTimeout, connectTimeout time.Duration) Option {
 	return func(o *Options) {
 		o.ReadTimeout = readTimeout
 		o.ConnectTimeout = connectTimeout
@@ -113,7 +127,7 @@ func WithTransport(transport http.RoundTripper) Option {
 	}
 }
 
-func WithAsync(enableAsync bool, maxTaskQueueSize, goRoutinePoolSize int) Option {
+func WithAsync(enableAsync bool, maxTaskQueueSize, goRoutinePoolSize int32) Option {
 	return func(o *Options) {
 		o.EnableAsync = enableAsync
 		o.MaxTaskQueueSize = maxTaskQueueSize

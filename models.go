@@ -518,7 +518,23 @@ type MomentLike struct {
 
 type MomentLikeDelete struct{}
 
-type Metafield struct{}
+type MetafieldType string
+
+const (
+	MetafieldTypeString  MetafieldType = "string"
+	MetafieldTypeBool    MetafieldType = "boolean"
+	MetafieldTypeInteger MetafieldType = "integer"
+	MetafieldTypeMap     MetafieldType = "map"
+)
+
+type Metafield struct {
+	Namespace  string        `json:"namespace,omitempty"`   // 命令空间
+	Resource   string        `json:"resource,omitempty"`    // 归属资源类型
+	ResourceId string        `json:"resource_id,omitempty"` // 归属资源ID
+	Type       MetafieldType `json:"type,omitempty"`        // 字段类型
+	Key        string        `json:"key,omitempty"`         // 字段名
+	Value      any           `json:"value,omitempty"`       // 字段值
+}
 
 type MetafieldUpdate struct{}
 

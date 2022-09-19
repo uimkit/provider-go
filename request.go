@@ -323,7 +323,6 @@ func (request *BaseRequest) String() string {
 func NewBaseRequest() (request *BaseRequest) {
 	request = &BaseRequest{
 		method:       http.MethodPost,
-		scheme:       HTTPS,
 		acceptFormat: Json,
 		headers: map[string]string{
 			"x-sdk-client":      "golang/1.0.0",

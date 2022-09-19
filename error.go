@@ -15,9 +15,6 @@ const (
 	AsyncFunctionNotEnabledCode    = "SDK.AsyncFunctionNotEnabled"
 	AsyncFunctionNotEnabledMessage = "Async function is not enabled in client, please invoke 'client.EnableAsync' function"
 
-	MissingParamErrorCode = "SDK.MissingParam"
-	InvalidParamErrorCode = "SDK.InvalidParam"
-
 	JsonMarshalErrorCode    = "SDK.JsonMarshalError"
 	JsonMarshalErrorMessage = "Failed to marshal request"
 
@@ -26,6 +23,8 @@ const (
 
 	TimeoutErrorCode    = "SDK.TimeoutError"
 	TimeoutErrorMessage = "The request timed out %s times(%s for retry), perhaps we should have the threshold raised a little?"
+
+	NetworkErrorCode = "SDK.NetworkError"
 )
 
 type Error interface {

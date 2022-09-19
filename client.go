@@ -30,10 +30,6 @@ func init() {
 // Version will be replaced while build: -ldflags="-X uim.Version=x.x.x"
 var Version = "0.0.1"
 var DefaultUserAgent = fmt.Sprintf("UIMKit (%s; %s) Golang/%s Core/%s", runtime.GOOS, runtime.GOARCH, strings.Trim(runtime.Version(), "go"), Version)
-var DefaultDomain = "api.uimkit.chat/provider/v1"
-
-var defaultConnectTimeout = 30 * time.Second
-var defaultReadTimeout = 10 * time.Second
 
 type EventHandler func(*cloudevents.Event) (any, error)
 
@@ -103,14 +99,14 @@ func (client *Client) getHTTPSInsecure(request Request) (insecure bool) {
 }
 
 // EnableAsync enable the async task queue
-func (client *Client) enableAsync(routinePoolSize, maxTaskQueueSize int) {
+func (client *Client) enableAsync(routinePoolSize, maxTaskQueueSize int32) {
 	if client.isOpenAsync {
 		fmt.Println("warning: Please not call EnableAsync repeatedly")
 		return
 	}
 	client.isOpenAsync = true
 	client.asyncTaskQueue = make(chan func(), maxTaskQueueSize)
-	for i := 0; i < routinePoolSize; i++ {
+	for i := 0; i < int(routinePoolSize); i++ {
 		go func() {
 			for {
 				task, notClosed := <-client.asyncTaskQueue
@@ -161,14 +157,20 @@ func (client *Client) buildRequest(request Request) (httpRequest *http.Request, 
 	if endpoint == "" && client.options.Domain != "" {
 		endpoint = client.options.Domain
 	}
-	if endpoint == "" {
-		endpoint = DefaultDomain
-	}
 	request.SetDomain(endpoint)
 
 	if request.GetScheme() == "" {
 		request.SetScheme(client.options.Scheme)
 	}
+
+	if request.GetPort() == 0 && client.options.Port > 0 {
+		request.SetPort(client.options.Port)
+	}
+
+	if client.options.BasePath != "" {
+		request.SetPath(client.options.BasePath + request.GetPath())
+	}
+
 	// init request params
 	err = initParams(request)
 	if err != nil {
@@ -190,8 +192,8 @@ func (client *Client) buildRequest(request Request) (httpRequest *http.Request, 
 }
 
 func (client *Client) getTimeout(request Request) (time.Duration, time.Duration) {
-	readTimeout := defaultReadTimeout
-	connectTimeout := defaultConnectTimeout
+	readTimeout := time.Duration(0)
+	connectTimeout := time.Duration(0)
 
 	reqReadTimeout := request.GetReadTimeout()
 	reqConnectTimeout := request.GetConnectTimeout()
@@ -284,7 +286,7 @@ func (client *Client) DoAction(request Request, response Response) (err error) {
 	}
 
 	var httpResponse *http.Response
-	for retryTimes := 0; retryTimes <= client.options.MaxRetryTime; retryTimes++ {
+	for retryTimes := 0; retryTimes <= int(client.options.MaxRetryTime); retryTimes++ {
 		if retryTimes > 0 {
 			client.printLog(fieldMap, err)
 			initLogMsg(fieldMap)
@@ -320,16 +322,15 @@ func (client *Client) DoAction(request Request, response Response) (err error) {
 			debug(" Error: %s.", err.Error())
 			if !client.options.AutoRetry {
 				return
-			} else if retryTimes >= client.options.MaxRetryTime {
+			} else if retryTimes >= int(client.options.MaxRetryTime) {
 				// timeout but reached the max retry times, return
-				times := strconv.Itoa(retryTimes + 1)
-				timeoutErrorMsg := fmt.Sprintf(TimeoutErrorMessage, times, times)
 				if strings.Contains(err.Error(), "Client.Timeout") {
-					timeoutErrorMsg += " Read timeout. Please set a valid ReadTimeout."
-				} else {
-					timeoutErrorMsg += " Connect timeout. Please set a valid ConnectTimeout."
+					times := strconv.Itoa(retryTimes + 1)
+					timeoutErrorMsg := fmt.Sprintf(TimeoutErrorMessage, times, times)
+					err = NewClientError(TimeoutErrorCode, timeoutErrorMsg, err)
+				} else if _, ok := err.(*url.Error); ok {
+					err = NewClientError(NetworkErrorCode, err.Error(), err)
 				}
-				err = NewClientError(TimeoutErrorCode, timeoutErrorMsg, err)
 				return
 			}
 		}
@@ -460,6 +461,10 @@ func buildHttpRequest(request Request) (httpRequest *http.Request, err error) {
 }
 
 func marshalBody(request Request) (err error) {
+	// don't overwrite if body has been set
+	if request.GetContent() != nil {
+		return nil
+	}
 	if contentType, contains := request.GetContentType(); contains {
 		var content []byte
 		if contentType == Json {
@@ -495,7 +500,8 @@ func isServerError(httpResponse *http.Response) bool {
 
 func NewClient(opts ...Option) (client *Client) {
 	client = &Client{
-		options: NewOptions(),
+		options:       NewOptions(),
+		eventHandlers: make(map[string]EventHandler),
 	}
 	for _, opt := range opts {
 		opt(client.options)
