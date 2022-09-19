@@ -392,37 +392,11 @@ func (client *Client) InvokeCommand(command *cloudevents.Event, resp Response) (
 	return resp, err
 }
 
-func castCommandResponse[T Response](resp Response, err error) (T, error) {
-	return resp.(T), err
-}
-
 func (c *Client) OnEvent(event string, handler EventHandler) {
 	c.eventLock.Lock()
 	defer c.eventLock.Unlock()
 	c.eventHandlers[event] = handler
 }
-
-func castEventHandler[D any](handler func(*D) error) EventHandler {
-	return func(event *cloudevents.Event) (any, error) {
-		data := new(D)
-		if err := event.DataAs(data); err != nil {
-			return nil, err
-		}
-		err := handler(data)
-		return nil, err
-	}
-}
-
-func castCommandHandler[D any, R any](handler func(*D) (*R, error)) EventHandler {
-	return func(event *cloudevents.Event) (any, error) {
-		data := new(D)
-		if err := event.DataAs(data); err != nil {
-			return nil, err
-		}
-		return handler(data)
-	}
-}
-
 func (c *Client) EventHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		c.eventLock.RLock()
@@ -549,4 +523,29 @@ func NewClient(appId, secret string, opts ...Option) (client *Client) {
 	}
 
 	return client
+}
+
+func castCommandResponse[T Response](resp Response, err error) (T, error) {
+	return resp.(T), err
+}
+
+func castEventHandler[D any](handler func(*D) error) EventHandler {
+	return func(event *cloudevents.Event) (any, error) {
+		data := new(D)
+		if err := event.DataAs(data); err != nil {
+			return nil, err
+		}
+		err := handler(data)
+		return nil, err
+	}
+}
+
+func castCommandHandler[D any, R any](handler func(*D) (*R, error)) EventHandler {
+	return func(event *cloudevents.Event) (any, error) {
+		data := new(D)
+		if err := event.DataAs(data); err != nil {
+			return nil, err
+		}
+		return handler(data)
+	}
 }
