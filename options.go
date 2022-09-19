@@ -6,6 +6,8 @@ import (
 )
 
 type Options struct {
+	AppId             string            `default:""`
+	Secret            string            `default:""`
 	Domain            string            `default:""`
 	Provider          string            `default:""`
 	Strategy          string            `default:""`
@@ -34,6 +36,13 @@ func NewOptions() (options *Options) {
 }
 
 type Option func(*Options)
+
+func WithAppSecret(appId, secret string) Option {
+	return func(o *Options) {
+		o.AppId = appId
+		o.Secret = secret
+	}
+}
 
 func WithDomain(domain string) Option {
 	return func(o *Options) {

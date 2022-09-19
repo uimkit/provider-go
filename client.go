@@ -38,10 +38,8 @@ var defaultReadTimeout = 10 * time.Second
 type EventHandler func(*cloudevents.Event) (any, error)
 
 type Client struct {
-	appId          string
-	secret         string
-	eventSource    string
 	options        *Options
+	eventSource    string
 	httpClient     *http.Client
 	logger         *Logger
 	asyncTaskQueue chan func()
@@ -495,10 +493,8 @@ func isServerError(httpResponse *http.Response) bool {
 	return httpResponse.StatusCode >= http.StatusInternalServerError
 }
 
-func NewClient(appId, secret string, opts ...Option) (client *Client) {
+func NewClient(opts ...Option) (client *Client) {
 	client = &Client{
-		appId:   appId,
-		secret:  secret,
 		options: NewOptions(),
 	}
 	for _, opt := range opts {
