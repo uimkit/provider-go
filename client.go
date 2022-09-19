@@ -529,23 +529,23 @@ func castCommandResponse[T Response](resp Response, err error) (T, error) {
 	return resp.(T), err
 }
 
-func castEventHandler[D any](handler func(*D) error) EventHandler {
+func castEventHandler[D any](handler func(*cloudevents.Event, *D) error) EventHandler {
 	return func(event *cloudevents.Event) (any, error) {
 		data := new(D)
 		if err := event.DataAs(data); err != nil {
 			return nil, err
 		}
-		err := handler(data)
+		err := handler(event, data)
 		return nil, err
 	}
 }
 
-func castCommandHandler[D any, R any](handler func(*D) (*R, error)) EventHandler {
+func castCommandHandler[D any, R any](handler func(*cloudevents.Event, *D) (*R, error)) EventHandler {
 	return func(event *cloudevents.Event) (any, error) {
 		data := new(D)
 		if err := event.DataAs(data); err != nil {
 			return nil, err
 		}
-		return handler(data)
+		return handler(event, data)
 	}
 }
