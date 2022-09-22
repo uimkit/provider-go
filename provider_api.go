@@ -138,7 +138,7 @@ func (client *Client) MetafieldUpdated(metafield *MetafieldUpdate) error {
 }
 
 // 查询元数据
-func (client *Client) GetMetafield(metafield *GetMetafield) (*GetMetafieldResponse, error) {
+func (client *Client) GetMetafield(metafield *GetMetafieldRequest) (*GetMetafieldResponse, error) {
 	return castCommandResponse[*GetMetafieldResponse](
 		client.InvokeCommand(
 			client.newEvent(ProviderCommandGetMetafield, metafield),

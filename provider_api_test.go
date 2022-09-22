@@ -30,9 +30,9 @@ func TestMetafield(t *testing.T) {
 		Namespace:  "test",
 		Resource:   "test_metafield",
 		ResourceId: resourceId,
-		Type:       MetafieldTypeString,
+		Type:       MetafieldValueTypeString,
 		Key:        "str_value",
-		Value:      "this is a string value",
+		Value:      "this is the string value",
 	})
 	assert.Nil(t, err)
 
@@ -41,7 +41,7 @@ func TestMetafield(t *testing.T) {
 		Namespace:  "test",
 		Resource:   "test_metafield",
 		ResourceId: resourceId,
-		Type:       MetafieldTypeInteger,
+		Type:       MetafieldValueTypeInteger,
 		Key:        "int_value",
 		Value:      2789132749,
 	})
@@ -52,8 +52,8 @@ func TestMetafield(t *testing.T) {
 		Namespace:  "test",
 		Resource:   "test_metafield",
 		ResourceId: resourceId,
-		Type:       MetafieldTypeBool,
-		Key:        "bool_value",
+		Type:       MetafieldValueTypeBoolean,
+		Key:        "boolean_value",
 		Value:      true,
 	})
 	assert.Nil(t, err)
@@ -63,7 +63,7 @@ func TestMetafield(t *testing.T) {
 		Namespace:  "test",
 		Resource:   "test_metafield",
 		ResourceId: resourceId,
-		Type:       MetafieldTypeMap,
+		Type:       MetafieldValueTypeJsonMap,
 		Key:        "map_value",
 		Value: map[string]any{
 			"id":   resourceId,
@@ -71,4 +71,36 @@ func TestMetafield(t *testing.T) {
 		},
 	})
 	assert.Nil(t, err)
+
+	err = client.MetafieldUpdated(&MetafieldUpdate{
+		Namespace:  "test",
+		Resource:   "test_metafield",
+		ResourceId: resourceId,
+		Type:       MetafieldValueTypeBoolean,
+		Key:        "boolean_value",
+		Value:      false,
+	})
+	assert.Nil(t, err)
+
+	err = client.MetafieldUpdated(&MetafieldUpdate{
+		Namespace:  "test",
+		Resource:   "test_metafield",
+		ResourceId: resourceId,
+		Type:       MetafieldValueTypeString,
+		Key:        "str_value",
+		Value:      "hello world",
+	})
+	assert.Nil(t, err)
+
+	err = client.MetafieldUpdated(&MetafieldUpdate{
+		Namespace:  "test",
+		Resource:   "test_metafield",
+		ResourceId: resourceId,
+		Type:       MetafieldValueTypeString,
+		Key:        "not_found_value",
+		Value:      "hello world",
+	})
+	assert.NotNil(t, err)
+	assert.Equal(t, ResourceNotFoundErrorCode, err.(*ServerError).errorCode)
+	t.Logf("%+v", err)
 }

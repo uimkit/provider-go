@@ -3,8 +3,18 @@ package uim
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
 )
 
+type Error interface {
+	error
+	HttpStatus() int
+	ErrorCode() string
+	Message() string
+	OriginError() error
+}
+
+// 客户端错误
 const (
 	DefaultClientErrorStatus = 400
 	DefaultClientErrorCode   = "SDK.ClientError"
@@ -24,16 +34,9 @@ const (
 	TimeoutErrorCode    = "SDK.TimeoutError"
 	TimeoutErrorMessage = "The request timed out %s times(%s for retry), perhaps we should have the threshold raised a little?"
 
-	NetworkErrorCode = "SDK.NetworkError"
+	NetworkErrorCode    = "SDK.NetworkError"
+	NetworkErrorMessage = "Failed to make the http request."
 )
-
-type Error interface {
-	error
-	HttpStatus() int
-	ErrorCode() string
-	Message() string
-	OriginError() error
-}
 
 type ClientError struct {
 	errorCode   string
@@ -77,58 +80,53 @@ func (err *ClientError) Message() string {
 	return err.message
 }
 
-func (err *ClientError) String() string {
-	return err.Error()
-}
+// 服务端错误
+const (
+	DefaultServerErrorStatus = http.StatusInternalServerError
+	DefaultServerErrorCode   = "SDK.ServerError"
 
-var wrapperList = []ServerErrorWrapper{}
+	UnsupportedEventTypeErrorStatus  = http.StatusBadRequest
+	UnsupportedEventTypeErrorCode    = "SDK.UnsupportedEventType"
+	UnsupportedEventTypeErrorMessage = "Unsupported event type \"%s\""
+
+	InvalidEventFormatErrorStatus  = http.StatusBadRequest
+	InvalidEventFormatErrorCode    = "SDK.InvalidEventFormat"
+	InvalidEventFormatErrorMessage = "Event must comply with the cloudevents specification"
+
+	UnsupportedResponseFormatErrorStatus  = http.StatusBadRequest
+	UnsupportedResponseFormatErrorCode    = "SDK.UnsupportedResponseFormat"
+	UnsupportedResponseFormatErrorMessage = "Could not marshal response in \"%s\", pelease set proper \"Accept\" header in request"
+
+	ResourceNotFoundErrorStatus = http.StatusNotFound
+	ResourceNotFoundErrorCode   = "SDK.ResourceNotFound"
+)
 
 type ServerError struct {
-	RespHeaders map[string][]string
 	httpStatus  int
-	requestId   string
-	hostId      string
 	errorCode   string
-	comment     string
-	recommend   string
 	message     string
+	originError error
 }
 
-type ServerErrorWrapper interface {
-	tryWrap(error *ServerError, wrapInfo map[string]string) bool
+func NewServerError(httpStatus int, errorCode, message string, originError error) Error {
+	return &ServerError{
+		httpStatus:  httpStatus,
+		errorCode:   errorCode,
+		message:     message,
+		originError: originError,
+	}
 }
 
 func (err *ServerError) Error() string {
-	return fmt.Sprintf("SDK.ServerError\nErrorCode: %s\nRecommend: %s\nRequestId: %s\nHostId: %s\nMessage: %s\nRespHeaders: %s",
-		err.errorCode, err.comment+err.recommend, err.requestId, err.hostId, err.message, err.RespHeaders)
+	serverErrMsg := fmt.Sprintf("[%s] %s", err.ErrorCode(), err.message)
+	if err.originError != nil {
+		return serverErrMsg + "\ncaused by:\n" + err.originError.Error()
+	}
+	return serverErrMsg
 }
 
-func NewServerError(httpStatus int, responseContent, comment string) Error {
-	result := &ServerError{
-		httpStatus: httpStatus,
-		comment:    comment,
-	}
-
-	data := make(map[string]string)
-	err := json.Unmarshal([]byte(responseContent), &data)
-	if err == nil {
-		result.requestId = data["request_id"]
-		result.hostId = data["host_id"]
-		result.errorCode = data["code"]
-		result.recommend = data["recommend"]
-		result.message = data["message"]
-	}
-	return result
-}
-
-func wrapServerError(originError *ServerError, wrapInfo map[string]string) *ServerError {
-	for _, wrapper := range wrapperList {
-		ok := wrapper.tryWrap(originError, wrapInfo)
-		if ok {
-			return originError
-		}
-	}
-	return originError
+func (err *ServerError) OriginError() error {
+	return err.originError
 }
 
 func (err *ServerError) HttpStatus() int {
@@ -143,22 +141,36 @@ func (err *ServerError) Message() string {
 	return err.message
 }
 
-func (err *ServerError) OriginError() error {
-	return nil
+func parseServerError(httpStatus int, responseContent string) Error {
+	result := &ServerError{
+		httpStatus: httpStatus,
+	}
+	data := make(map[string]string)
+	err := json.Unmarshal([]byte(responseContent), &data)
+	if err == nil {
+		result.errorCode = data["code"]
+		result.message = data["message"]
+	} else {
+		result.errorCode = DefaultServerErrorCode
+		result.message = fmt.Sprintf("Server runtime error caused by: %s", responseContent)
+	}
+	return result
 }
 
-func (err *ServerError) HostId() string {
-	return err.hostId
-}
-
-func (err *ServerError) RequestId() string {
-	return err.requestId
-}
-
-func (err *ServerError) Recommend() string {
-	return err.recommend
-}
-
-func (err *ServerError) Comment() string {
-	return err.comment
+func writeError(w http.ResponseWriter, err error) {
+	if serverError, ok := err.(*ServerError); ok {
+		b, _ := json.Marshal(map[string]string{
+			"code":    serverError.errorCode,
+			"message": serverError.message,
+		})
+		w.WriteHeader(serverError.httpStatus)
+		w.Write(b)
+	} else {
+		b, _ := json.Marshal(map[string]string{
+			"code":    DefaultServerErrorCode,
+			"message": fmt.Sprintf("Server runtime error caused by: %s", err.Error()),
+		})
+		w.WriteHeader(DefaultServerErrorStatus)
+		w.Write(b)
+	}
 }

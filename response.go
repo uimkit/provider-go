@@ -26,7 +26,7 @@ func unmarshalResponse(response Response, httpResponse *http.Response, format st
 		return
 	}
 	if !response.IsSuccess() {
-		err = NewServerError(response.GetHttpStatus(), response.GetHttpContentString(), "")
+		err = parseServerError(response.GetHttpStatus(), response.GetHttpContentString())
 		return
 	}
 

@@ -518,29 +518,44 @@ type MomentLike struct {
 
 type MomentLikeDelete struct{}
 
-type MetafieldType string
+type MetafieldValueType string
 
 const (
-	MetafieldTypeString  MetafieldType = "string"
-	MetafieldTypeBool    MetafieldType = "boolean"
-	MetafieldTypeInteger MetafieldType = "integer"
-	MetafieldTypeMap     MetafieldType = "map"
+	MetafieldValueTypeInteger   MetafieldValueType = "integer"
+	MetafieldValueTypeString    MetafieldValueType = "string"
+	MetafieldValueTypeBoolean   MetafieldValueType = "boolean"
+	MetafieldValueTypeDateTime  MetafieldValueType = "datetime"
+	MetafieldValueTypeJsonArray MetafieldValueType = "json_array"
+	MetafieldValueTypeJsonMap   MetafieldValueType = "json_map"
+	MetafieldValueTypeDecimal   MetafieldValueType = "decimal"
 )
 
 type Metafield struct {
-	Namespace  string        `json:"namespace,omitempty"`   // 命令空间
-	Resource   string        `json:"resource,omitempty"`    // 归属资源类型
-	ResourceId string        `json:"resource_id,omitempty"` // 归属资源ID
-	Type       MetafieldType `json:"type,omitempty"`        // 字段类型
-	Key        string        `json:"key,omitempty"`         // 字段名
-	Value      any           `json:"value,omitempty"`       // 字段值
+	Resource   string             `json:"resource,omitempty"`    // 归属资源类型
+	ResourceId string             `json:"resource_id,omitempty"` // 归属资源ID
+	Namespace  string             `json:"namespace,omitempty"`   // 命令空间
+	Key        string             `json:"key,omitempty"`         // 字段名
+	Type       MetafieldValueType `json:"type,omitempty"`        // 字段类型
+	Value      any                `json:"value,omitempty"`       // 字段值
 }
 
-type MetafieldUpdate struct{}
+type MetafieldUpdate struct {
+	Resource   string             `json:"resource,omitempty"`    // 归属资源类型
+	ResourceId string             `json:"resource_id,omitempty"` // 归属资源ID
+	Namespace  string             `json:"namespace,omitempty"`   // 命令空间
+	Key        string             `json:"key,omitempty"`         // 字段名
+	Type       MetafieldValueType `json:"type,omitempty"`        // 字段类型
+	Value      any                `json:"value,omitempty"`       // 字段值
+}
 
-type GetMetafield struct {
+type GetMetafieldRequest struct {
+	Resource   string `json:"resource,omitempty"`    // 归属资源类型
+	ResourceId string `json:"resource_id,omitempty"` // 归属资源ID
+	Namespace  string `json:"namespace,omitempty"`   // 命令空间
+	Key        string `json:"key,omitempty"`         // 字段名
 }
 
 type GetMetafieldResponse struct {
 	BaseResponse
+	Metafield
 }

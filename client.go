@@ -329,7 +329,7 @@ func (client *Client) DoAction(request Request, response Response) (err error) {
 					timeoutErrorMsg := fmt.Sprintf(TimeoutErrorMessage, times, times)
 					err = NewClientError(TimeoutErrorCode, timeoutErrorMsg, err)
 				} else if _, ok := err.(*url.Error); ok {
-					err = NewClientError(NetworkErrorCode, err.Error(), err)
+					err = NewClientError(NetworkErrorCode, NetworkErrorMessage, err)
 				}
 				return
 			}
@@ -356,14 +356,6 @@ func (client *Client) DoAction(request Request, response Response) (err error) {
 	err = unmarshalResponse(response, httpResponse, request.GetAcceptFormat())
 	fieldMap["{res_body}"] = response.GetHttpContentString()
 	debug("%s", response.GetHttpContentString())
-
-	// wrap server errors
-	if serverErr, ok := err.(*ServerError); ok {
-		var wrapInfo = map[string]string{}
-		serverErr.RespHeaders = response.GetHttpHeaders()
-		wrapInfo["StringToSign"] = request.GetStringToSign()
-		err = wrapServerError(serverErr, wrapInfo)
-	}
 	return
 }
 
@@ -396,6 +388,7 @@ func (c *Client) OnEvent(event string, handler EventHandler) {
 	defer c.eventLock.Unlock()
 	c.eventHandlers[event] = handler
 }
+
 func (c *Client) EventHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		c.eventLock.RLock()
@@ -405,38 +398,51 @@ func (c *Client) EventHandler() http.HandlerFunc {
 		event := cloudevents.NewEvent()
 		err := json.Unmarshal(body, &event)
 		if err != nil {
-			debug("Handle event error: %s.", err.Error())
-			w.WriteHeader(http.StatusBadRequest)
+			writeError(w, NewServerError(
+				InvalidEventFormatErrorStatus,
+				InvalidEventFormatErrorCode,
+				InvalidEventFormatErrorMessage,
+				nil,
+			))
 			return
 		}
 
 		if handler, ok := c.eventHandlers[event.Type()]; ok {
 			if resp, err := handler(&event); err == nil {
 				if resp == nil {
-					debug("Handle event success: %+v.", &event)
 					w.WriteHeader(http.StatusOK)
 					return
 
 				} else {
-					debug("Handle event success: %+v, resp: %+v.", &event, resp)
 					switch r.Header.Get("accept") {
 					default: // Json
-						body, _ := json.Marshal(resp)
-						_, _ = w.Write(body)
+						if body, err := json.Marshal(resp); err != nil {
+							writeError(w, NewServerError(
+								UnsupportedResponseFormatErrorStatus,
+								UnsupportedResponseFormatErrorCode,
+								fmt.Sprintf(UnsupportedResponseFormatErrorMessage, Json),
+								err,
+							))
+						} else {
+							w.WriteHeader(http.StatusOK)
+							_, _ = w.Write(body)
+						}
 					}
-					w.WriteHeader(http.StatusOK)
 					return
 				}
 
 			} else {
-				debug("Handle event error: %+v.", err)
-				w.WriteHeader(http.StatusInternalServerError)
+				writeError(w, err)
 				return
 			}
 
 		} else {
-			debug("Handle unknown event: %s.", event.Type())
-			w.WriteHeader(http.StatusBadRequest)
+			writeError(w, NewServerError(
+				UnsupportedEventTypeErrorStatus,
+				UnsupportedEventTypeErrorCode,
+				fmt.Sprintf(UnsupportedEventTypeErrorMessage, event.Type()),
+				nil,
+			))
 			return
 		}
 	}

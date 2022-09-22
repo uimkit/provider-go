@@ -194,7 +194,7 @@ func (client *Client) OnMetafieldUpdated(handler MetafieldUpdatedHandler) {
 }
 
 // 查询元数据
-type GetMetafieldHandler func(*cloudevents.Event, *GetMetafield) (*GetMetafieldResponse, error)
+type GetMetafieldHandler func(*cloudevents.Event, *GetMetafieldRequest) (*GetMetafieldResponse, error)
 
 func (client *Client) OnGetMetafield(handler GetMetafieldHandler) {
 	client.OnEvent(ProviderCommandGetMetafield, castCommandHandler(handler))
