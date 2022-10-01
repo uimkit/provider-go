@@ -103,4 +103,22 @@ func TestMetafield(t *testing.T) {
 	assert.NotNil(t, err)
 	assert.Equal(t, ResourceNotFoundErrorCode, err.(*ServerError).errorCode)
 	t.Logf("%+v", err)
+
+	var getMetafieldResp *GetMetafieldResponse
+	getMetafieldResp, err = client.GetMetafield(&GetMetafieldRequest{
+		Resource:   "test_metafield",
+		ResourceId: resourceId,
+		Namespace:  "test",
+		Key:        "str_value",
+	})
+	assert.Nil(t, err)
+	assert.Equal(t, "hello world", getMetafieldResp.Value)
+
+	_, err = client.GetMetafield(&GetMetafieldRequest{
+		Resource:   "test_metafield",
+		ResourceId: resourceId,
+		Namespace:  "test",
+		Key:        "not_found_value",
+	})
+	assert.Equal(t, ResourceNotFoundErrorCode, err.(*ServerError).errorCode)
 }
