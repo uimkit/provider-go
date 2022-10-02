@@ -189,6 +189,8 @@ type ContactUpdate struct {
 
 // 联系人删除
 type ContactDeleted struct {
+	UserId        string `json:"user_id,omitempty"`         // 联系人归属账号的平台用户ID，如：微信ID
+	ContactUserId string `json:"contact_user_id,omitempty"` // 联系人的用户ID
 }
 
 // 查询联系人列表

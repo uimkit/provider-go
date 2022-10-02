@@ -21,6 +21,52 @@ func newProviderClient() *Client {
 	)
 }
 
+func TestContact(t *testing.T) {
+	var err error
+	client := newProviderClient()
+
+	birthday := time.Now().Add(-365 * 10 * 24 * 3600 * time.Second)
+	userId := "wxid_SPdd_nkhEYnA_Yf5gN5sp"
+	contactUserId, _ := gonanoid.New()
+	contactUserId = fmt.Sprintf("wxid_%s", contactUserId)
+
+	err = client.NewContact(&Contact{
+		UserId:  userId,
+		Alias:   "老李",
+		Remark:  "公司同事",
+		Blocked: false,
+		Marked:  true,
+		ContactUser: &IMUser{
+			UserId:    contactUserId,
+			CustomId:  "Angela",
+			Name:      "Angela（网红合作）☀️",
+			Mobile:    "13000192287",
+			Avatar:    "https://avatar.url",
+			Gender:    GenderFemale,
+			Country:   "中国",
+			Province:  "广东",
+			City:      "深圳",
+			Signature: "长期招募主播",
+			Birthday:  &birthday,
+		},
+	})
+	assert.Nil(t, err)
+
+	updateAlias := "小孙"
+	updateProvince := "江苏"
+	updateCity := "苏州"
+	err = client.ContactUpdated(&ContactUpdate{
+		UserId: userId,
+		ContactUser: &IMUserUpdate{
+			UserId:   contactUserId,
+			Province: &updateProvince,
+			City:     &updateCity,
+		},
+		Alias: &updateAlias,
+	})
+	assert.Nil(t, err)
+}
+
 func TestIMAccount(t *testing.T) {
 	var err error
 	client := newProviderClient()
@@ -30,7 +76,7 @@ func TestIMAccount(t *testing.T) {
 	})
 	assert.Equal(t, InvalidEventDataErrorCode, err.(*ServerError).errorCode)
 
-	now := time.Now()
+	birthday := time.Now().Add(-365 * 10 * 24 * 3600 * time.Second)
 	userId, _ := gonanoid.New()
 	userId = fmt.Sprintf("wxid_%s", userId)
 	account := &IMAccount{
@@ -45,7 +91,7 @@ func TestIMAccount(t *testing.T) {
 			Province:  "广东",
 			City:      "深圳",
 			Signature: "长期招募主播",
-			Birthday:  &now,
+			Birthday:  &birthday,
 		},
 		Presence: PresenceInitializing,
 	}
