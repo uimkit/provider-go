@@ -67,6 +67,11 @@ func TestIMAccount(t *testing.T) {
 	assert.Nil(t, err)
 
 	err = client.AccountUpdated(&IMAccountUpdate{
+		User: &IMUserUpdate{},
+	})
+	assert.Equal(t, InvalidEventDataErrorCode, err.(*ServerError).errorCode)
+
+	err = client.AccountUpdated(&IMAccountUpdate{
 		User: &IMUserUpdate{
 			UserId: "fakeid",
 		},
