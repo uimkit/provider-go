@@ -5,7 +5,8 @@ go 1.18
 require (
 	github.com/cloudevents/sdk-go/v2 v2.10.1
 	github.com/google/uuid v1.3.0
-	github.com/stretchr/testify v1.5.1
+	github.com/matoous/go-nanoid/v2 v2.0.0
+	github.com/stretchr/testify v1.6.1
 )
 
 require (
@@ -17,5 +18,5 @@ require (
 	go.uber.org/atomic v1.4.0 // indirect
 	go.uber.org/multierr v1.1.0 // indirect
 	go.uber.org/zap v1.10.0 // indirect
-	gopkg.in/yaml.v2 v2.3.0 // indirect
+	gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c // indirect
 )

@@ -1,10 +1,12 @@
 package uim
 
 import (
+	"fmt"
 	"strconv"
 	"testing"
 	"time"
 
+	gonanoid "github.com/matoous/go-nanoid/v2"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -17,6 +19,59 @@ func newProviderClient() *Client {
 		WithScheme(HTTP),
 		WithDebug(true),
 	)
+}
+
+func TestIMAccount(t *testing.T) {
+	var err error
+	client := newProviderClient()
+
+	err = client.NewAccount(&IMAccount{
+		User: &IMUser{},
+	})
+	assert.Equal(t, InvalidEventDataErrorCode, err.(*ServerError).errorCode)
+
+	now := time.Now()
+	userId, _ := gonanoid.New()
+	userId = fmt.Sprintf("wxid_%s", userId)
+	account := &IMAccount{
+		User: &IMUser{
+			UserId:    userId,
+			CustomId:  "Angela",
+			Name:      "Angela（网红合作）☀️",
+			Mobile:    "13000192287",
+			Avatar:    "https://avatar.url",
+			Gender:    GenderFemale,
+			Country:   "中国",
+			Province:  "广东",
+			City:      "深圳",
+			Signature: "长期招募主播",
+			Birthday:  &now,
+		},
+		Presence: PresenceInitializing,
+	}
+	err = client.NewAccount(account)
+	assert.Nil(t, err)
+
+	updatePresence := PresenceOnline
+	updateMobile := "18900010002"
+	updateName := "jenny"
+	err = client.AccountUpdated(&IMAccountUpdate{
+		User: &IMUserUpdate{
+			UserId: userId,
+			Name:   &updateName,
+			Mobile: &updateMobile,
+		},
+		Presence: &updatePresence,
+		Metadata: map[string]any{"test": true},
+	})
+	assert.Nil(t, err)
+
+	err = client.AccountUpdated(&IMAccountUpdate{
+		User: &IMUserUpdate{
+			UserId: "fakeid",
+		},
+	})
+	assert.Equal(t, ResourceNotFoundErrorCode, err.(*ServerError).errorCode)
 }
 
 func TestMetafield(t *testing.T) {

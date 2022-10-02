@@ -97,8 +97,15 @@ const (
 	UnsupportedResponseFormatErrorCode    = "SDK.UnsupportedResponseFormat"
 	UnsupportedResponseFormatErrorMessage = "Could not marshal response in \"%s\", pelease set proper \"Accept\" header in request"
 
+	InvalidEventDataErrorStatus = http.StatusBadRequest
+	InvalidEventDataErrorCode   = "SDK.InvalidEventData"
+
 	ResourceNotFoundErrorStatus = http.StatusNotFound
 	ResourceNotFoundErrorCode   = "SDK.ResourceNotFound"
+
+	UnregisteredProviderErrorStatus  = http.StatusUnauthorized
+	UnregisteredProviderErrorCode    = "SDK.UnregisteredProvider"
+	UnregisteredProviderErrorMessage = "Please set proper \"Provider\" and \"Strategy\" client options"
 )
 
 type ServerError struct {
