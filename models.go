@@ -256,6 +256,8 @@ type GroupUpdate struct {
 
 // 群组删除
 type GroupDelete struct {
+	UserId  string `json:"user_id,omitempty"`  // 群组归属账号的平台用户ID，如：微信ID
+	GroupId string `json:"group_id,omitempty"` // 平台群组ID
 }
 
 // 查询群组列表

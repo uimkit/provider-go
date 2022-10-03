@@ -21,6 +21,63 @@ func newProviderClient() *Client {
 	)
 }
 
+func TestGroup(t *testing.T) {
+	var err error
+	client := newProviderClient()
+
+	userId := "wxid_SPdd_nkhEYnA_Yf5gN5sp"
+	groupId, _ := gonanoid.New()
+	groupId = fmt.Sprintf("wxid_%s", groupId)
+	ownerUserId, _ := gonanoid.New()
+	ownerUserId = fmt.Sprintf("wxid_%s", ownerUserId)
+	birthday := time.Now().Add(-365 * 10 * 24 * 3600 * time.Second)
+
+	err = client.NewGroup(&Group{
+		UserId:  userId,
+		GroupId: groupId,
+		Owner: &IMUser{
+			UserId:    ownerUserId,
+			CustomId:  "Angela",
+			Name:      "Angela（网红合作）☀️",
+			Mobile:    "13000192287",
+			Avatar:    "https://avatar.url",
+			Gender:    GenderFemale,
+			Country:   "中国",
+			Province:  "广东",
+			City:      "深圳",
+			Signature: "长期招募主播",
+			Birthday:  &birthday,
+		},
+		Name:         "福利一群",
+		Avatar:       "https://avatar.url",
+		Announcement: "大家记得修改群公告",
+	})
+	assert.Nil(t, err)
+
+	updateOwnerUserId, _ := gonanoid.New()
+	updateOwnerUserId = fmt.Sprintf("wxid_%s", updateOwnerUserId)
+	updateBirthday := time.Now().Add(-365 * 5 * 24 * 3600 * time.Second)
+	updateAnnouncement := "大家记得修改群公告，发广告者提出"
+	err = client.GroupUpdated(&GroupUpdate{
+		UserId:  userId,
+		GroupId: groupId,
+		Owner: &IMUser{
+			UserId:   updateOwnerUserId,
+			CustomId: "Fiona",
+			Name:     "Fiona（网红合作）☀️",
+			Mobile:   "18988776655",
+			Avatar:   "https://avatar.url",
+			Gender:   GenderFemale,
+			Country:  "中国",
+			Province: "江苏",
+			City:     "苏州",
+			Birthday: &updateBirthday,
+		},
+		Announcement: &updateAnnouncement,
+	})
+	assert.Nil(t, err)
+}
+
 func TestContact(t *testing.T) {
 	var err error
 	client := newProviderClient()
