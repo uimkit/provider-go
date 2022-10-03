@@ -10,6 +10,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+const defaultUserId = "wxid_SPdd_nkhEYnA_Yf5gN5sp"
+
 func newProviderClient() *Client {
 	return NewClient(
 		WithAppSecret("", ""),
@@ -25,7 +27,7 @@ func TestConversation(t *testing.T) {
 	var err error
 	client := newProviderClient()
 
-	userId := "wxid_SPdd_nkhEYnA_Yf5gN5sp"
+	userId := defaultUserId
 	partyGroupId, _ := gonanoid.New()
 	partyGroupId = fmt.Sprintf("wxid_%s", partyGroupId)
 	partyUserId, _ := gonanoid.New()
@@ -80,7 +82,7 @@ func TestGroup(t *testing.T) {
 	var err error
 	client := newProviderClient()
 
-	userId := "wxid_SPdd_nkhEYnA_Yf5gN5sp"
+	userId := defaultUserId
 	groupId, _ := gonanoid.New()
 	groupId = fmt.Sprintf("wxid_%s", groupId)
 	ownerUserId, _ := gonanoid.New()
@@ -138,7 +140,7 @@ func TestContact(t *testing.T) {
 	client := newProviderClient()
 
 	birthday := time.Now().Add(-365 * 10 * 24 * 3600 * time.Second)
-	userId := "wxid_SPdd_nkhEYnA_Yf5gN5sp"
+	userId := defaultUserId
 	contactUserId, _ := gonanoid.New()
 	contactUserId = fmt.Sprintf("wxid_%s", contactUserId)
 
