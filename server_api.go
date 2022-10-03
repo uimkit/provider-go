@@ -109,6 +109,20 @@ func (client *Client) OnNewJoinGroupApply(handler NewJoinGroupApplyHandler) {
 	client.OnEvent(ProviderEventNewJoinGroupApply, castEventHandler(handler))
 }
 
+// 新会话
+type NewConversationHandler func(*cloudevents.Event, *Conversation) error
+
+func (client *Client) OnNewConversation(handler NewConversationHandler) {
+	client.OnEvent(ProviderEventNewConversation, castEventHandler(handler))
+}
+
+// 会话更新
+type ConversationUpdatedHandler func(*cloudevents.Event, *ConversationUpdate) error
+
+func (client *Client) OnConversationUpdated(handler ConversationUpdatedHandler) {
+	client.OnEvent(ProviderEventConversationUpdated, castEventHandler(handler))
+}
+
 // 新消息
 type NewMessageHandler func(*cloudevents.Event, *Message) error
 

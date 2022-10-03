@@ -17,6 +17,8 @@ const (
 	ProviderEventGroupMemberDeleted   = "provider.group_member_deleted"   // 群成员删除
 	ProviderEventNewGroupInvitation   = "provider.new_group_invitation"   // 收到入群邀请
 	ProviderEventNewJoinGroupApply    = "provider.new_join_group_apply"   // 收到入群申请
+	ProviderEventNewConversation      = "provider.new_conversation"       // 新会话
+	ProviderEventConversationUpdated  = "provider.conversation_updated"   // 会话更新
 	ProviderEventNewMessage           = "provider.new_message"            // 收新消息
 	ProviderEventMessageUpdated       = "provider.message_updated"        // 消息更新，如：撤回消息
 	ProviderEventNewMoment            = "provider.new_moment"             // 新动态

@@ -21,6 +21,61 @@ func newProviderClient() *Client {
 	)
 }
 
+func TestConversation(t *testing.T) {
+	var err error
+	client := newProviderClient()
+
+	userId := "wxid_SPdd_nkhEYnA_Yf5gN5sp"
+	partyGroupId, _ := gonanoid.New()
+	partyGroupId = fmt.Sprintf("wxid_%s", partyGroupId)
+	partyUserId, _ := gonanoid.New()
+	partyUserId = fmt.Sprintf("wxid_%s", partyUserId)
+	conversationId1, _ := gonanoid.New()
+	conversationId2, _ := gonanoid.New()
+
+	err = client.NewConversation(&Conversation{
+		ConversationId: conversationId1,
+		UserId:         userId,
+		Type:           ConversationTypePrivate,
+		Party: &ConversationParty{
+			PartyId: partyUserId,
+			Name:    "Jackson",
+			Avatar:  "https://avatar.url",
+		},
+		Metadata: map[string]any{"test": true},
+	})
+	assert.Nil(t, err)
+
+	err = client.NewConversation(&Conversation{
+		ConversationId: conversationId2,
+		UserId:         userId,
+		Type:           ConversationTypeGroup,
+		Party: &ConversationParty{
+			PartyId: partyGroupId,
+			Name:    "公司群",
+			Avatar:  "https://avatar.url",
+		},
+		PrivateMetadata: map[string]any{"test": true},
+	})
+	assert.Nil(t, err)
+
+	err = client.ConversationUpdated(&ConversationUpdate{
+		UserId:          userId,
+		Type:            ConversationTypePrivate,
+		PartyId:         partyUserId,
+		PrivateMetadata: map[string]any{"test": false},
+	})
+	assert.Nil(t, err)
+
+	err = client.ConversationUpdated(&ConversationUpdate{
+		UserId:   userId,
+		Type:     ConversationTypeGroup,
+		PartyId:  partyGroupId,
+		Metadata: map[string]any{"test": false},
+	})
+	assert.Nil(t, err)
+}
+
 func TestGroup(t *testing.T) {
 	var err error
 	client := newProviderClient()

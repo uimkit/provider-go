@@ -77,6 +77,16 @@ func (client *Client) NewJoinGroupApply(apply *JoinGroupApply) error {
 	return client.SendEvent(client.newEvent(ProviderEventNewJoinGroupApply, apply))
 }
 
+// 新会话
+func (client *Client) NewConversation(conversation *Conversation) error {
+	return client.SendEvent(client.newEvent(ProviderEventNewConversation, conversation))
+}
+
+// 会话更新
+func (client *Client) ConversationUpdated(conversation *ConversationUpdate) error {
+	return client.SendEvent(client.newEvent(ProviderEventConversationUpdated, conversation))
+}
+
 // 新消息
 func (client *Client) NewMessage(message *Message) error {
 	return client.SendEvent(client.newEvent(ProviderEventNewMessage, message))

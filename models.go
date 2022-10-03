@@ -378,6 +378,32 @@ const (
 	ConversationTypeCustomerService                             // 客服会话
 )
 
+// 会话对方
+type ConversationParty struct {
+	PartyId string `json:"party_id,omitempty"` // 会话对方平台ID
+	Name    string `json:"name,omitempty"`     // 会话对方名称
+	Avatar  string `json:"avatar,omitempty"`   // 会话对方头像
+}
+
+// 会话
+type Conversation struct {
+	ConversationId  string                 `json:"conversation_id,omitempty"`  // 平台会话ID
+	UserId          string                 `json:"user_id,omitempty"`          // 会话归属用户平台ID
+	Type            ConversationType       `json:"type,omitempty"`             // 会话类型
+	Party           *ConversationParty     `json:"party,omitempty"`            // 会话对方
+	Metadata        map[string]interface{} `json:"metadata,omitempty"`         // 公开元数据
+	PrivateMetadata map[string]interface{} `json:"private_metadata,omitempty"` // 私有元数据
+}
+
+// 会话更新
+type ConversationUpdate struct {
+	UserId          string                 `json:"user_id,omitempty"`          // 会话归属用户平台ID
+	Type            ConversationType       `json:"type,omitempty"`             // 会话类型
+	PartyId         string                 `json:"party_id,omitempty"`         // 会话对方平台ID
+	Metadata        map[string]interface{} `json:"metadata,omitempty"`         // 公开元数据
+	PrivateMetadata map[string]interface{} `json:"private_metadata,omitempty"` // 私有元数据
+}
+
 // 消息@用户类型
 type MentionedType int
 
