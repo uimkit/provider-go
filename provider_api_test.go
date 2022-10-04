@@ -24,6 +24,32 @@ func newProviderClient() *Client {
 	)
 }
 
+func TestGroupJoinApply(t *testing.T) {
+	var err error
+	client := newProviderClient()
+
+	userId := defaultUserId
+	groupId := defaultGroupId
+	applyUserId, _ := gonanoid.New()
+	applyUserId = fmt.Sprintf("wxid_%s", applyUserId)
+	applyId, _ := gonanoid.New()
+	appliedAt := time.Now().Add(-10 * time.Minute)
+
+	err = client.NewJoinGroupApply(&JoinGroupApply{
+		ID:      applyId,
+		UserId:  userId,
+		GroupId: groupId,
+		ApplyUser: &IMUser{
+			UserId: applyUserId,
+			Name:   "John Stockton",
+		},
+		HelloMessage: "你好啊",
+		AppliedAt:    &appliedAt,
+		Metadata:     map[string]any{"test": true},
+	})
+	assert.Nil(t, err)
+}
+
 func TestGroupInvitation(t *testing.T) {
 	var err error
 	client := newProviderClient()
