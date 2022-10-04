@@ -23,6 +23,35 @@ func newProviderClient() *Client {
 	)
 }
 
+func TestFriendApply(t *testing.T) {
+	var err error
+	client := newProviderClient()
+
+	userId := defaultUserId
+	applyUserId, _ := gonanoid.New()
+	applyUserId = fmt.Sprintf("wxid_%s", applyUserId)
+	applyId, _ := gonanoid.New()
+
+	err = client.NewFriendApply(&FriendApply{
+		ID:     applyId,
+		UserId: userId,
+		ApplyUser: &IMUser{
+			UserId:    applyUserId,
+			CustomId:  "Kobe",
+			Name:      "Kobe Bryant",
+			Mobile:    "18666633332",
+			Avatar:    "https://avatar.url",
+			Gender:    GenderMale,
+			Country:   "美国",
+			Province:  "加利福尼亚",
+			City:      "洛杉矶",
+			Signature: "",
+		},
+		HelloMessage: "play with me",
+	})
+	assert.Nil(t, err)
+}
+
 func TestConversation(t *testing.T) {
 	var err error
 	client := newProviderClient()
