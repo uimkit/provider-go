@@ -130,16 +130,6 @@ type FriendApply struct {
 	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
 }
 
-// 好友申请回复
-type FriendReply struct {
-	ID           string     `json:"id,omitempty"`            // 回复ID
-	ApplyId      string     `json:"apply_id,omitempty"`      // 平台好友申请ID
-	UserId       string     `json:"user_id,omitempty"`       // 回复用户ID，如：微信ID
-	ApplyUser    *IMUser    `json:"apply_user,omitempty"`    // 申请人信息
-	HelloMessage string     `json:"hello_message,omitempty"` // 打招呼留言
-	AppliedAt    *time.Time `json:"applied_at,omitempty"`    // 申请时间
-}
-
 // 申请添加好友
 type NewFriendApply struct {
 	UserId       string   `json:"user_id,omitempty"`       // 发起申请的平台用户ID，如：微信ID

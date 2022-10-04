@@ -17,11 +17,6 @@ func (client *Client) NewFriendApply(apply *FriendApply) error {
 	return client.SendEvent(client.newEvent(ProviderEventNewFriendApply, apply))
 }
 
-// 收到好友申请的消息回复
-func (client *Client) NewFriendReply(reply *FriendReply) error {
-	return client.SendEvent(client.newEvent(ProviderEventNewFriendReply, reply))
-}
-
 // 新好友
 func (client *Client) NewContact(contact *Contact) error {
 	return client.SendEvent(client.newEvent(ProviderEventNewContact, contact))

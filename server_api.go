@@ -25,13 +25,6 @@ func (client *Client) OnNewFriendApply(handler NewFriendApplyHandler) {
 	client.OnEvent(ProviderEventNewFriendApply, castEventHandler(handler))
 }
 
-// 收到好友申请的消息回复
-type NewFriendReplyHandler func(*cloudevents.Event, *FriendReply) error
-
-func (client *Client) OnNewFriendReply(handler NewFriendReplyHandler) {
-	client.OnEvent(ProviderEventNewFriendReply, castEventHandler(handler))
-}
-
 // 新好友
 type NewContactHandler func(*cloudevents.Event, *Contact) error
 
