@@ -270,12 +270,14 @@ type GroupList struct {
 
 // 入群邀请
 type GroupInvitation struct {
-	ID           string     `json:"id,omitempty"`            // 入群邀请ID
-	UserId       string     `json:"user_id,omitempty"`       // 收到入群邀请的账号的平台用户ID，如：微信ID
-	Group        *Group     `json:"group,omitempty"`         // 群组信息
-	Inviter      *IMUser    `json:"inviter,omitempty"`       // 邀请人信息
-	HelloMessage string     `json:"hello_message,omitempty"` // 打招呼留言
-	InvitedAt    *time.Time `json:"invited_at,omitempty"`    // 邀请时间
+	ID              string         `json:"id,omitempty"`               // 入群邀请ID
+	UserId          string         `json:"user_id,omitempty"`          // 收到入群邀请的账号的平台用户ID，如：微信ID
+	GroupId         string         `json:"group_id,omitempty"`         // 群组ID
+	Inviter         *IMUser        `json:"inviter,omitempty"`          // 邀请人信息
+	HelloMessage    string         `json:"hello_message,omitempty"`    // 打招呼留言
+	InvitedAt       *time.Time     `json:"invited_at,omitempty"`       // 邀请时间
+	Metadata        map[string]any `json:"metadata,omitempty"`         // 公开元数据
+	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
 }
 
 // 邀请入群
@@ -295,12 +297,14 @@ type AcceptGroupInvitation struct {
 
 // 入群申请
 type JoinGroupApply struct {
-	ID           string     `json:"id,omitempty"`            // 入群申请ID
-	UserId       string     `json:"user_id,omitempty"`       // 收到入群申请的账号的平台用户ID，如：微信ID
-	Group        *Group     `json:"group,omitempty"`         // 群组信息
-	ApplyUser    *IMUser    `json:"apply_user,omitempty"`    // 申请用户信息
-	HelloMessage string     `json:"hello_message,omitempty"` // 打招呼留言
-	AppliedAt    *time.Time `json:"applied_at,omitempty"`    // 申请时间
+	ID              string         `json:"id,omitempty"`               // 入群申请ID
+	UserId          string         `json:"user_id,omitempty"`          // 收到入群申请的账号的平台用户ID，如：微信ID
+	GroupId         string         `json:"group_id,omitempty"`         // 群组ID
+	ApplyUser       *IMUser        `json:"apply_user,omitempty"`       // 申请用户信息
+	HelloMessage    string         `json:"hello_message,omitempty"`    // 打招呼留言
+	AppliedAt       *time.Time     `json:"applied_at,omitempty"`       // 申请时间
+	Metadata        map[string]any `json:"metadata,omitempty"`         // 公开元数据
+	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
 }
 
 // 申请加入群组
