@@ -11,6 +11,7 @@ import (
 )
 
 const defaultUserId = "wxid_SPdd_nkhEYnA_Yf5gN5sp"
+const defaultGroupId = "wxid_6QOgsgb9QYM4od3rwZUM9"
 
 func newProviderClient() *Client {
 	return NewClient(
@@ -21,6 +22,73 @@ func newProviderClient() *Client {
 		WithScheme(HTTP),
 		WithDebug(true),
 	)
+}
+
+func TestGroupMember(t *testing.T) {
+	var err error
+	client := newProviderClient()
+
+	userId, _ := gonanoid.New()
+	userId = fmt.Sprintf("wxid_%s", userId)
+	userId2, _ := gonanoid.New()
+	userId2 = fmt.Sprintf("wxid_%s", userId2)
+	groupId := defaultGroupId
+	memberId, _ := gonanoid.New()
+	memberId2, _ := gonanoid.New()
+
+	err = client.NewGroupMember(&GroupMember{
+		GroupId:  groupId,
+		MemberId: memberId,
+		User: &IMUser{
+			UserId:   userId,
+			CustomId: "Chris Webber",
+		},
+		IsOwner:  false,
+		IsAdmin:  true,
+		Alias:    "李伟波",
+		Metadata: map[string]any{"test": true},
+	})
+	assert.Nil(t, err)
+
+	updateIsOwner := true
+	err = client.GroupMemberUpdated(&GroupMemberUpdate{
+		GroupId:         groupId,
+		MemberId:        memberId,
+		IsOwner:         &updateIsOwner,
+		PrivateMetadata: map[string]any{"test": false},
+	})
+	assert.Nil(t, err)
+
+	updateName := "韦伯"
+	err = client.GroupMemberUpdated(&GroupMemberUpdate{
+		GroupId:  groupId,
+		MemberId: memberId,
+		User: &IMUserUpdate{
+			UserId: userId,
+			Name:   &updateName,
+		},
+	})
+	assert.Nil(t, err)
+
+	err = client.NewGroupMember(&GroupMember{
+		GroupId:  groupId,
+		MemberId: memberId2,
+		User: &IMUser{
+			UserId:   userId2,
+			CustomId: "Mike Bibby",
+		},
+		IsOwner:  false,
+		IsAdmin:  true,
+		Alias:    "麦贝比",
+		Metadata: map[string]any{"test": true},
+	})
+	assert.Nil(t, err)
+
+	err = client.GroupMemberDeleted(&GroupMemberDelete{
+		GroupId:  groupId,
+		MemberId: memberId2,
+	})
+	assert.Nil(t, err)
 }
 
 func TestFriendApply(t *testing.T) {

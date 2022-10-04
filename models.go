@@ -343,6 +343,8 @@ type GroupMemberUpdate struct {
 
 // 群组成员删除
 type GroupMemberDelete struct {
+	GroupId  string `json:"group_id,omitempty"`  // 平台群组ID
+	MemberId string `json:"member_id,omitempty"` // 平台群成员ID
 }
 
 // 查询群成员列表
