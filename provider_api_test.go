@@ -31,6 +31,7 @@ func TestFriendApply(t *testing.T) {
 	applyUserId, _ := gonanoid.New()
 	applyUserId = fmt.Sprintf("wxid_%s", applyUserId)
 	applyId, _ := gonanoid.New()
+	appliedAt := time.Now()
 
 	err = client.NewFriendApply(&FriendApply{
 		ID:     applyId,
@@ -48,6 +49,8 @@ func TestFriendApply(t *testing.T) {
 			Signature: "",
 		},
 		HelloMessage: "play with me",
+		AppliedAt:    &appliedAt,
+		Metadata:     map[string]any{"test": true},
 	})
 	assert.Nil(t, err)
 }
