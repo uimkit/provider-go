@@ -24,6 +24,71 @@ func newProviderClient() *Client {
 	)
 }
 
+func TestMessage(t *testing.T) {
+	var err error
+	client := newProviderClient()
+
+	messageId1, _ := gonanoid.New()
+	messageId2, _ := gonanoid.New()
+	messageId3, _ := gonanoid.New()
+	userId1, _ := gonanoid.New()
+	userId2, _ := gonanoid.New()
+	userId3, _ := gonanoid.New()
+	now := time.Now()
+
+	message := &Message{
+		MessageId: messageId1,
+		UserId:    defaultUserId,
+		From: &MessageParticipant{
+			ID: defaultUserId,
+		},
+		To: &MessageParticipant{
+			ID: defaultGroupId,
+		},
+		ConversationType: ConversationTypeGroup,
+		MentionedType:    MentionedTypeAll,
+		MentionedUsers:   make([]*IMUser, 0),
+		SentAt:           &now,
+		Payload: &MessagePayload{
+			Type: MessageTypeText,
+			Body: &TextMessageBody{
+				Content: "hello",
+			},
+		},
+		Revoked: false,
+	}
+	err = client.NewMessage(message)
+	assert.Nil(t, err)
+
+	message.MessageId = messageId2
+	message.From.ID = userId1
+	message.MentionedType = MentionedTypeSpecific
+	message.MentionedUsers = []*IMUser{{UserId: userId2}}
+	message.Payload.Body.(*TextMessageBody).Content = "yes"
+	err = client.NewMessage(message)
+	assert.Nil(t, err)
+
+	message.MessageId = messageId3
+	message.ConversationType = ConversationTypePrivate
+	message.From.ID = defaultUserId
+	message.To.ID = userId3
+	message.To.Name = "Westbrook"
+	message.To.Avatar = "https://avatar.url"
+	message.MentionedType = MentionedTypeNone
+	message.MentionedUsers = nil
+	message.Payload.Body.(*TextMessageBody).Content = "在不？"
+	err = client.NewMessage(message)
+	assert.Nil(t, err)
+
+	updateRevoke := true
+	err = client.MessageUpdated(&MessageUpdate{
+		MessageId: messageId3,
+		Revoked:   &updateRevoke,
+		Metadata:  map[string]any{"test": true},
+	})
+	assert.Nil(t, err)
+}
+
 func TestGroupJoinApply(t *testing.T) {
 	var err error
 	client := newProviderClient()

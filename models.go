@@ -255,8 +255,9 @@ type ConversationUpdate struct {
 type MentionedType int
 
 const (
-	MentionedTypeAll      MentionedType = iota + 1 // 所有人
-	MentionedTypeSpecific                          // 指定人
+	MentionedTypeNone     MentionedType = iota // 没有@
+	MentionedTypeAll                           // 所有人
+	MentionedTypeSpecific                      // 指定人
 )
 
 // 消息参与方
@@ -280,7 +281,7 @@ type Message struct {
 	Revoked          bool                `json:"revoked,omitempty"`           // 是否撤回
 	Metadata         map[string]any      `json:"metadata,omitempty"`          // 公开元数据
 	PrivateMetadata  map[string]any      `json:"private_metadata,omitempty"`  // 私有元数据
-	State            string              `json:"state,omitempty"`             // 发送消息时携带的业务自定义数据，通知新消息会透传给业务方
+	State            string              `json:"state,omitempty"`             // 发送消息时携带的业务自定义数据，发送后返回消息会透传给业务方
 }
 
 // 消息变更
@@ -289,6 +290,7 @@ type MessageUpdate struct {
 	Revoked         *bool          `json:"revoked,omitempty"`          // 是否撤回
 	Metadata        map[string]any `json:"metadata,omitempty"`         // 公开元数据
 	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
+	State           string         `json:"state,omitempty"`            // 发送消息时携带的业务自定义数据，发送后返回消息会透传给业务方
 }
 
 // 消息类型
