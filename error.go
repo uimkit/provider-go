@@ -36,6 +36,9 @@ const (
 
 	NetworkErrorCode    = "SDK.NetworkError"
 	NetworkErrorMessage = "Failed to make the http request."
+
+	AuthenticationFailedErrorCode    = "SDK.AuthenticationFailed"
+	AuthenticationFailedErrorMessage = "Authentication failed, please check 'client_id' & 'client_secret'"
 )
 
 type ClientError struct {

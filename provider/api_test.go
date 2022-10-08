@@ -27,6 +27,20 @@ func newProviderClient() *Client {
 	)
 }
 
+func TestAuthorize(t *testing.T) {
+	_, _, err := NewClient(uim.WithClient(
+		os.Getenv("PROVIDER_CLIENT_ID"), os.Getenv("UIM_CLIENT_SECRET"), os.Getenv("UIM_AUDIENCE")),
+	).Authorize()
+	assert.Equal(t, uim.AuthenticationFailedErrorCode, err.(*uim.ClientError).ErrorCode())
+
+	client := newProviderClient()
+	accessToken, expiresIn, err := client.Authorize()
+	assert.NotEmpty(t, accessToken)
+	assert.Greater(t, expiresIn, int64(0))
+	assert.Nil(t, err)
+	t.Log(accessToken)
+}
+
 func TestRequestOptions(t *testing.T) {
 	clientId := os.Getenv("PROVIDER_CLIENT_ID")
 	clientSecret := os.Getenv("PROVIDER_CLIENT_SECRET")

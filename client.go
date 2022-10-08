@@ -1,6 +1,7 @@
 package uim
 
 import (
+	"bytes"
 	"context"
 	"crypto/tls"
 	"encoding/json"
@@ -34,13 +35,16 @@ var DefaultUserAgent = fmt.Sprintf("UIMKit (%s; %s) Golang/%s Core/%s", runtime.
 type EventHandler func(*cloudevents.Event) (any, error)
 
 type Client struct {
-	options        *Options
-	httpClient     *http.Client
-	logger         *Logger
-	asyncTaskQueue chan func()
-	isOpenAsync    bool
-	eventLock      sync.RWMutex
-	eventHandlers  map[string]EventHandler
+	options              *Options
+	httpClient           *http.Client
+	logger               *Logger
+	asyncTaskQueue       chan func()
+	isOpenAsync          bool
+	eventLock            sync.RWMutex
+	eventHandlers        map[string]EventHandler
+	accessTokenLock      sync.Mutex
+	accessToken          string
+	accessTokenExpiresAt time.Time
 }
 
 func (client *Client) getHttpProxy(scheme string) (proxy *url.URL, err error) {
@@ -142,9 +146,40 @@ func (client *Client) AddAsyncTask(task func()) (err error) {
 	return
 }
 
+func (client *Client) getAccessToken() (string, error) {
+	if client.accessToken != "" && client.accessTokenExpiresAt.After(time.Now()) {
+		return client.accessToken, nil
+	}
+
+	client.accessTokenLock.Lock()
+	defer client.accessTokenLock.Unlock()
+
+	if client.accessToken != "" && client.accessTokenExpiresAt.After(time.Now()) {
+		return client.accessToken, nil
+	}
+
+	accessToken, expiresIn, err := client.Authorize()
+	if err != nil {
+		return "", err
+	}
+	expiresAt := time.Now().Add(time.Duration(expiresIn-300) * time.Second)
+	client.accessToken = accessToken
+	client.accessTokenExpiresAt = expiresAt
+	return accessToken, nil
+}
+
 func (client *Client) buildRequest(request Request) (httpRequest *http.Request, err error) {
 	// add clientVersion
 	request.GetHeaders()["x-sdk-core-version"] = Version
+
+	// add authorization
+	if client.options.EnableAuthorization {
+		accessToken, err := client.getAccessToken()
+		if err != nil {
+			return nil, err
+		}
+		request.GetHeaders()["authorization"] = fmt.Sprintf("Bearer %s", accessToken)
+	}
 
 	// accept format
 	if accept := request.GetAcceptFormat(); accept != "" {
@@ -360,6 +395,42 @@ func (client *Client) DoAction(request Request, response Response, opts ...Reque
 	return
 }
 
+func (client *Client) Authorize() (accessToken string, expiresIn int64, err error) {
+	payload, _ := json.Marshal(map[string]string{
+		"client_id":     client.options.ClientId,
+		"client_secret": client.options.ClientSecret,
+		"audience":      client.options.TokenAudience,
+		"grant_type":    "client_credentials",
+	})
+	req, _ := http.NewRequest("POST", client.options.TokenEndpoint, bytes.NewReader(payload))
+	req.Header.Add("content-type", "application/json")
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		debug("%v", err)
+		return "", 0, err
+	}
+	defer res.Body.Close()
+	body, _ := ioutil.ReadAll(res.Body)
+
+	if res.StatusCode < http.StatusOK || res.StatusCode >= http.StatusMultipleChoices {
+		result := make(map[string]string)
+		if err = json.Unmarshal(body, &result); err != nil {
+			debug("%s", string(body))
+			return "", 0, err
+		}
+		return "", 0, NewClientError(AuthenticationFailedErrorCode, AuthenticationFailedErrorMessage, nil)
+	}
+
+	result := make(map[string]any)
+	if err = json.Unmarshal(body, &result); err != nil {
+		debug("%s", string(body))
+		return "", 0, err
+	}
+	accessToken = result["access_token"].(string)
+	expiresIn = int64(result["expires_in"].(float64))
+	return
+}
+
 func (client *Client) newEvent(eventType string, data any) *cloudevents.Event {
 	id, _ := gonanoid.New()
 	ce := cloudevents.NewEvent()
@@ -395,6 +466,7 @@ func (c *Client) OnEvent(event string, handler EventHandler) {
 
 func (c *Client) EventHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		println(r.Header)
 		c.eventLock.RLock()
 		defer c.eventLock.RUnlock()
 

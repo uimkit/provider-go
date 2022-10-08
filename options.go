@@ -8,30 +8,31 @@ import (
 )
 
 type Options struct {
-	ClientId          string            `default:""`
-	ClientSecret      string            `default:""`
-	TokenAudience     string            `default:""`
-	TokenEndpoint     string            `default:"https://uim.cn.authok.cn/oauth/token"`
-	EventSource       string            `default:""`
-	Scheme            string            `default:"HTTPS"`
-	Domain            string            `default:"api.uimkit.chat"`
-	Port              int32             `default:""`
-	BasePath          string            `default:""`
-	IsInsecure        bool              `default:"false"` // 是否可以跳过证书验证
-	HttpProxy         string            `default:""`
-	HttpsProxy        string            `default:""`
-	NoProxy           string            `default:""`
-	AutoRetry         bool              `default:"false"`
-	MaxRetryTime      int32             `default:"3"`
-	UserAgent         string            `default:""`
-	Debug             bool              `default:"false"`
-	HttpTransport     *http.Transport   `default:""`
-	Transport         http.RoundTripper `default:""`
-	EnableAsync       bool              `default:"false"`
-	MaxTaskQueueSize  int32             `default:"1000"`
-	GoRoutinePoolSize int32             `default:"5"`
-	ReadTimeout       time.Duration     `default:"30000000000"` // 30s
-	ConnectTimeout    time.Duration     `default:"10000000000"` // 10s
+	ClientId            string            `default:""`
+	ClientSecret        string            `default:""`
+	TokenAudience       string            `default:""`
+	TokenEndpoint       string            `default:"https://uim.cn.authok.cn/oauth/token"`
+	EnableAuthorization bool              `default:"true"`
+	EventSource         string            `default:""`
+	Scheme              string            `default:"HTTPS"`
+	Domain              string            `default:"api.uimkit.chat"`
+	Port                int32             `default:""`
+	BasePath            string            `default:""`
+	IsInsecure          bool              `default:"false"` // 是否可以跳过证书验证
+	HttpProxy           string            `default:""`
+	HttpsProxy          string            `default:""`
+	NoProxy             string            `default:""`
+	AutoRetry           bool              `default:"false"`
+	MaxRetryTime        int32             `default:"3"`
+	UserAgent           string            `default:""`
+	Debug               bool              `default:"false"`
+	HttpTransport       *http.Transport   `default:""`
+	Transport           http.RoundTripper `default:""`
+	EnableAsync         bool              `default:"false"`
+	MaxTaskQueueSize    int32             `default:"1000"`
+	GoRoutinePoolSize   int32             `default:"5"`
+	ReadTimeout         time.Duration     `default:"30000000000"` // 30s
+	ConnectTimeout      time.Duration     `default:"10000000000"` // 10s
 }
 
 func NewOptions() (options *Options) {
@@ -53,6 +54,12 @@ func WithClient(clientId, clientSecret, audience string) Option {
 func WithTokenEndpoint(endpoint string) Option {
 	return func(o *Options) {
 		o.TokenEndpoint = endpoint
+	}
+}
+
+func WithAuthorization(enable bool) Option {
+	return func(o *Options) {
+		o.EnableAuthorization = enable
 	}
 }
 
