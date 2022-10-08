@@ -18,6 +18,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/authok/go-jwt-middleware/v2/jwks"
+	"github.com/authok/go-jwt-middleware/v2/validator"
 	cloudevents "github.com/cloudevents/sdk-go/v2"
 	gonanoid "github.com/matoous/go-nanoid/v2"
 )
@@ -399,7 +401,7 @@ func (client *Client) Authorize() (accessToken string, expiresIn int64, err erro
 	payload, _ := json.Marshal(map[string]string{
 		"client_id":     client.options.ClientId,
 		"client_secret": client.options.ClientSecret,
-		"audience":      client.options.TokenAudience,
+		"audience":      client.options.ClientAudience,
 		"grant_type":    "client_credentials",
 	})
 	req, _ := http.NewRequest("POST", client.options.TokenEndpoint, bytes.NewReader(payload))
@@ -429,6 +431,26 @@ func (client *Client) Authorize() (accessToken string, expiresIn int64, err erro
 	accessToken = result["access_token"].(string)
 	expiresIn = int64(result["expires_in"].(float64))
 	return
+}
+
+func (client *Client) ValidateToken(token string) (any, error) {
+	issuerURL, err := url.Parse(client.options.ServerIssuer)
+	if err != nil {
+		return nil, err
+	}
+	provider := jwks.NewCachingProvider(issuerURL, 5*time.Minute)
+
+	// Set up the validator.
+	jwtValidator, err := validator.New(
+		provider.KeyFunc,
+		validator.RS256,
+		issuerURL.String(),
+		[]string{client.options.ServerAudience},
+	)
+	if err != nil {
+		return nil, err
+	}
+	return jwtValidator.ValidateToken(context.TODO(), token)
 }
 
 func (client *Client) newEvent(eventType string, data any) *cloudevents.Event {
@@ -466,13 +488,34 @@ func (c *Client) OnEvent(event string, handler EventHandler) {
 
 func (c *Client) EventHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		println(r.Header)
+		token := r.Header.Get("Authorization")
+		if token == "" || !strings.HasPrefix(token, "Bearer ") {
+			writeError(w, NewServerError(
+				UnauthorizedErrorStatus,
+				UnauthorizedErrorCode,
+				UnauthorizedErrorMessage,
+				nil,
+			))
+			return
+		}
+		token = strings.Split(token, " ")[1]
+		_, err := c.ValidateToken(token)
+		if err != nil {
+			writeError(w, NewServerError(
+				UnauthorizedErrorStatus,
+				UnauthorizedErrorCode,
+				UnauthorizedErrorMessage,
+				err,
+			))
+			return
+		}
+
 		c.eventLock.RLock()
 		defer c.eventLock.RUnlock()
 
 		body, _ := ioutil.ReadAll(r.Body)
 		event := cloudevents.NewEvent()
-		err := json.Unmarshal(body, &event)
+		err = json.Unmarshal(body, &event)
 		if err != nil {
 			writeError(w, NewServerError(
 				InvalidEventFormatErrorStatus,

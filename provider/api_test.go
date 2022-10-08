@@ -19,8 +19,10 @@ func newProviderClient() *Client {
 	clientId := os.Getenv("PROVIDER_CLIENT_ID")
 	clientSecret := os.Getenv("PROVIDER_CLIENT_SECRET")
 	audience := os.Getenv("PROVIDER_AUDIENCE")
+	issuer := os.Getenv("ISSUER")
 	return NewClient(
 		uim.WithClient(clientId, clientSecret, audience),
+		uim.WithServer(issuer, audience),
 		WithProvider("provider-go", "test"),
 		uim.WithBaseUrl("http://127.0.0.1:9000/providers/v1"),
 		uim.WithDebug(true),
@@ -39,6 +41,10 @@ func TestAuthorize(t *testing.T) {
 	assert.Greater(t, expiresIn, int64(0))
 	assert.Nil(t, err)
 	t.Log(accessToken)
+
+	claims, err := client.ValidateToken(accessToken)
+	assert.Nil(t, err)
+	t.Logf("%+v", claims)
 }
 
 func TestRequestOptions(t *testing.T) {

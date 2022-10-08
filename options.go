@@ -10,7 +10,9 @@ import (
 type Options struct {
 	ClientId            string            `default:""`
 	ClientSecret        string            `default:""`
-	TokenAudience       string            `default:""`
+	ClientAudience      string            `default:""`
+	ServerIssuer        string            `default:"https://uim.cn.authok.cn/"`
+	ServerAudience      string            `default:""`
 	TokenEndpoint       string            `default:"https://uim.cn.authok.cn/oauth/token"`
 	EnableAuthorization bool              `default:"true"`
 	EventSource         string            `default:""`
@@ -47,7 +49,14 @@ func WithClient(clientId, clientSecret, audience string) Option {
 	return func(o *Options) {
 		o.ClientId = clientId
 		o.ClientSecret = clientSecret
-		o.TokenAudience = audience
+		o.ClientAudience = audience
+	}
+}
+
+func WithServer(issuer, audience string) Option {
+	return func(o *Options) {
+		o.ServerIssuer = issuer
+		o.ServerAudience = audience
 	}
 }
 

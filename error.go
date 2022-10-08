@@ -88,6 +88,10 @@ const (
 	DefaultServerErrorStatus = http.StatusInternalServerError
 	DefaultServerErrorCode   = "SDK.ServerError"
 
+	UnauthorizedErrorStatus  = http.StatusUnauthorized
+	UnauthorizedErrorCode    = "SDK.Unauthorized"
+	UnauthorizedErrorMessage = "Please set proper \"Bearer\" token in \"Authorization\" header"
+
 	UnsupportedEventTypeErrorStatus  = http.StatusBadRequest
 	UnsupportedEventTypeErrorCode    = "SDK.UnsupportedEventType"
 	UnsupportedEventTypeErrorMessage = "Unsupported event type \"%s\""
