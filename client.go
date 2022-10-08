@@ -148,7 +148,7 @@ func (client *Client) AddAsyncTask(task func()) (err error) {
 	return
 }
 
-func (client *Client) getAccessToken() (string, error) {
+func (client *Client) GetAccessToken() (string, error) {
 	if client.accessToken != "" && client.accessTokenExpiresAt.After(time.Now()) {
 		return client.accessToken, nil
 	}
@@ -176,7 +176,7 @@ func (client *Client) buildRequest(request Request) (httpRequest *http.Request, 
 
 	// add authorization
 	if client.options.EnableAuthorization {
-		accessToken, err := client.getAccessToken()
+		accessToken, err := client.GetAccessToken()
 		if err != nil {
 			return nil, err
 		}
