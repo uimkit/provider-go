@@ -2,19 +2,22 @@ package uim
 
 import (
 	"net/http"
+	"net/url"
+	"strconv"
 	"time"
 )
 
 type Options struct {
-	AppId             string            `default:""`
-	Secret            string            `default:""`
+	ClientId          string            `default:""`
+	ClientSecret      string            `default:""`
+	TokenAudience     string            `default:""`
+	TokenEndpoint     string            `default:"https://uim.cn.authok.cn/oauth/token"`
+	EventSource       string            `default:""`
 	Scheme            string            `default:"HTTPS"`
 	Domain            string            `default:"api.uimkit.chat"`
 	Port              int32             `default:""`
-	BasePath          string            `default:"/providers/v1"`
-	Provider          string            `default:""`
-	Strategy          string            `default:""`
-	IsInsecure        bool              `default:"false"`
+	BasePath          string            `default:""`
+	IsInsecure        bool              `default:"false"` // 是否可以跳过证书验证
 	HttpProxy         string            `default:""`
 	HttpsProxy        string            `default:""`
 	NoProxy           string            `default:""`
@@ -39,10 +42,40 @@ func NewOptions() (options *Options) {
 
 type Option func(*Options)
 
-func WithAppSecret(appId, secret string) Option {
+func WithClient(clientId, clientSecret, audience string) Option {
 	return func(o *Options) {
-		o.AppId = appId
-		o.Secret = secret
+		o.ClientId = clientId
+		o.ClientSecret = clientSecret
+		o.TokenAudience = audience
+	}
+}
+
+func WithTokenEndpoint(endpoint string) Option {
+	return func(o *Options) {
+		o.TokenEndpoint = endpoint
+	}
+}
+
+func WithEventSource(es string) Option {
+	return func(o *Options) {
+		o.EventSource = es
+	}
+}
+
+func WithBaseUrl(baseUrl string) Option {
+	return func(o *Options) {
+		parsed, _ := url.Parse(baseUrl)
+		port, _ := strconv.ParseInt(parsed.Port(), 10, 64)
+		WithScheme(parsed.Scheme)(o)
+		WithDomain(parsed.Hostname())(o)
+		WithPort(int32(port))(o)
+		WithBasePath(parsed.Path)(o)
+	}
+}
+
+func WithScheme(scheme string) Option {
+	return func(o *Options) {
+		o.Scheme = scheme
 	}
 }
 
@@ -61,13 +94,6 @@ func WithPort(port int32) Option {
 func WithBasePath(basePath string) Option {
 	return func(o *Options) {
 		o.BasePath = basePath
-	}
-}
-
-func WithProvider(provider, strategy string) Option {
-	return func(o *Options) {
-		o.Provider = provider
-		o.Strategy = strategy
 	}
 }
 
@@ -132,11 +158,5 @@ func WithAsync(enableAsync bool, maxTaskQueueSize, goRoutinePoolSize int32) Opti
 		o.EnableAsync = enableAsync
 		o.MaxTaskQueueSize = maxTaskQueueSize
 		o.GoRoutinePoolSize = goRoutinePoolSize
-	}
-}
-
-func WithScheme(scheme string) Option {
-	return func(o *Options) {
-		o.Scheme = scheme
 	}
 }

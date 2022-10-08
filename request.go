@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"reflect"
 	"sort"
 	"strconv"
@@ -35,6 +36,8 @@ type Request interface {
 	GetScheme() string
 	SetDomain(domain string)
 	GetDomain() string
+	SetBasePath(basePath string)
+	GetBasePath() string
 	SetPort(port int32)
 	GetPort() int32
 	SetPath(path string)
@@ -73,6 +76,7 @@ type BaseRequest struct {
 	scheme         string
 	domain         string
 	port           int32
+	basePath       string
 	path           string
 	headers        map[string]string
 	queryParams    map[string]string
@@ -118,6 +122,14 @@ func (request *BaseRequest) SetPort(port int32) {
 
 func (request *BaseRequest) GetPort() int32 {
 	return request.port
+}
+
+func (request *BaseRequest) SetBasePath(basePath string) {
+	request.basePath = basePath
+}
+
+func (request *BaseRequest) GetBasePath() string {
+	return request.basePath
 }
 
 func (request *BaseRequest) SetPath(path string) {
@@ -578,4 +590,41 @@ func addParam(request Request, position, name, value string) (err error) {
 		}
 	}
 	return
+}
+
+type RequestOption func(req Request)
+
+func WithRequestBaseUrl(baseUrl string) RequestOption {
+	return func(req Request) {
+		parsed, _ := url.Parse(baseUrl)
+		port, _ := strconv.ParseInt(parsed.Port(), 10, 64)
+		WithRequestScheme(parsed.Scheme)(req)
+		WithRequestDomain(parsed.Hostname())(req)
+		WithRequestPort(int32(port))(req)
+		WithRequestBasePath(parsed.Path)(req)
+	}
+}
+
+func WithRequestScheme(scheme string) RequestOption {
+	return func(req Request) {
+		req.SetScheme(scheme)
+	}
+}
+
+func WithRequestDomain(domain string) RequestOption {
+	return func(req Request) {
+		req.SetDomain(domain)
+	}
+}
+
+func WithRequestPort(port int32) RequestOption {
+	return func(req Request) {
+		req.SetPort(port)
+	}
+}
+
+func WithRequestBasePath(basePath string) RequestOption {
+	return func(req Request) {
+		req.SetBasePath(basePath)
+	}
 }

@@ -18,7 +18,7 @@ import (
 	"time"
 
 	cloudevents "github.com/cloudevents/sdk-go/v2"
-	"github.com/google/uuid"
+	gonanoid "github.com/matoous/go-nanoid/v2"
 )
 
 var debug Debug
@@ -35,7 +35,6 @@ type EventHandler func(*cloudevents.Event) (any, error)
 
 type Client struct {
 	options        *Options
-	eventSource    string
 	httpClient     *http.Client
 	logger         *Logger
 	asyncTaskQueue chan func()
@@ -152,24 +151,23 @@ func (client *Client) buildRequest(request Request) (httpRequest *http.Request, 
 		request.GetHeaders()["accept"] = request.GetAcceptFormat()
 	}
 
-	// resolve endpoint
-	endpoint := request.GetDomain()
-	if endpoint == "" && client.options.Domain != "" {
-		endpoint = client.options.Domain
+	if request.GetDomain() == "" {
+		request.SetDomain(client.options.Domain)
 	}
-	request.SetDomain(endpoint)
 
 	if request.GetScheme() == "" {
 		request.SetScheme(client.options.Scheme)
 	}
 
-	if request.GetPort() == 0 && client.options.Port > 0 {
+	if request.GetPort() == 0 {
 		request.SetPort(client.options.Port)
 	}
 
-	if client.options.BasePath != "" {
-		request.SetPath(client.options.BasePath + request.GetPath())
+	if request.GetBasePath() == "" {
+		request.SetBasePath(client.options.BasePath)
 	}
+
+	request.SetPath(request.GetBasePath() + request.GetPath())
 
 	// init request params
 	err = initParams(request)
@@ -235,7 +233,10 @@ func (client *Client) setTimeout(request Request) {
 	}
 }
 
-func (client *Client) DoAction(request Request, response Response) (err error) {
+func (client *Client) DoAction(request Request, response Response, opts ...RequestOption) (err error) {
+	for _, opt := range opts {
+		opt(request)
+	}
 	fieldMap := make(map[string]string)
 	initLogMsg(fieldMap)
 	defer func() {
@@ -360,26 +361,29 @@ func (client *Client) DoAction(request Request, response Response) (err error) {
 }
 
 func (client *Client) newEvent(eventType string, data any) *cloudevents.Event {
+	id, _ := gonanoid.New()
 	ce := cloudevents.NewEvent()
-	ce.SetID(uuid.NewString())
-	ce.SetSource(client.eventSource)
+	ce.SetID(id)
+	ce.SetSource(client.options.EventSource)
 	ce.SetType(eventType)
 	ce.SetData(cloudevents.ApplicationJSON, data)
 	return &ce
 }
 
-func (client *Client) SendEvent(event *cloudevents.Event) (err error) {
+func (client *Client) SendEvent(eventType string, data any, opts ...RequestOption) (err error) {
+	event := client.newEvent(eventType, data)
 	content, _ := json.Marshal(event)
 	req := NewBaseRequest()
 	req.SetContent(content)
-	return client.DoAction(req, &BaseResponse{})
+	return client.DoAction(req, &BaseResponse{}, opts...)
 }
 
-func (client *Client) InvokeCommand(command *cloudevents.Event, resp Response) (Response, error) {
+func (client *Client) Invoke(commandType string, data any, resp Response, opts ...RequestOption) (Response, error) {
+	command := client.newEvent(commandType, data)
 	content, _ := json.Marshal(command)
 	req := NewBaseRequest()
 	req.SetContent(content)
-	err := client.DoAction(req, resp)
+	err := client.DoAction(req, resp, opts...)
 	return resp, err
 }
 
@@ -514,8 +518,6 @@ func NewClient(opts ...Option) (client *Client) {
 	}
 	options := client.options
 
-	client.eventSource = fmt.Sprintf("provider.source/%s/%s", options.Provider, options.Strategy)
-
 	client.httpClient = &http.Client{}
 	if options.Transport != nil {
 		client.httpClient.Transport = options.Transport
@@ -533,11 +535,11 @@ func NewClient(opts ...Option) (client *Client) {
 	return client
 }
 
-func castCommandResponse[T Response](resp Response, err error) (T, error) {
+func CastCommandResponse[T Response](resp Response, err error) (T, error) {
 	return resp.(T), err
 }
 
-func castEventHandler[D any](handler func(*cloudevents.Event, *D) error) EventHandler {
+func CastEventHandler[D any](handler func(*cloudevents.Event, *D) error) EventHandler {
 	return func(event *cloudevents.Event) (any, error) {
 		data := new(D)
 		if err := event.DataAs(data); err != nil {
@@ -548,7 +550,7 @@ func castEventHandler[D any](handler func(*cloudevents.Event, *D) error) EventHa
 	}
 }
 
-func castCommandHandler[D any, R any](handler func(*cloudevents.Event, *D) (*R, error)) EventHandler {
+func CastCommandHandler[D any, R any](handler func(*cloudevents.Event, *D) (*R, error)) EventHandler {
 	return func(event *cloudevents.Event) (any, error) {
 		data := new(D)
 		if err := event.DataAs(data); err != nil {
