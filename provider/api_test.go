@@ -45,6 +45,37 @@ func TestAuthorize(t *testing.T) {
 	claims, err := client.ValidateToken(accessToken)
 	assert.Nil(t, err)
 	t.Logf("%+v", claims)
+
+	id1, _ := gonanoid.New()
+	id2, _ := gonanoid.New()
+	resourceId1 := "test_metafield_" + id1
+	resourceId2 := "test_metafield_" + id2
+
+	err = client.NewMetafield(&uim.Metafield{
+		Namespace:  "test",
+		Resource:   "test_metafield",
+		ResourceId: resourceId1,
+		Type:       uim.MetafieldValueTypeString,
+		Key:        "str_value",
+		Value:      "this is the string value",
+	})
+	assert.Nil(t, err)
+
+	client = NewClient(
+		uim.WithClient(os.Getenv("UIM_CLIENT_ID"), os.Getenv("UIM_CLIENT_SECRET"), os.Getenv("UIM_AUDIENCE")),
+		WithProvider("provider-go", "test"),
+		uim.WithBaseUrl("http://127.0.0.1:9000/providers/v1"),
+		uim.WithDebug(true),
+	)
+	err = client.NewMetafield(&uim.Metafield{
+		Namespace:  "test",
+		Resource:   "test_metafield",
+		ResourceId: resourceId2,
+		Type:       uim.MetafieldValueTypeString,
+		Key:        "str_value",
+		Value:      "this is the string value",
+	})
+	assert.Equal(t, uim.UnauthorizedErrorCode, err.(*uim.ServerError).ErrorCode())
 }
 
 func TestRequestOptions(t *testing.T) {
