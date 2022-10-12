@@ -30,6 +30,12 @@ type IMAccountUpdate struct {
 	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
 }
 
+// 新账号
+type NewIMAccount struct {
+	Account *IMAccount `json:"account,omitempty"` // 账号
+	State   string     `json:"state,omitempty"`   // 授权账号时客户传来的自定义数据，透传回去
+}
+
 // 性别
 type Gender int
 

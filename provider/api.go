@@ -5,7 +5,7 @@ import (
 )
 
 // 新账号
-func (client *Client) NewAccount(account *uim.IMAccount, opts ...uim.RequestOption) error {
+func (client *Client) NewAccount(account *uim.NewIMAccount, opts ...uim.RequestOption) error {
 	return client.SendEvent(uim.ProviderEventNewAccount, account, opts...)
 }
 

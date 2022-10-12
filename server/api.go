@@ -8,7 +8,7 @@ import (
 // UIM 需要的接口
 
 // 新账号事件
-type NewAccountHandler func(*cloudevents.Event, *uim.IMAccount) error
+type NewAccountHandler func(*cloudevents.Event, *uim.NewIMAccount) error
 
 func (client *Client) OnNewAccount(handler NewAccountHandler) {
 	client.OnEvent(uim.ProviderEventNewAccount, uim.CastEventHandler(handler))

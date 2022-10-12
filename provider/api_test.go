@@ -478,8 +478,10 @@ func TestIMAccount(t *testing.T) {
 	var err error
 	client := newProviderClient()
 
-	err = client.NewAccount(&uim.IMAccount{
-		User: &uim.IMUser{},
+	err = client.NewAccount(&uim.NewIMAccount{
+		Account: &uim.IMAccount{
+			User: &uim.IMUser{},
+		},
 	})
 	assert.Equal(t, uim.InvalidEventDataErrorCode, err.(*uim.ServerError).ErrorCode())
 
@@ -502,7 +504,7 @@ func TestIMAccount(t *testing.T) {
 		},
 		Presence: uim.PresenceInitializing,
 	}
-	err = client.NewAccount(account)
+	err = client.NewAccount(&uim.NewIMAccount{Account: account})
 	assert.Nil(t, err)
 
 	updatePresence := uim.PresenceOnline
