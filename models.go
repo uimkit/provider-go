@@ -1,6 +1,10 @@
 package uim
 
-import "time"
+import (
+	"encoding/json"
+	"errors"
+	"time"
+)
 
 // 账号在线状态
 type Presence int
@@ -334,6 +338,31 @@ const (
 type MessagePayload struct {
 	Type MessageType `json:"type,omitempty"` // 消息类型
 	Body any         `json:"body,omitempty"` // 消息体
+}
+
+func (p *MessagePayload) UnmarshalJSON(data []byte) error {
+	type alias MessagePayload
+	v := (*alias)(p)
+	if err := json.Unmarshal(data, v); err != nil {
+		return err
+	}
+	switch v.Type {
+	case MessageTypeText:
+		v.Body = &TextMessageBody{}
+	case MessageTypeImage:
+		v.Body = &ImageMessageBody{}
+	case MessageTypeVoice:
+		v.Body = &VoiceMessageBody{}
+	case MessageTypeVideo:
+		v.Body = &VideoMessageBody{}
+	default:
+		return errors.New("unsupported message type")
+	}
+	if err := json.Unmarshal(data, v); err != nil {
+		return err
+	}
+	*p = MessagePayload(*v)
+	return nil
 }
 
 // 文本消息内容
