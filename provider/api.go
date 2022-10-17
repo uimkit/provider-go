@@ -1,6 +1,7 @@
 package provider
 
 import (
+	cloudevents "github.com/cloudevents/sdk-go/v2"
 	uim "github.com/uimkit/provider-go"
 )
 
@@ -154,4 +155,11 @@ func (client *Client) GetMetafield(metafield *uim.GetMetafieldRequest, opts ...u
 			opts...,
 		),
 	)
+}
+
+// 发送消息
+type SendMessageHandler func(*cloudevents.Event, *uim.SendMessageRequest) (*uim.SendMessageResponse, error)
+
+func (client *Client) OnSendMessage(handler SendMessageHandler) {
+	client.OnEvent(uim.UIMCommandSendMessage, uim.CastCommandHandler(handler))
 }

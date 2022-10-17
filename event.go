@@ -43,6 +43,9 @@ const ()
 
 // UIM 调用 Provider 的指令
 const (
+	UIMCommandSendMessage = "uim.send_message" // 发送消息
+
+	// deprecated
 	UIMCommandUpdateAccount         = "uim.update_account"          // 更新账号资料
 	UIMCommandUpdateContact         = "uim.update_contact"          // 更新联系人资料
 	UIMCommandListContacts          = "uim.list_contacts"           // 查询账号的联系人列表
@@ -56,6 +59,5 @@ const (
 	UIMCommandApplyJoinGroup        = "uim.apply_join_group"        // 申请加入群组
 	UIMCommandAcceptGroupApply      = "uim.accept_group_apply"      // 通过入群申请
 	UIMCommandListGroupMembers      = "uim.list_group_members"      // 查询群成员列表
-	UIMCommandSendMessage           = "uim.send_message"            // 发送消息
 	UIMCommandPublishMoment         = "uim.publish_moment"          // 发布动态
 )

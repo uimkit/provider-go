@@ -209,3 +209,15 @@ type GetMetafieldHandler func(*cloudevents.Event, *uim.GetMetafieldRequest) (*ui
 func (client *Client) OnGetMetafield(handler GetMetafieldHandler) {
 	client.OnEvent(uim.ProviderCommandGetMetafield, uim.CastCommandHandler(handler))
 }
+
+// 发送消息
+func (client *Client) SendMessage(message *uim.SendMessageRequest, opts ...uim.RequestOption) (*uim.SendMessageResponse, error) {
+	return uim.CastCommandResponse[*uim.SendMessageResponse](
+		client.Invoke(
+			uim.UIMCommandSendMessage,
+			message,
+			&uim.SendMessageResponse{},
+			opts...,
+		),
+	)
+}

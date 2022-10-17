@@ -299,6 +299,24 @@ type MessageUpdate struct {
 	State           string         `json:"state,omitempty"`            // 发送消息时携带的业务自定义数据，发送后返回消息会透传给业务方
 }
 
+// 发送消息
+type SendMessageRequest struct {
+	From             string           `json:"from,omitempty"`              // 消息发送者
+	To               string           `json:"to,omitempty"`                // 消息接受者
+	ConversationType ConversationType `json:"conversation_type,omitempty"` // 所属的会话类型
+	Seq              int              `json:"seq,omitempty"`               // 序列号，在会话中唯一且有序增长，用于确保消息顺序
+	MentionedType    MentionedType    `json:"mentioned_type,omitempty"`    // @用户类型
+	MentionedUserIds []string         `json:"mentioned_users"`             // @用户列表
+	SentAt           *time.Time       `json:"sent_at,omitempty"`           // 发送时间
+	Payload          *MessagePayload  `json:"payload,omitempty"`           // 消息内容
+}
+
+// 发送消息结果
+type SendMessageResponse struct {
+	BaseResponse
+	Message
+}
+
 // 消息类型
 type MessageType int
 
@@ -561,18 +579,6 @@ type GroupMemberList struct {
 	QueryId string         `json:"query_id,omitempty"` // 请求的查询ID，用于匹配异步请求
 	Data    []*GroupMember `json:"data,omitempty"`     // 数据列表
 	Next    string         `json:"next,omitempty"`     // 游标，用于下次查询请求的 after 参数
-}
-
-// 发送消息
-type SendMessage struct {
-	From             string           `json:"from,omitempty"`              // 消息发送者
-	To               string           `json:"to,omitempty"`                // 消息接受者
-	ConversationType ConversationType `json:"conversation_type,omitempty"` // 所属的会话类型
-	Seq              int              `json:"seq,omitempty"`               // 序列号，在会话中唯一且有序增长，用于确保消息顺序
-	MentionedType    MentionedType    `json:"mentioned_type,omitempty"`    // @用户类型
-	MentionedUserIds []string         `json:"mentioned_users"`             // @用户列表
-	SentAt           *time.Time       `json:"sent_at,omitempty"`           // 发送时间
-	Payload          *MessagePayload  `json:"payload,omitempty"`           // 消息内容
 }
 
 // 评论类型
