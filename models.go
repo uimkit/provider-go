@@ -279,19 +279,19 @@ type MessageParticipant struct {
 
 // 消息
 type Message struct {
-	MessageId        string              `json:"message_id,omitempty"`        // 平台消息ID
-	UserId           string              `json:"user_id,omitempty"`           // 归属用户平台ID
-	From             *MessageParticipant `json:"from,omitempty"`              // 消息发送者
-	To               *MessageParticipant `json:"to,omitempty"`                // 消息接受者
-	ConversationType ConversationType    `json:"conversation_type,omitempty"` // 会话类型
-	MentionedType    MentionedType       `json:"mentioned_type,omitempty"`    // @用户类型
-	MentionedUsers   []*IMUser           `json:"mentioned_users"`             // @用户信息
-	SentAt           *time.Time          `json:"sent_at,omitempty"`           // 发送时间
-	Payload          *MessagePayload     `json:"payload,omitempty"`           // 消息内容
-	Revoked          bool                `json:"revoked,omitempty"`           // 是否撤回
-	Metadata         map[string]any      `json:"metadata,omitempty"`          // 公开元数据
-	PrivateMetadata  map[string]any      `json:"private_metadata,omitempty"`  // 私有元数据
-	State            string              `json:"state,omitempty"`             // 发送消息时携带的业务自定义数据，发送后返回消息会透传给业务方
+	MessageId        string                `json:"message_id,omitempty"`        // 平台消息ID
+	UserId           string                `json:"user_id,omitempty"`           // 归属用户平台ID
+	From             *MessageParticipant   `json:"from,omitempty"`              // 消息发送者
+	To               *MessageParticipant   `json:"to,omitempty"`                // 消息接受者
+	ConversationType ConversationType      `json:"conversation_type,omitempty"` // 会话类型
+	MentionedType    MentionedType         `json:"mentioned_type,omitempty"`    // @用户类型
+	MentionedUsers   []*MessageParticipant `json:"mentioned_users"`             // @用户信息
+	SentAt           *time.Time            `json:"sent_at,omitempty"`           // 发送时间
+	Payload          *MessagePayload       `json:"payload,omitempty"`           // 消息内容
+	Revoked          bool                  `json:"revoked,omitempty"`           // 是否撤回
+	Metadata         map[string]any        `json:"metadata,omitempty"`          // 公开元数据
+	PrivateMetadata  map[string]any        `json:"private_metadata,omitempty"`  // 私有元数据
+	State            string                `json:"state,omitempty"`             // 发送消息时携带的业务自定义数据，发送后返回消息会透传给业务方
 }
 
 // 消息变更

@@ -123,7 +123,7 @@ func TestMessage(t *testing.T) {
 		},
 		ConversationType: uim.ConversationTypeGroup,
 		MentionedType:    uim.MentionedTypeAll,
-		MentionedUsers:   make([]*uim.IMUser, 0),
+		MentionedUsers:   make([]*uim.MessageParticipant, 0),
 		SentAt:           &now,
 		Payload: &uim.MessagePayload{
 			Type: uim.MessageTypeText,
@@ -139,7 +139,7 @@ func TestMessage(t *testing.T) {
 	message.MessageId = messageId2
 	message.From.ID = userId1
 	message.MentionedType = uim.MentionedTypeSpecific
-	message.MentionedUsers = []*uim.IMUser{{UserId: userId2}}
+	message.MentionedUsers = []*uim.MessageParticipant{{ID: userId2}}
 	message.Payload.Body.(*uim.TextMessageBody).Content = "yes"
 	err = client.NewMessage(message)
 	assert.Nil(t, err)
