@@ -119,6 +119,12 @@ type Contact struct {
 	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
 }
 
+// 粉丝
+type Follower Contact
+
+// 关注的人
+type Following Contact
+
 // 联系人变更
 type ContactUpdate struct {
 	UserId          string         `json:"user_id,omitempty"`          // 归属的平台用户ID

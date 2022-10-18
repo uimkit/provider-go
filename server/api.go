@@ -35,6 +35,20 @@ func (client *Client) OnNewContact(handler NewContactHandler) {
 	client.OnEvent(uim.ProviderEventNewContact, uim.CastEventHandler(handler))
 }
 
+// 新粉丝
+type NewFollowerHandler func(*cloudevents.Event, *uim.Follower) error
+
+func (client *Client) OnNewFollower(handler NewFollowerHandler) {
+	client.OnEvent(uim.ProviderEventNewFollower, uim.CastEventHandler(handler))
+}
+
+// 新关注的人
+type NewFollowingHandler func(*cloudevents.Event, *uim.Following) error
+
+func (client *Client) OnNewFollowing(handler NewFollowingHandler) {
+	client.OnEvent(uim.ProviderEventNewFollowing, uim.CastEventHandler(handler))
+}
+
 // 好友更新
 type ContactUpdatedHandler func(*cloudevents.Event, *uim.ContactUpdate) error
 

@@ -25,6 +25,16 @@ func (client *Client) NewContact(contact *uim.Contact, opts ...uim.RequestOption
 	return client.SendEvent(uim.ProviderEventNewContact, contact, opts...)
 }
 
+// 新粉丝
+func (client *Client) NewFollower(follower *uim.Follower, opts ...uim.RequestOption) error {
+	return client.SendEvent(uim.ProviderEventNewFollower, follower, opts...)
+}
+
+// 新关注的人
+func (client *Client) NewFollwing(following *uim.Following, opts ...uim.RequestOption) error {
+	return client.SendEvent(uim.ProviderEventNewFollowing, following, opts...)
+}
+
 // 好友更新
 func (client *Client) ContactUpdated(contact *uim.ContactUpdate, opts ...uim.RequestOption) error {
 	return client.SendEvent(uim.ProviderEventContactUpdated, contact, opts...)
