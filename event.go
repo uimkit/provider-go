@@ -46,6 +46,7 @@ const ()
 // UIM 调用 Provider 的指令
 const (
 	UIMCommandSendMessage = "uim.send_message" // 发送消息
+	UIMCommandAddContact  = "uim.add_contact"  // 发起好友申请
 
 	// deprecated
 	UIMCommandUpdateAccount         = "uim.update_account"          // 更新账号资料

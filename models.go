@@ -119,6 +119,20 @@ type Contact struct {
 	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
 }
 
+// 添加好友
+type AddContactRequest struct {
+	UserId       string `json:"user_id,omitempty"`       // 账号的平台用户ID
+	Contact      string `json:"contact,omitempty"`       // 添加的好友，可以为手机号、平台ID
+	HelloMessage string `json:"hello_message,omitempty"` // 打招呼消息
+}
+
+// 添加好友返回
+type AddContactResponse struct {
+	BaseResponse
+	Success bool   `json:"success"` // 是否发起好友申请成功
+	Reason  string `json:"reason"`  // 发起申请好友失败原因
+}
+
 // 粉丝
 type Follower Contact
 
@@ -496,13 +510,6 @@ type IMAccountList struct {
 	QueryId string       `json:"query_id,omitempty"` // 请求的查询ID，用于匹配异步请求
 	Data    []*IMAccount `json:"data,omitempty"`     // 数据列表
 	Next    string       `json:"next,omitempty"`     // 游标，用于下次查询请求的 after 参数
-}
-
-// 申请添加好友
-type NewFriendApply struct {
-	UserId       string   `json:"user_id,omitempty"`       // 发起申请的平台用户ID，如：微信ID
-	Contacts     []string `json:"contacts,omitempty"`      // 好友列表
-	HelloMessage string   `json:"hello_message,omitempty"` // 打招呼留言
 }
 
 // 通过好友申请

@@ -173,3 +173,10 @@ type SendMessageHandler func(*cloudevents.Event, *uim.SendMessageRequest) (*uim.
 func (client *Client) OnSendMessage(handler SendMessageHandler) {
 	client.OnEvent(uim.UIMCommandSendMessage, uim.CastCommandHandler(handler))
 }
+
+// 添加好友
+type AddContactHandler func(*cloudevents.Event, *uim.AddContactRequest) (*uim.AddContactResponse, error)
+
+func (client *Client) OnAddContact(handler AddContactHandler) {
+	client.OnEvent(uim.UIMCommandAddContact, uim.CastCommandHandler(handler))
+}

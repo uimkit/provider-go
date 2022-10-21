@@ -225,12 +225,24 @@ func (client *Client) OnGetMetafield(handler GetMetafieldHandler) {
 }
 
 // 发送消息
-func (client *Client) SendMessage(message *uim.SendMessageRequest, opts ...uim.RequestOption) (*uim.SendMessageResponse, error) {
+func (client *Client) SendMessage(req *uim.SendMessageRequest, opts ...uim.RequestOption) (*uim.SendMessageResponse, error) {
 	return uim.CastCommandResponse[*uim.SendMessageResponse](
 		client.Invoke(
 			uim.UIMCommandSendMessage,
-			message,
+			req,
 			&uim.SendMessageResponse{},
+			opts...,
+		),
+	)
+}
+
+// 申请好友
+func (client *Client) AddContact(req *uim.AddContactRequest, opts ...uim.RequestOption) (*uim.AddContactResponse, error) {
+	return uim.CastCommandResponse[*uim.AddContactResponse](
+		client.Invoke(
+			uim.UIMCommandAddContact,
+			req,
+			&uim.AddContactResponse{},
 			opts...,
 		),
 	)
