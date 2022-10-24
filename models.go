@@ -55,6 +55,7 @@ type IMUser struct {
 	CustomId        string         `json:"custom_id,omitempty"`        // 用户自定义ID
 	Username        string         `json:"username,omitempty"`         // 用户账户
 	Name            string         `json:"name,omitempty"`             // 名称
+	RealName        string         `json:"real_name,omitempty"`        // 真实名字
 	Mobile          string         `json:"mobile,omitempty"`           // 手机号
 	Email           string         `json:"email,omitempty"`            // 邮箱
 	Avatar          string         `json:"avatar,omitempty"`           // 头像URL
@@ -67,6 +68,9 @@ type IMUser struct {
 	Address         string         `json:"address,omitempty"`          // 地址
 	Signature       string         `json:"signature,omitempty"`        // 签名
 	Birthday        *time.Time     `json:"birthday,omitempty"`         // 生日
+	Company         string         `json:"company,omitempty"`          // 公司
+	Department      string         `json:"department,omitempty"`       // 部门
+	Title           string         `json:"title,omitempty"`            // 头衔、职位
 	Language        string         `json:"language,omitempty"`         // 语言
 	Metadata        map[string]any `json:"metadata,omitempty"`         // 公开元数据
 	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
@@ -78,6 +82,7 @@ type IMUserUpdate struct {
 	CustomId        *string        `json:"custom_id,omitempty"`        // 用户自定义ID
 	Username        *string        `json:"username,omitempty"`         // 用户账户
 	Name            *string        `json:"name,omitempty"`             // 名称
+	RealName        *string        `json:"real_name,omitempty"`        // 真实名字
 	Mobile          *string        `json:"mobile,omitempty"`           // 手机号
 	Email           *string        `json:"email,omitempty"`            // 邮箱
 	Avatar          *string        `json:"avatar,omitempty"`           // 头像URL
@@ -90,6 +95,9 @@ type IMUserUpdate struct {
 	Address         *string        `json:"address,omitempty"`          // 地址
 	Signature       *string        `json:"signature,omitempty"`        // 签名
 	Birthday        *time.Time     `json:"birthday,omitempty"`         // 生日
+	Company         *string        `json:"company,omitempty"`          // 公司
+	Department      *string        `json:"department,omitempty"`       // 部门
+	Title           *string        `json:"title,omitempty"`            // 头衔、职位
 	Language        *string        `json:"language,omitempty"`         // 语言
 	Metadata        map[string]any `json:"metadata,omitempty"`         // 公开元数据
 	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
