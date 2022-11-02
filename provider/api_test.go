@@ -478,58 +478,46 @@ func TestIMAccount(t *testing.T) {
 	var err error
 	client := newProviderClient()
 
-	err = client.NewAccount(&uim.NewIMAccount{
-		Account: &uim.IMAccount{
-			User: &uim.IMUser{},
-		},
-	})
+	err = client.NewAccount(&uim.NewIMAccount{})
 	assert.Equal(t, uim.InvalidEventDataErrorCode, err.(*uim.ServerError).ErrorCode())
 
 	birthday := time.Now().Add(-365 * 10 * 24 * 3600 * time.Second)
 	userId, _ := gonanoid.New()
 	userId = fmt.Sprintf("wxid_%s", userId)
-	account := &uim.IMAccount{
-		User: &uim.IMUser{
-			UserId:    userId,
-			CustomId:  "Angela",
-			Name:      "Angela（网红合作）☀️",
-			Mobile:    "13000192287",
-			Avatar:    "https://avatar.url",
-			Gender:    uim.GenderFemale,
-			Country:   "中国",
-			Province:  "广东",
-			City:      "深圳",
-			Signature: "长期招募主播",
-			Birthday:  &birthday,
-		},
-		Presence: uim.PresenceInitializing,
+	account := &uim.NewIMAccount{
+		UserId:    userId,
+		CustomId:  "Angela",
+		Name:      "Angela（网红合作）☀️",
+		Mobile:    "13000192287",
+		Avatar:    "https://avatar.url",
+		Gender:    uim.GenderFemale,
+		Country:   "中国",
+		Province:  "广东",
+		City:      "深圳",
+		Signature: "长期招募主播",
+		Birthday:  &birthday,
+		Presence:  uim.PresenceInitializing,
 	}
-	err = client.NewAccount(&uim.NewIMAccount{Account: account})
+	err = client.NewAccount(account)
 	assert.Nil(t, err)
 
 	updatePresence := uim.PresenceOnline
 	updateMobile := "18900010002"
 	updateName := "jenny"
 	err = client.AccountUpdated(&uim.IMAccountUpdate{
-		User: &uim.IMUserUpdate{
-			UserId: userId,
-			Name:   &updateName,
-			Mobile: &updateMobile,
-		},
+		UserId:   userId,
+		Name:     &updateName,
+		Mobile:   &updateMobile,
 		Presence: &updatePresence,
 		Metadata: map[string]any{"test": true},
 	})
 	assert.Nil(t, err)
 
-	err = client.AccountUpdated(&uim.IMAccountUpdate{
-		User: &uim.IMUserUpdate{},
-	})
+	err = client.AccountUpdated(&uim.IMAccountUpdate{})
 	assert.Equal(t, uim.InvalidEventDataErrorCode, err.(*uim.ServerError).ErrorCode())
 
 	err = client.AccountUpdated(&uim.IMAccountUpdate{
-		User: &uim.IMUserUpdate{
-			UserId: "fakeid",
-		},
+		UserId: "fakeid",
 	})
 	assert.Equal(t, uim.ResourceNotFoundErrorCode, err.(*uim.ServerError).ErrorCode())
 }

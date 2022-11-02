@@ -6,40 +6,6 @@ import (
 	"time"
 )
 
-// 账号在线状态
-type Presence int
-
-const (
-	PresenceInitializing       Presence = iota // 初始化中
-	PresenceOnline                             // 在线
-	PresenceOffline                            // 离线
-	PresenceLogout                             // 登出
-	PresenceDisabled                           // 禁用
-	PresenceDisabledByProvider                 // 服务商封禁
-)
-
-// IM账号
-type IMAccount struct {
-	User            *IMUser        `json:"user,omitempty"`             // 用户信息
-	Presence        Presence       `json:"presence,omitempty"`         // 状态
-	Metadata        map[string]any `json:"metadata,omitempty"`         // 公开元数据
-	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
-}
-
-// 账号变更
-type IMAccountUpdate struct {
-	User            *IMUserUpdate  `json:"user,omitempty"`             // 用户信息变更
-	Presence        *Presence      `json:"presence,omitempty"`         // 状态
-	Metadata        map[string]any `json:"metadata,omitempty"`         // 公开元数据
-	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
-}
-
-// 新账号
-type NewIMAccount struct {
-	Account *IMAccount `json:"account,omitempty"` // 账号
-	State   string     `json:"state,omitempty"`   // 授权账号时客户传来的自定义数据，透传回去
-}
-
 // 性别
 type Gender int
 
@@ -52,11 +18,14 @@ const (
 // IM用户
 type IMUser struct {
 	UserId          string         `json:"user_id,omitempty"`          // 平台用户ID
+	OpenId          string         `json:"open_id,omitempty"`          // 实际的平台用户ID，如：微信ID
 	CustomId        string         `json:"custom_id,omitempty"`        // 用户自定义ID
 	Username        string         `json:"username,omitempty"`         // 用户账户
 	Name            string         `json:"name,omitempty"`             // 名称
+	Nickname        string         `json:"nickname,omitempty"`         // 昵称
 	RealName        string         `json:"real_name,omitempty"`        // 真实名字
 	Mobile          string         `json:"mobile,omitempty"`           // 手机号
+	Tel             string         `json:"tel,omitempty"`              // 座机电话
 	Email           string         `json:"email,omitempty"`            // 邮箱
 	Avatar          string         `json:"avatar,omitempty"`           // 头像URL
 	QRCode          string         `json:"qrcode,omitempty"`           // 二维码URL
@@ -79,11 +48,14 @@ type IMUser struct {
 // IM用户变更
 type IMUserUpdate struct {
 	UserId          string         `json:"user_id,omitempty"`          // 平台用户ID
+	OpenId          *string        `json:"open_id,omitempty"`          // 实际的平台用户ID，如：微信ID
 	CustomId        *string        `json:"custom_id,omitempty"`        // 用户自定义ID
 	Username        *string        `json:"username,omitempty"`         // 用户账户
 	Name            *string        `json:"name,omitempty"`             // 名称
+	Nickname        *string        `json:"nickname,omitempty"`         // 昵称
 	RealName        *string        `json:"real_name,omitempty"`        // 真实名字
 	Mobile          *string        `json:"mobile,omitempty"`           // 手机号
+	Tel             *string        `json:"tel,omitempty"`              // 座机电话
 	Email           *string        `json:"email,omitempty"`            // 邮箱
 	Avatar          *string        `json:"avatar,omitempty"`           // 头像URL
 	QRCode          *string        `json:"qrcode,omitempty"`           // 二维码URL
@@ -101,6 +73,112 @@ type IMUserUpdate struct {
 	Language        *string        `json:"language,omitempty"`         // 语言
 	Metadata        map[string]any `json:"metadata,omitempty"`         // 公开元数据
 	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
+}
+
+// 账号在线状态
+type Presence int
+
+const (
+	PresenceInitializing       Presence = iota // 初始化中
+	PresenceOnline                             // 在线
+	PresenceOffline                            // 离线
+	PresenceLogout                             // 登出
+	PresenceDisabled                           // 禁用
+	PresenceDisabledByProvider                 // 服务商封禁
+)
+
+// IM账号
+type IMAccount struct {
+	UserId          string         `json:"user_id,omitempty"`          // 平台用户ID
+	OpenId          string         `json:"open_id,omitempty"`          // 实际的平台用户ID，如：微信ID
+	CustomId        string         `json:"custom_id,omitempty"`        // 用户自定义ID
+	Username        string         `json:"username,omitempty"`         // 用户账户
+	Name            string         `json:"name,omitempty"`             // 名称
+	Nickname        string         `json:"nickname,omitempty"`         // 昵称
+	RealName        string         `json:"real_name,omitempty"`        // 真实名字
+	Mobile          string         `json:"mobile,omitempty"`           // 手机号
+	Tel             string         `json:"tel,omitempty"`              // 座机电话
+	Email           string         `json:"email,omitempty"`            // 邮箱
+	Avatar          string         `json:"avatar,omitempty"`           // 头像URL
+	QRCode          string         `json:"qrcode,omitempty"`           // 二维码URL
+	Gender          Gender         `json:"gender,omitempty"`           // 性别
+	Country         string         `json:"country,omitempty"`          // 国家
+	Province        string         `json:"province,omitempty"`         // 省份
+	City            string         `json:"city,omitempty"`             // 城市
+	District        string         `json:"district,omitempty"`         // 区
+	Address         string         `json:"address,omitempty"`          // 地址
+	Signature       string         `json:"signature,omitempty"`        // 签名
+	Birthday        *time.Time     `json:"birthday,omitempty"`         // 生日
+	Company         string         `json:"company,omitempty"`          // 公司
+	Department      string         `json:"department,omitempty"`       // 部门
+	Title           string         `json:"title,omitempty"`            // 头衔、职位
+	Language        string         `json:"language,omitempty"`         // 语言
+	Presence        Presence       `json:"presence,omitempty"`         // 状态
+	Metadata        map[string]any `json:"metadata,omitempty"`         // 公开元数据
+	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
+}
+
+// 账号变更
+type IMAccountUpdate struct {
+	UserId          string         `json:"user_id,omitempty"`          // 平台用户ID
+	OpenId          *string        `json:"open_id,omitempty"`          // 实际的平台用户ID，如：微信ID
+	CustomId        *string        `json:"custom_id,omitempty"`        // 用户自定义ID
+	Username        *string        `json:"username,omitempty"`         // 用户账户
+	Name            *string        `json:"name,omitempty"`             // 名称
+	Nickname        *string        `json:"nickname,omitempty"`         // 昵称
+	RealName        *string        `json:"real_name,omitempty"`        // 真实名字
+	Mobile          *string        `json:"mobile,omitempty"`           // 手机号
+	Tel             *string        `json:"tel,omitempty"`              // 座机电话
+	Email           *string        `json:"email,omitempty"`            // 邮箱
+	Avatar          *string        `json:"avatar,omitempty"`           // 头像URL
+	QRCode          *string        `json:"qrcode,omitempty"`           // 二维码URL
+	Gender          *Gender        `json:"gender,omitempty"`           // 性别
+	Country         *string        `json:"country,omitempty"`          // 国家
+	Province        *string        `json:"province,omitempty"`         // 省份
+	City            *string        `json:"city,omitempty"`             // 城市
+	District        *string        `json:"district,omitempty"`         // 区
+	Address         *string        `json:"address,omitempty"`          // 地址
+	Signature       *string        `json:"signature,omitempty"`        // 签名
+	Birthday        *time.Time     `json:"birthday,omitempty"`         // 生日
+	Company         *string        `json:"company,omitempty"`          // 公司
+	Department      *string        `json:"department,omitempty"`       // 部门
+	Title           *string        `json:"title,omitempty"`            // 头衔、职位
+	Language        *string        `json:"language,omitempty"`         // 语言
+	Presence        *Presence      `json:"presence,omitempty"`         // 状态
+	Metadata        map[string]any `json:"metadata,omitempty"`         // 公开元数据
+	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
+}
+
+// 新账号
+type NewIMAccount struct {
+	UserId          string         `json:"user_id,omitempty"`          // 平台用户ID
+	OpenId          string         `json:"open_id,omitempty"`          // 实际的平台用户ID，如：微信ID
+	CustomId        string         `json:"custom_id,omitempty"`        // 用户自定义ID
+	Username        string         `json:"username,omitempty"`         // 用户账户
+	Name            string         `json:"name,omitempty"`             // 名称
+	Nickname        string         `json:"nickname,omitempty"`         // 昵称
+	RealName        string         `json:"real_name,omitempty"`        // 真实名字
+	Mobile          string         `json:"mobile,omitempty"`           // 手机号
+	Tel             string         `json:"tel,omitempty"`              // 座机电话
+	Email           string         `json:"email,omitempty"`            // 邮箱
+	Avatar          string         `json:"avatar,omitempty"`           // 头像URL
+	QRCode          string         `json:"qrcode,omitempty"`           // 二维码URL
+	Gender          Gender         `json:"gender,omitempty"`           // 性别
+	Country         string         `json:"country,omitempty"`          // 国家
+	Province        string         `json:"province,omitempty"`         // 省份
+	City            string         `json:"city,omitempty"`             // 城市
+	District        string         `json:"district,omitempty"`         // 区
+	Address         string         `json:"address,omitempty"`          // 地址
+	Signature       string         `json:"signature,omitempty"`        // 签名
+	Birthday        *time.Time     `json:"birthday,omitempty"`         // 生日
+	Company         string         `json:"company,omitempty"`          // 公司
+	Department      string         `json:"department,omitempty"`       // 部门
+	Title           string         `json:"title,omitempty"`            // 头衔、职位
+	Language        string         `json:"language,omitempty"`         // 语言
+	Presence        Presence       `json:"presence,omitempty"`         // 状态
+	Metadata        map[string]any `json:"metadata,omitempty"`         // 公开元数据
+	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
+	State           string         `json:"state,omitempty"`            // 授权账号时客户传来的自定义数据，透传回去
 }
 
 // 好友申请
