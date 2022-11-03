@@ -195,7 +195,7 @@ type Following Contact
 type FriendApply struct {
 	ID              string         `json:"id,omitempty"`               // 申请ID
 	Account         string         `json:"account,omitempty"`          // 接收申请的账号的平台用户ID
-	UserId          string         `json:"user_id,omitempty"`          // 申请人平台用户ID
+	UserId          string         `json:"user_id,omitempty"`          // 申请人平台用户ID，非必须
 	OpenId          string         `json:"open_id,omitempty"`          // 申请人实际的平台用户ID，如：微信ID
 	CustomId        string         `json:"custom_id,omitempty"`        // 申请人用户自定义ID
 	Username        string         `json:"username,omitempty"`         // 申请人用户账户
@@ -220,6 +220,7 @@ type FriendApply struct {
 	Title           string         `json:"title,omitempty"`            // 申请人头衔、职位
 	Language        string         `json:"language,omitempty"`         // 申请人语言
 	HelloMessage    string         `json:"hello_message,omitempty"`    // 打招呼留言
+	Source          string         `json:"source,omitempty"`           // 添加好友来源
 	AppliedAt       *time.Time     `json:"applied_at,omitempty"`       // 申请时间
 	Metadata        map[string]any `json:"metadata,omitempty"`         // 公开元数据
 	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
