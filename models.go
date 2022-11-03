@@ -194,8 +194,31 @@ type Following Contact
 // 好友申请
 type FriendApply struct {
 	ID              string         `json:"id,omitempty"`               // 申请ID
-	UserId          string         `json:"user_id,omitempty"`          // 接收申请的平台用户ID
-	ApplyUser       *IMUser        `json:"apply_user,omitempty"`       // 申请人信息
+	Account         string         `json:"account,omitempty"`          // 接收申请的账号的平台用户ID
+	UserId          string         `json:"user_id,omitempty"`          // 申请人平台用户ID
+	OpenId          string         `json:"open_id,omitempty"`          // 申请人实际的平台用户ID，如：微信ID
+	CustomId        string         `json:"custom_id,omitempty"`        // 申请人用户自定义ID
+	Username        string         `json:"username,omitempty"`         // 申请人用户账户
+	Name            string         `json:"name,omitempty"`             // 申请人名称
+	Nickname        string         `json:"nickname,omitempty"`         // 申请人昵称
+	RealName        string         `json:"real_name,omitempty"`        // 申请人真实名字
+	Mobile          string         `json:"mobile,omitempty"`           // 申请人手机号
+	Tel             string         `json:"tel,omitempty"`              // 申请人座机电话
+	Email           string         `json:"email,omitempty"`            // 申请人邮箱
+	Avatar          string         `json:"avatar,omitempty"`           // 申请人头像URL
+	QRCode          string         `json:"qrcode,omitempty"`           // 申请人二维码URL
+	Gender          Gender         `json:"gender,omitempty"`           // 申请人性别
+	Country         string         `json:"country,omitempty"`          // 申请人国家
+	Province        string         `json:"province,omitempty"`         // 申请人省份
+	City            string         `json:"city,omitempty"`             // 申请人城市
+	District        string         `json:"district,omitempty"`         // 申请人区
+	Address         string         `json:"address,omitempty"`          // 申请人地址
+	Signature       string         `json:"signature,omitempty"`        // 申请人签名
+	Birthday        *time.Time     `json:"birthday,omitempty"`         // 申请人生日
+	Company         string         `json:"company,omitempty"`          // 申请人公司
+	Department      string         `json:"department,omitempty"`       // 申请人部门
+	Title           string         `json:"title,omitempty"`            // 申请人头衔、职位
+	Language        string         `json:"language,omitempty"`         // 申请人语言
 	HelloMessage    string         `json:"hello_message,omitempty"`    // 打招呼留言
 	AppliedAt       *time.Time     `json:"applied_at,omitempty"`       // 申请时间
 	Metadata        map[string]any `json:"metadata,omitempty"`         // 公开元数据
