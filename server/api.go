@@ -8,7 +8,7 @@ import (
 // UIM 需要的接口
 
 // 新账号事件
-type NewAccountHandler func(*cloudevents.Event, *uim.NewIMAccount) error
+type NewAccountHandler func(*cloudevents.Event, *uim.IMAccount) error
 
 func (client *Client) OnNewAccount(handler NewAccountHandler) {
 	client.OnEvent(uim.ProviderEventNewAccount, uim.CastEventHandler(handler))
@@ -19,13 +19,6 @@ type AccountUpdatedHandler func(*cloudevents.Event, *uim.IMAccountUpdate) error
 
 func (client *Client) OnAccountUpdated(handler AccountUpdatedHandler) {
 	client.OnEvent(uim.ProviderEventAccountUpdated, uim.CastEventHandler(handler))
-}
-
-// 新的好友申请
-type NewFriendApplyHandler func(*cloudevents.Event, *uim.FriendApply) error
-
-func (client *Client) OnNewFriendApply(handler NewFriendApplyHandler) {
-	client.OnEvent(uim.ProviderEventNewFriendApply, uim.CastEventHandler(handler))
 }
 
 // 新好友
@@ -49,18 +42,11 @@ func (client *Client) OnNewFollowing(handler NewFollowingHandler) {
 	client.OnEvent(uim.ProviderEventNewFollowing, uim.CastEventHandler(handler))
 }
 
-// 好友更新
-type ContactUpdatedHandler func(*cloudevents.Event, *uim.ContactUpdate) error
+// 新的好友申请
+type NewFriendApplyHandler func(*cloudevents.Event, *uim.FriendApply) error
 
-func (client *Client) OnContactUpdated(handler ContactUpdatedHandler) {
-	client.OnEvent(uim.ProviderEventContactUpdated, uim.CastEventHandler(handler))
-}
-
-// 好友删除
-type ContactDeletedHandler func(*cloudevents.Event, *uim.ContactDeleted) error
-
-func (client *Client) OnContactDeleted(handler ContactDeletedHandler) {
-	client.OnEvent(uim.ProviderEventContactDeleted, uim.CastEventHandler(handler))
+func (client *Client) OnNewFriendApply(handler NewFriendApplyHandler) {
+	client.OnEvent(uim.ProviderEventNewFriendApply, uim.CastEventHandler(handler))
 }
 
 // 新群组

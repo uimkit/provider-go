@@ -438,38 +438,22 @@ func TestContact(t *testing.T) {
 	contactUserId = fmt.Sprintf("wxid_%s", contactUserId)
 
 	err = client.NewContact(&uim.Contact{
-		UserId:  userId,
-		Alias:   "老李",
-		Remark:  "公司同事",
-		Blocked: false,
-		Marked:  true,
-		ContactUser: &uim.IMUser{
-			UserId:    contactUserId,
-			CustomId:  "Angela",
-			Name:      "Angela（网红合作）☀️",
-			Mobile:    "13000192287",
-			Avatar:    "https://avatar.url",
-			Gender:    uim.GenderFemale,
-			Country:   "中国",
-			Province:  "广东",
-			City:      "深圳",
-			Signature: "长期招募主播",
-			Birthday:  &birthday,
-		},
-	})
-	assert.Nil(t, err)
-
-	updateAlias := "小孙"
-	updateProvince := "江苏"
-	updateCity := "苏州"
-	err = client.ContactUpdated(&uim.ContactUpdate{
-		UserId: userId,
-		ContactUser: &uim.IMUserUpdate{
-			UserId:   contactUserId,
-			Province: &updateProvince,
-			City:     &updateCity,
-		},
-		Alias: &updateAlias,
+		Account:   userId,
+		Alias:     "老李",
+		Remark:    "公司同事",
+		Blocked:   false,
+		Marked:    true,
+		UserId:    contactUserId,
+		CustomId:  "Angela",
+		Name:      "Angela（网红合作）☀️",
+		Mobile:    "13000192287",
+		Avatar:    "https://avatar.url",
+		Gender:    uim.GenderFemale,
+		Country:   "中国",
+		Province:  "广东",
+		City:      "深圳",
+		Signature: "长期招募主播",
+		Birthday:  &birthday,
 	})
 	assert.Nil(t, err)
 }
@@ -478,13 +462,13 @@ func TestIMAccount(t *testing.T) {
 	var err error
 	client := newProviderClient()
 
-	err = client.NewAccount(&uim.NewIMAccount{})
+	err = client.NewAccount(&uim.IMAccount{})
 	assert.Equal(t, uim.InvalidEventDataErrorCode, err.(*uim.ServerError).ErrorCode())
 
 	birthday := time.Now().Add(-365 * 10 * 24 * 3600 * time.Second)
 	userId, _ := gonanoid.New()
 	userId = fmt.Sprintf("wxid_%s", userId)
-	account := &uim.NewIMAccount{
+	account := &uim.IMAccount{
 		UserId:    userId,
 		CustomId:  "Angela",
 		Name:      "Angela（网红合作）☀️",

@@ -2,13 +2,14 @@ package uim
 
 // Provider 发送给 UIM 的事件
 const (
-	ProviderEventNewAccount           = "provider.new_account"            // 新账号
-	ProviderEventAccountUpdated       = "provider.account_updated"        // 账号更新
+	ProviderEventNewAccount     = "provider.new_account"     // 新账号
+	ProviderEventAccountUpdated = "provider.account_updated" // 账号更新
+	ProviderEventNewContact     = "provider.new_contact"     // 新好友
+	ProviderEventNewFollower    = "provider.new_follower"    // 新粉丝
+	ProviderEventNewFollowing   = "provider.new_following"   // 新关注的人
+
 	ProviderEventNewFriendApply       = "provider.new_friend_apply"       // 新的好友申请
 	ProviderEventNewFriendReply       = "provider.new_friend_reply"       // 收到好友申请回复
-	ProviderEventNewContact           = "provider.new_contact"            // 新好友
-	ProviderEventNewFollower          = "provider.new_follower"           // 新粉丝
-	ProviderEventNewFollowing         = "provider.new_following"          // 新关注的人
 	ProviderEventContactUpdated       = "provider.contact_updated"        // 好友更新
 	ProviderEventContactDeleted       = "provider.contact_deleted"        // 好友删除
 	ProviderEventNewGroup             = "provider.new_group"              // 新群组

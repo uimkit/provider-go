@@ -6,18 +6,13 @@ import (
 )
 
 // 新账号
-func (client *Client) NewAccount(account *uim.NewIMAccount, opts ...uim.RequestOption) error {
+func (client *Client) NewAccount(account *uim.IMAccount, opts ...uim.RequestOption) error {
 	return client.SendEvent(uim.ProviderEventNewAccount, account, opts...)
 }
 
 // 账号更新
 func (client *Client) AccountUpdated(account *uim.IMAccountUpdate, opts ...uim.RequestOption) error {
 	return client.SendEvent(uim.ProviderEventAccountUpdated, account, opts...)
-}
-
-// 新的好友申请
-func (client *Client) NewFriendApply(apply *uim.FriendApply, opts ...uim.RequestOption) error {
-	return client.SendEvent(uim.ProviderEventNewFriendApply, apply, opts...)
 }
 
 // 新好友
@@ -35,14 +30,9 @@ func (client *Client) NewFollwing(following *uim.Following, opts ...uim.RequestO
 	return client.SendEvent(uim.ProviderEventNewFollowing, following, opts...)
 }
 
-// 好友更新
-func (client *Client) ContactUpdated(contact *uim.ContactUpdate, opts ...uim.RequestOption) error {
-	return client.SendEvent(uim.ProviderEventContactUpdated, contact, opts...)
-}
-
-// 好友删除
-func (client *Client) ContactDeleted(contact *uim.ContactDeleted, opts ...uim.RequestOption) error {
-	return client.SendEvent(uim.ProviderEventContactDeleted, contact, opts...)
+// 新的好友申请
+func (client *Client) NewFriendApply(apply *uim.FriendApply, opts ...uim.RequestOption) error {
+	return client.SendEvent(uim.ProviderEventNewFriendApply, apply, opts...)
 }
 
 // 新群组

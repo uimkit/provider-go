@@ -87,7 +87,7 @@ const (
 	PresenceDisabledByProvider                 // 服务商封禁
 )
 
-// IM账号
+// 账号
 type IMAccount struct {
 	UserId          string         `json:"user_id,omitempty"`          // 平台用户ID
 	OpenId          string         `json:"open_id,omitempty"`          // 实际的平台用户ID，如：微信ID
@@ -116,6 +116,7 @@ type IMAccount struct {
 	Presence        Presence       `json:"presence,omitempty"`         // 状态
 	Metadata        map[string]any `json:"metadata,omitempty"`         // 公开元数据
 	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
+	State           string         `json:"state,omitempty"`            // 授权账号时客户传来的自定义数据，透传回去
 }
 
 // 账号变更
@@ -149,8 +150,9 @@ type IMAccountUpdate struct {
 	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
 }
 
-// 新账号
-type NewIMAccount struct {
+// 联系人
+type Contact struct {
+	Account         string         `json:"account,omitempty"`          // 所属账号的平台用户ID
 	UserId          string         `json:"user_id,omitempty"`          // 平台用户ID
 	OpenId          string         `json:"open_id,omitempty"`          // 实际的平台用户ID，如：微信ID
 	CustomId        string         `json:"custom_id,omitempty"`        // 用户自定义ID
@@ -175,11 +177,19 @@ type NewIMAccount struct {
 	Department      string         `json:"department,omitempty"`       // 部门
 	Title           string         `json:"title,omitempty"`            // 头衔、职位
 	Language        string         `json:"language,omitempty"`         // 语言
-	Presence        Presence       `json:"presence,omitempty"`         // 状态
+	Alias           string         `json:"alias,omitempty"`            // 备注名
+	Remark          string         `json:"remark,omitempty"`           // 备注说明
+	Blocked         bool           `json:"blocked,omitempty"`          // 是否拉黑
+	Marked          bool           `json:"marked,omitempty"`           // 是否星标
 	Metadata        map[string]any `json:"metadata,omitempty"`         // 公开元数据
 	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
-	State           string         `json:"state,omitempty"`            // 授权账号时客户传来的自定义数据，透传回去
 }
+
+// 粉丝
+type Follower Contact
+
+// 关注的人
+type Following Contact
 
 // 好友申请
 type FriendApply struct {
@@ -188,19 +198,6 @@ type FriendApply struct {
 	ApplyUser       *IMUser        `json:"apply_user,omitempty"`       // 申请人信息
 	HelloMessage    string         `json:"hello_message,omitempty"`    // 打招呼留言
 	AppliedAt       *time.Time     `json:"applied_at,omitempty"`       // 申请时间
-	Metadata        map[string]any `json:"metadata,omitempty"`         // 公开元数据
-	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
-}
-
-// 联系人
-type Contact struct {
-	UserId          string         `json:"user_id,omitempty"`          // 归属的平台用户ID
-	ContactUser     *IMUser        `json:"contact_user,omitempty"`     // 联系人的用户信息
-	Alias           string         `json:"alias,omitempty"`            // 备注名
-	Remark          string         `json:"remark,omitempty"`           // 备注说明
-	Tags            []string       `json:"tags,omitempty"`             // 标签
-	Blocked         bool           `json:"blocked,omitempty"`          // 是否拉黑
-	Marked          bool           `json:"marked,omitempty"`           // 是否星标
 	Metadata        map[string]any `json:"metadata,omitempty"`         // 公开元数据
 	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
 }
@@ -217,31 +214,6 @@ type AddContactResponse struct {
 	BaseResponse
 	Success bool   `json:"success"` // 是否发起好友申请成功
 	Reason  string `json:"reason"`  // 发起申请好友失败原因
-}
-
-// 粉丝
-type Follower Contact
-
-// 关注的人
-type Following Contact
-
-// 联系人变更
-type ContactUpdate struct {
-	UserId          string         `json:"user_id,omitempty"`          // 归属的平台用户ID
-	ContactUser     *IMUserUpdate  `json:"contact_user,omitempty"`     // 联系人的用户信息
-	Alias           *string        `json:"alias,omitempty"`            // 备注名
-	Remark          *string        `json:"remark,omitempty"`           // 备注说明
-	Tags            []string       `json:"tags,omitempty"`             // 标签
-	Blocked         *bool          `json:"blocked,omitempty"`          // 是否拉黑
-	Marked          *bool          `json:"marked,omitempty"`           // 是否星标
-	Metadata        map[string]any `json:"metadata,omitempty"`         // 公开元数据
-	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
-}
-
-// 联系人删除
-type ContactDeleted struct {
-	UserId        string `json:"user_id,omitempty"`         // 归属的平台用户ID
-	ContactUserId string `json:"contact_user_id,omitempty"` // 联系人的用户ID
 }
 
 // 群组
@@ -589,13 +561,6 @@ type ListIMAccounts struct {
 	QueryId string `json:"query_id,omitempty"` // 查询ID，用于匹配异步请求
 	Limit   int    `json:"limit,omitempty"`    // 查询数量
 	After   string `json:"after,omitempty"`    // 上次查询返回 next，重新开始查询为空
-}
-
-// 账号列表
-type IMAccountList struct {
-	QueryId string       `json:"query_id,omitempty"` // 请求的查询ID，用于匹配异步请求
-	Data    []*IMAccount `json:"data,omitempty"`     // 数据列表
-	Next    string       `json:"next,omitempty"`     // 游标，用于下次查询请求的 after 参数
 }
 
 // 通过好友申请
