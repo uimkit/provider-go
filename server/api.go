@@ -140,6 +140,18 @@ func (client *Client) OnGetMetafield(handler GetMetafieldHandler) {
 	client.OnEvent(uim.ProviderCommandGetMetafield, uim.CastCommandHandler(handler))
 }
 
+// 查询消息地址关联的信息
+func (client *Client) GetChannelInfo(req *uim.GetChannelInfoRequest, opts ...uim.RequestOption) (*uim.GetChannelInfoResponse, error) {
+	return uim.CastCommandResponse[*uim.GetChannelInfoResponse](
+		client.Invoke(
+			uim.UIMCommandGetChannelInfo,
+			req,
+			&uim.GetChannelInfoResponse{},
+			opts...,
+		),
+	)
+}
+
 // 发送消息
 func (client *Client) SendMessage(req *uim.SendMessageRequest, opts ...uim.RequestOption) (*uim.SendMessageResponse, error) {
 	return uim.CastCommandResponse[*uim.SendMessageResponse](
