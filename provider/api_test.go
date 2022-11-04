@@ -1,12 +1,14 @@
 package provider
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"strconv"
 	"testing"
 	"time"
 
+	"github.com/hokaccha/go-prettyjson"
 	gonanoid "github.com/matoous/go-nanoid/v2"
 	"github.com/stretchr/testify/assert"
 	uim "github.com/uimkit/provider-go"
@@ -113,30 +115,28 @@ func TestMessage(t *testing.T) {
 	now := time.Now()
 
 	message := &uim.Message{
-		MessageId:        messageId1,
-		Account:          defaultUserId,
-		UserId:           userId1,
-		Channel:          defaultGroupId,
-		ConversationType: uim.ConversationTypeGroup,
-		MentionedType:    uim.MentionedTypeAll,
-		MentionedUsers:   make([]*uim.MessageParticipant, 0),
-		SentAt:           &now,
-		Type:             uim.MessageTypeText,
-		Text:             "hello",
-		Revoked:          false,
+		MessageId:      messageId1,
+		Account:        defaultUserId,
+		UserId:         userId1,
+		Channel:        defaultGroupId,
+		MentionedType:  uim.MentionedTypeAll,
+		MentionedUsers: make([]string, 0),
+		SentAt:         &now,
+		Type:           uim.MessageTypeText,
+		Text:           "hello",
+		Revoked:        false,
 	}
 	err = client.NewMessage(message)
 	assert.Nil(t, err)
 
 	message.MessageId = messageId2
 	message.MentionedType = uim.MentionedTypeUsers
-	message.MentionedUsers = []*uim.MessageParticipant{{UserId: userId2}}
+	message.MentionedUsers = []string{userId2}
 	message.Text = "yes"
 	err = client.NewMessage(message)
 	assert.Nil(t, err)
 
 	message.MessageId = messageId3
-	message.ConversationType = uim.ConversationTypePrivate
 	message.Account = defaultUserId
 	message.UserId = defaultUserId
 	message.Channel = userId3
@@ -286,18 +286,20 @@ func TestFriendApply(t *testing.T) {
 	appliedAt := time.Now()
 
 	err = client.NewFriendApply(&uim.FriendApply{
+		IMUser: uim.IMUser{
+			UserId:    applyUserId,
+			CustomId:  "Kobe",
+			Name:      "Kobe Bryant",
+			Mobile:    "18666633332",
+			Avatar:    "https://avatar.url",
+			Gender:    uim.GenderMale,
+			Country:   "美国",
+			Province:  "加利福尼亚",
+			City:      "洛杉矶",
+			Signature: "",
+		},
 		ID:           applyId,
 		Account:      userId,
-		UserId:       applyUserId,
-		CustomId:     "Kobe",
-		Name:         "Kobe Bryant",
-		Mobile:       "18666633332",
-		Avatar:       "https://avatar.url",
-		Gender:       uim.GenderMale,
-		Country:      "美国",
-		Province:     "加利福尼亚",
-		City:         "洛杉矶",
-		Signature:    "",
 		HelloMessage: "play with me",
 		AppliedAt:    &appliedAt,
 		Metadata:     map[string]any{"test": true},
@@ -372,22 +374,24 @@ func TestContact(t *testing.T) {
 	contactUserId = fmt.Sprintf("wxid_%s", contactUserId)
 
 	err = client.NewContact(&uim.Contact{
-		Account:   userId,
-		Alias:     "老李",
-		Remark:    "公司同事",
-		Blocked:   false,
-		Marked:    true,
-		UserId:    contactUserId,
-		CustomId:  "Angela",
-		Name:      "Angela（网红合作）☀️",
-		Mobile:    "13000192287",
-		Avatar:    "https://avatar.url",
-		Gender:    uim.GenderFemale,
-		Country:   "中国",
-		Province:  "广东",
-		City:      "深圳",
-		Signature: "长期招募主播",
-		Birthday:  &birthday,
+		IMUser: uim.IMUser{
+			UserId:    contactUserId,
+			CustomId:  "Angela",
+			Name:      "Angela（网红合作）☀️",
+			Mobile:    "13000192287",
+			Avatar:    "https://avatar.url",
+			Gender:    uim.GenderFemale,
+			Country:   "中国",
+			Province:  "广东",
+			City:      "深圳",
+			Signature: "长期招募主播",
+			Birthday:  &birthday,
+		},
+		Account: userId,
+		Alias:   "老李",
+		Remark:  "公司同事",
+		Blocked: false,
+		Marked:  true,
 	})
 	assert.Nil(t, err)
 }
@@ -403,18 +407,20 @@ func TestIMAccount(t *testing.T) {
 	userId, _ := gonanoid.New()
 	userId = fmt.Sprintf("wxid_%s", userId)
 	account := &uim.IMAccount{
-		UserId:    userId,
-		CustomId:  "Angela",
-		Name:      "Angela（网红合作）☀️",
-		Mobile:    "13000192287",
-		Avatar:    "https://avatar.url",
-		Gender:    uim.GenderFemale,
-		Country:   "中国",
-		Province:  "广东",
-		City:      "深圳",
-		Signature: "长期招募主播",
-		Birthday:  &birthday,
-		Presence:  uim.PresenceInitializing,
+		IMUser: uim.IMUser{
+			UserId:    userId,
+			CustomId:  "Angela",
+			Name:      "Angela（网红合作）☀️",
+			Mobile:    "13000192287",
+			Avatar:    "https://avatar.url",
+			Gender:    uim.GenderFemale,
+			Country:   "中国",
+			Province:  "广东",
+			City:      "深圳",
+			Signature: "长期招募主播",
+			Birthday:  &birthday,
+		},
+		Presence: uim.PresenceInitializing,
 	}
 	err = client.NewAccount(account)
 	assert.Nil(t, err)
@@ -423,9 +429,11 @@ func TestIMAccount(t *testing.T) {
 	updateMobile := "18900010002"
 	updateName := "jenny"
 	err = client.AccountUpdated(&uim.IMAccountUpdate{
-		UserId:   userId,
-		Name:     &updateName,
-		Mobile:   &updateMobile,
+		IMUserUpdate: uim.IMUserUpdate{
+			UserId: userId,
+			Name:   &updateName,
+			Mobile: &updateMobile,
+		},
 		Presence: &updatePresence,
 		Metadata: map[string]any{"test": true},
 	})
@@ -435,7 +443,9 @@ func TestIMAccount(t *testing.T) {
 	assert.Equal(t, uim.InvalidEventDataErrorCode, err.(*uim.ServerError).ErrorCode())
 
 	err = client.AccountUpdated(&uim.IMAccountUpdate{
-		UserId: "fakeid",
+		IMUserUpdate: uim.IMUserUpdate{
+			UserId: "fakeid",
+		},
 	})
 	assert.Equal(t, uim.ResourceNotFoundErrorCode, err.(*uim.ServerError).ErrorCode())
 }
@@ -542,4 +552,51 @@ func TestMetafield(t *testing.T) {
 		Key:        "not_found_value",
 	})
 	assert.Equal(t, uim.ResourceNotFoundErrorCode, err.(*uim.ServerError).ErrorCode())
+}
+
+func TestJSON(t *testing.T) {
+	birthday := time.Now().Add(-365 * 10 * 24 * 3600 * time.Second)
+	userId, _ := gonanoid.New()
+	userId = fmt.Sprintf("wxid_%s", userId)
+	b, err := prettyjson.Marshal(&uim.IMAccount{
+		IMUser: uim.IMUser{
+			UserId:    userId,
+			CustomId:  "Angela",
+			Name:      "Angela（网红合作）☀️",
+			Mobile:    "13000192287",
+			Avatar:    "https://avatar.url",
+			Gender:    uim.GenderFemale,
+			Country:   "中国",
+			Province:  "广东",
+			City:      "深圳",
+			Signature: "长期招募主播",
+			Birthday:  &birthday,
+			Metadata:  map[string]any{"user": true},
+		},
+		Presence: uim.PresenceInitializing,
+		Metadata: map[string]any{"account": true},
+	})
+	assert.Nil(t, err)
+	t.Logf("%s", string(b))
+
+	str := `{
+		"avatar": "https://avatar.url",
+		"birthday": "2012-11-07T01:07:43.296042+08:00",
+		"city": "深圳",
+		"country": "中国",
+		"custom_id": "Angela",
+		"gender": 2,
+		"metadata": {
+			"account": true
+		},
+		"mobile": "13000192287",
+		"name": "Angela（网红合作）☀️",
+		"province": "广东",
+		"signature": "长期招募主播",
+		"user_id": "wxid_dAsOimcs5OWwQwWu_57aI"
+	}`
+	account := &uim.IMAccount{}
+	err = json.Unmarshal([]byte(str), account)
+	assert.Nil(t, err)
+	t.Logf("%+v", account)
 }
