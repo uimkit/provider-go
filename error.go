@@ -113,6 +113,10 @@ const (
 	UnregisteredProviderErrorStatus  = http.StatusUnauthorized
 	UnregisteredProviderErrorCode    = "SDK.UnregisteredProvider"
 	UnregisteredProviderErrorMessage = "Please set proper \"Provider\" and \"Strategy\" client options"
+
+	AccountProviderMismatchErrorStatus  = http.StatusBadRequest
+	AccountProviderMismatchErrorCode    = "SDK.AccountProviderMismatch"
+	AccountProviderMismatchErrorMessage = "Account is currently using another provider"
 )
 
 type ServerError struct {
