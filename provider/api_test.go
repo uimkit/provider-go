@@ -305,61 +305,6 @@ func TestFriendApply(t *testing.T) {
 	assert.Nil(t, err)
 }
 
-func TestConversation(t *testing.T) {
-	var err error
-	client := newProviderClient()
-
-	userId := defaultUserId
-	partyGroupId, _ := gonanoid.New()
-	partyGroupId = fmt.Sprintf("wxid_%s", partyGroupId)
-	partyUserId, _ := gonanoid.New()
-	partyUserId = fmt.Sprintf("wxid_%s", partyUserId)
-	conversationId1, _ := gonanoid.New()
-	conversationId2, _ := gonanoid.New()
-
-	err = client.NewConversation(&uim.Conversation{
-		ConversationId: conversationId1,
-		UserId:         userId,
-		Type:           uim.ConversationTypePrivate,
-		Party: &uim.ConversationParty{
-			PartyId: partyUserId,
-			Name:    "Jackson",
-			Avatar:  "https://avatar.url",
-		},
-		Metadata: map[string]any{"test": true},
-	})
-	assert.Nil(t, err)
-
-	err = client.NewConversation(&uim.Conversation{
-		ConversationId: conversationId2,
-		UserId:         userId,
-		Type:           uim.ConversationTypeGroup,
-		Party: &uim.ConversationParty{
-			PartyId: partyGroupId,
-			Name:    "公司群",
-			Avatar:  "https://avatar.url",
-		},
-		PrivateMetadata: map[string]any{"test": true},
-	})
-	assert.Nil(t, err)
-
-	err = client.ConversationUpdated(&uim.ConversationUpdate{
-		UserId:          userId,
-		Type:            uim.ConversationTypePrivate,
-		PartyId:         partyUserId,
-		PrivateMetadata: map[string]any{"test": false},
-	})
-	assert.Nil(t, err)
-
-	err = client.ConversationUpdated(&uim.ConversationUpdate{
-		UserId:   userId,
-		Type:     uim.ConversationTypeGroup,
-		PartyId:  partyGroupId,
-		Metadata: map[string]any{"test": false},
-	})
-	assert.Nil(t, err)
-}
-
 func TestGroup(t *testing.T) {
 	var err error
 	client := newProviderClient()

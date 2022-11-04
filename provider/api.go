@@ -85,16 +85,6 @@ func (client *Client) NewJoinGroupApply(apply *uim.JoinGroupApply, opts ...uim.R
 	return client.SendEvent(uim.ProviderEventNewJoinGroupApply, apply, opts...)
 }
 
-// 新会话
-func (client *Client) NewConversation(conversation *uim.Conversation, opts ...uim.RequestOption) error {
-	return client.SendEvent(uim.ProviderEventNewConversation, conversation, opts...)
-}
-
-// 会话更新
-func (client *Client) ConversationUpdated(conversation *uim.ConversationUpdate, opts ...uim.RequestOption) error {
-	return client.SendEvent(uim.ProviderEventConversationUpdated, conversation, opts...)
-}
-
 // 新的元数据
 func (client *Client) NewMetafield(metafield *uim.Metafield, opts ...uim.RequestOption) error {
 	return client.SendEvent(uim.ProviderEventNewMetafield, metafield, opts...)

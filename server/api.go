@@ -119,20 +119,6 @@ func (client *Client) OnNewJoinGroupApply(handler NewJoinGroupApplyHandler) {
 	client.OnEvent(uim.ProviderEventNewJoinGroupApply, uim.CastEventHandler(handler))
 }
 
-// 新会话
-type NewConversationHandler func(*cloudevents.Event, *uim.Conversation) error
-
-func (client *Client) OnNewConversation(handler NewConversationHandler) {
-	client.OnEvent(uim.ProviderEventNewConversation, uim.CastEventHandler(handler))
-}
-
-// 会话更新
-type ConversationUpdatedHandler func(*cloudevents.Event, *uim.ConversationUpdate) error
-
-func (client *Client) OnConversationUpdated(handler ConversationUpdatedHandler) {
-	client.OnEvent(uim.ProviderEventConversationUpdated, uim.CastEventHandler(handler))
-}
-
 // 新的元数据
 type NewMetafieldHandler func(*cloudevents.Event, *uim.Metafield) error
 

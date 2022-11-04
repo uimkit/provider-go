@@ -420,32 +420,6 @@ type GroupMemberDelete struct {
 	MemberId string `json:"member_id,omitempty"` // 平台群成员ID
 }
 
-// 会话的另一方
-type ConversationParty struct {
-	PartyId string `json:"party_id,omitempty"` // 另一方平台ID
-	Name    string `json:"name,omitempty"`     // 名称
-	Avatar  string `json:"avatar,omitempty"`   // 头像
-}
-
-// 会话
-type Conversation struct {
-	ConversationId  string             `json:"conversation_id,omitempty"`  // 平台会话ID
-	UserId          string             `json:"user_id,omitempty"`          // 归属用户平台ID
-	Type            ConversationType   `json:"type,omitempty"`             // 会话类型
-	Party           *ConversationParty `json:"party,omitempty"`            // 会话另一方
-	Metadata        map[string]any     `json:"metadata,omitempty"`         // 公开元数据
-	PrivateMetadata map[string]any     `json:"private_metadata,omitempty"` // 私有元数据
-}
-
-// 会话更新
-type ConversationUpdate struct {
-	UserId          string           `json:"user_id,omitempty"`          // 归属用户平台ID
-	Type            ConversationType `json:"type,omitempty"`             // 会话类型
-	PartyId         string           `json:"party_id,omitempty"`         // 另一方平台ID
-	Metadata        map[string]any   `json:"metadata,omitempty"`         // 公开元数据
-	PrivateMetadata map[string]any   `json:"private_metadata,omitempty"` // 私有元数据
-}
-
 // 发送消息
 type SendMessageRequest struct {
 	From             string           `json:"from,omitempty"`              // 消息发送者
