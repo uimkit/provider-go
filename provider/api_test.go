@@ -113,46 +113,37 @@ func TestMessage(t *testing.T) {
 	now := time.Now()
 
 	message := &uim.Message{
-		MessageId: messageId1,
-		UserId:    defaultUserId,
-		From: &uim.MessageParticipant{
-			ID: defaultUserId,
-		},
-		To: &uim.MessageParticipant{
-			ID: defaultGroupId,
-		},
+		MessageId:        messageId1,
+		Account:          defaultUserId,
+		UserId:           userId1,
+		Channel:          defaultGroupId,
 		ConversationType: uim.ConversationTypeGroup,
 		MentionedType:    uim.MentionedTypeAll,
 		MentionedUsers:   make([]*uim.MessageParticipant, 0),
 		SentAt:           &now,
-		Payload: &uim.MessagePayload{
-			Type: uim.MessageTypeText,
-			Body: &uim.TextMessageBody{
-				Content: "hello",
-			},
-		},
-		Revoked: false,
+		Type:             uim.MessageTypeText,
+		Text:             "hello",
+		Revoked:          false,
 	}
 	err = client.NewMessage(message)
 	assert.Nil(t, err)
 
 	message.MessageId = messageId2
-	message.From.ID = userId1
-	message.MentionedType = uim.MentionedTypeSpecific
-	message.MentionedUsers = []*uim.MessageParticipant{{ID: userId2}}
-	message.Payload.Body.(*uim.TextMessageBody).Content = "yes"
+	message.MentionedType = uim.MentionedTypeUsers
+	message.MentionedUsers = []*uim.MessageParticipant{{UserId: userId2}}
+	message.Text = "yes"
 	err = client.NewMessage(message)
 	assert.Nil(t, err)
 
 	message.MessageId = messageId3
 	message.ConversationType = uim.ConversationTypePrivate
-	message.From.ID = defaultUserId
-	message.To.ID = userId3
-	message.To.Name = "Westbrook"
-	message.To.Avatar = "https://avatar.url"
+	message.Account = defaultUserId
+	message.UserId = defaultUserId
+	message.Channel = userId3
+
 	message.MentionedType = uim.MentionedTypeNone
 	message.MentionedUsers = nil
-	message.Payload.Body.(*uim.TextMessageBody).Content = "在不？"
+	message.Text = "在不？"
 	err = client.NewMessage(message)
 	assert.Nil(t, err)
 

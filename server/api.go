@@ -49,6 +49,13 @@ func (client *Client) OnNewFriendApply(handler NewFriendApplyHandler) {
 	client.OnEvent(uim.ProviderEventNewFriendApply, uim.CastEventHandler(handler))
 }
 
+// 新消息
+type NewMessageHandler func(*cloudevents.Event, *uim.Message) error
+
+func (client *Client) OnNewMessage(handler NewMessageHandler) {
+	client.OnEvent(uim.ProviderEventNewMessage, uim.CastEventHandler(handler))
+}
+
 // 新群组
 type NewGroupHandler func(*cloudevents.Event, *uim.Group) error
 
@@ -119,74 +126,11 @@ func (client *Client) OnConversationUpdated(handler ConversationUpdatedHandler) 
 	client.OnEvent(uim.ProviderEventConversationUpdated, uim.CastEventHandler(handler))
 }
 
-// 新消息
-type NewMessageHandler func(*cloudevents.Event, *uim.Message) error
-
-func (client *Client) OnNewMessage(handler NewMessageHandler) {
-	client.OnEvent(uim.ProviderEventNewMessage, uim.CastEventHandler(handler))
-}
-
 // 消息更新
 type MessageUpdatedHandler func(*cloudevents.Event, *uim.MessageUpdate) error
 
 func (client *Client) OnMessageUpdated(handler MessageUpdatedHandler) {
 	client.OnEvent(uim.ProviderEventMessageUpdated, uim.CastEventHandler(handler))
-}
-
-// 新动态
-type NewMomentHandler func(*cloudevents.Event, *uim.Moment) error
-
-func (client *Client) OnNewMoment(handler NewMomentHandler) {
-	client.OnEvent(uim.ProviderEventNewMoment, uim.CastEventHandler(handler))
-}
-
-// 动态更新
-type MomentUpdatedHandler func(*cloudevents.Event, *uim.MomentUpdate) error
-
-func (client *Client) OnMomentUpdated(handler MomentUpdatedHandler) {
-	client.OnEvent(uim.ProviderEventMomentUpdated, uim.CastEventHandler(handler))
-}
-
-// 动态删除
-type MomentDeletedHandler func(*cloudevents.Event, *uim.MomentDelete) error
-
-func (client *Client) OnMomentDeleted(handler MomentDeletedHandler) {
-	client.OnEvent(uim.ProviderEventMomentDeleted, uim.CastEventHandler(handler))
-}
-
-// 收到动态评论
-type NewMomentCommentHandler func(*cloudevents.Event, *uim.MomentComment) error
-
-func (client *Client) OnNewMomentComment(handler NewMomentCommentHandler) {
-	client.OnEvent(uim.ProviderEventNewMomentComment, uim.CastEventHandler(handler))
-}
-
-// 动态评论更新
-type MomentCommentUpdatedHandler func(*cloudevents.Event, *uim.MomentCommentUpdate) error
-
-func (client *Client) OnMomentCommentUpdated(handler MomentCommentUpdatedHandler) {
-	client.OnEvent(uim.ProviderEventMomentCommentUpdated, uim.CastEventHandler(handler))
-}
-
-// 动态评论删除
-type MomentCommentDeletedHandler func(*cloudevents.Event, *uim.MomentCommentDelete) error
-
-func (client *Client) OnMomentCommentDeleted(handler MomentCommentDeletedHandler) {
-	client.OnEvent(uim.ProviderEventMomentCommentDeleted, uim.CastEventHandler(handler))
-}
-
-// 收到动态点赞
-type NewMomentLikeHandler func(*cloudevents.Event, *uim.MomentLike) error
-
-func (client *Client) OnNewMomentLike(handler NewMomentLikeHandler) {
-	client.OnEvent(uim.ProviderEventNewMomentLike, uim.CastEventHandler(handler))
-}
-
-// 动态点赞删除
-type MomentLikeDeletedHandler func(*cloudevents.Event, *uim.MomentLikeDelete) error
-
-func (client *Client) OnMomentLikeDeleted(handler MomentLikeDeletedHandler) {
-	client.OnEvent(uim.ProviderEventMomentLikeDeleted, uim.CastEventHandler(handler))
 }
 
 // 新的元数据
