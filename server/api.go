@@ -56,6 +56,13 @@ func (client *Client) OnNewMessage(handler NewMessageHandler) {
 	client.OnEvent(uim.ProviderEventNewMessage, uim.CastEventHandler(handler))
 }
 
+// 消息更新
+type MessageUpdatedHandler func(*cloudevents.Event, *uim.MessageUpdate) error
+
+func (client *Client) OnMessageUpdated(handler MessageUpdatedHandler) {
+	client.OnEvent(uim.ProviderEventMessageUpdated, uim.CastEventHandler(handler))
+}
+
 // 新群组
 type NewGroupHandler func(*cloudevents.Event, *uim.Group) error
 
@@ -124,13 +131,6 @@ type ConversationUpdatedHandler func(*cloudevents.Event, *uim.ConversationUpdate
 
 func (client *Client) OnConversationUpdated(handler ConversationUpdatedHandler) {
 	client.OnEvent(uim.ProviderEventConversationUpdated, uim.CastEventHandler(handler))
-}
-
-// 消息更新
-type MessageUpdatedHandler func(*cloudevents.Event, *uim.MessageUpdate) error
-
-func (client *Client) OnMessageUpdated(handler MessageUpdatedHandler) {
-	client.OnEvent(uim.ProviderEventMessageUpdated, uim.CastEventHandler(handler))
 }
 
 // 新的元数据

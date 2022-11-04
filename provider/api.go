@@ -40,6 +40,11 @@ func (client *Client) NewMessage(message *uim.Message, opts ...uim.RequestOption
 	return client.SendEvent(uim.ProviderEventNewMessage, message, opts...)
 }
 
+// 消息更新
+func (client *Client) MessageUpdated(message *uim.MessageUpdate, opts ...uim.RequestOption) error {
+	return client.SendEvent(uim.ProviderEventMessageUpdated, message, opts...)
+}
+
 // 新群组
 func (client *Client) NewGroup(group *uim.Group, opts ...uim.RequestOption) error {
 	return client.SendEvent(uim.ProviderEventNewGroup, group, opts...)
@@ -88,11 +93,6 @@ func (client *Client) NewConversation(conversation *uim.Conversation, opts ...ui
 // 会话更新
 func (client *Client) ConversationUpdated(conversation *uim.ConversationUpdate, opts ...uim.RequestOption) error {
 	return client.SendEvent(uim.ProviderEventConversationUpdated, conversation, opts...)
-}
-
-// 消息更新
-func (client *Client) MessageUpdated(message *uim.MessageUpdate, opts ...uim.RequestOption) error {
-	return client.SendEvent(uim.ProviderEventMessageUpdated, message, opts...)
 }
 
 // 新的元数据

@@ -312,6 +312,14 @@ type Message struct {
 	State            string                `json:"state,omitempty"`             // 发送消息时携带的业务自定义数据，发送后返回消息会透传给业务方
 }
 
+// 消息变更
+type MessageUpdate struct {
+	MessageId       string         `json:"message_id,omitempty"`       // 平台消息ID
+	Revoked         *bool          `json:"revoked,omitempty"`          // 是否撤回
+	Metadata        map[string]any `json:"metadata,omitempty"`         // 公开元数据
+	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
+}
+
 // 添加好友
 type AddContactRequest struct {
 	UserId       string `json:"user_id,omitempty"`       // 账号的平台用户ID
@@ -436,15 +444,6 @@ type ConversationUpdate struct {
 	PartyId         string           `json:"party_id,omitempty"`         // 另一方平台ID
 	Metadata        map[string]any   `json:"metadata,omitempty"`         // 公开元数据
 	PrivateMetadata map[string]any   `json:"private_metadata,omitempty"` // 私有元数据
-}
-
-// 消息变更
-type MessageUpdate struct {
-	MessageId       string         `json:"message_id,omitempty"`       // 平台消息ID
-	Revoked         *bool          `json:"revoked,omitempty"`          // 是否撤回
-	Metadata        map[string]any `json:"metadata,omitempty"`         // 公开元数据
-	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
-	State           string         `json:"state,omitempty"`            // 发送消息时携带的业务自定义数据，发送后返回消息会透传给业务方
 }
 
 // 发送消息
