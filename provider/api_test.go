@@ -167,7 +167,7 @@ func TestGroupJoinApply(t *testing.T) {
 	applyId, _ := gonanoid.New()
 	appliedAt := time.Now().Add(-10 * time.Minute)
 
-	err = client.NewJoinGroupApply(&uim.JoinGroupApply{
+	err = client.NewJoinGroupApply(&uim.GroupApply{
 		ID:      applyId,
 		UserId:  userId,
 		GroupId: groupId,

@@ -283,20 +283,6 @@ type GroupMemberUpdate struct {
 	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
 }
 
-// 添加好友
-type AddContactRequest struct {
-	UserId       string `json:"user_id,omitempty"`       // 账号的平台用户ID
-	Contact      string `json:"contact,omitempty"`       // 添加的好友，可以为手机号、平台ID
-	HelloMessage string `json:"hello_message,omitempty"` // 打招呼消息
-}
-
-// 添加好友返回
-type AddContactResponse struct {
-	BaseResponse
-	Success bool   `json:"success"` // 是否发起好友申请成功
-	Reason  string `json:"reason"`  // 发起申请好友失败原因
-}
-
 // 入群邀请
 type GroupInvitation struct {
 	ID              string         `json:"id,omitempty"`               // 入群邀请ID
@@ -310,7 +296,7 @@ type GroupInvitation struct {
 }
 
 // 入群申请
-type JoinGroupApply struct {
+type GroupApply struct {
 	ID              string         `json:"id,omitempty"`               // 入群申请ID
 	UserId          string         `json:"user_id,omitempty"`          // 收到申请的平台用户ID
 	GroupId         string         `json:"group_id,omitempty"`         // 平台群组ID
@@ -319,6 +305,20 @@ type JoinGroupApply struct {
 	AppliedAt       *time.Time     `json:"applied_at,omitempty"`       // 申请时间
 	Metadata        map[string]any `json:"metadata,omitempty"`         // 公开元数据
 	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
+}
+
+// 添加好友
+type AddContactRequest struct {
+	UserId       string `json:"user_id,omitempty"`       // 账号的平台用户ID
+	Contact      string `json:"contact,omitempty"`       // 添加的好友，可以为手机号、平台ID
+	HelloMessage string `json:"hello_message,omitempty"` // 打招呼消息
+}
+
+// 添加好友返回
+type AddContactResponse struct {
+	BaseResponse
+	Success bool   `json:"success"` // 是否发起好友申请成功
+	Reason  string `json:"reason"`  // 发起申请好友失败原因
 }
 
 // 发送消息

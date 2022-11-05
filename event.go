@@ -21,7 +21,7 @@ const (
 	ProviderEventGroupMemberUpdated   = "provider.group_member_updated"   // 群成员更新
 	ProviderEventGroupMemberDeleted   = "provider.group_member_deleted"   // 群成员删除
 	ProviderEventNewGroupInvitation   = "provider.new_group_invitation"   // 收到入群邀请
-	ProviderEventNewJoinGroupApply    = "provider.new_join_group_apply"   // 收到入群申请
+	ProviderEventNewGroupApply        = "provider.new_group_apply"        // 收到入群申请
 	ProviderEventNewMoment            = "provider.new_moment"             // 新动态
 	ProviderEventMomentUpdated        = "provider.moment_updated"         // 动态更新
 	ProviderEventMomentDeleted        = "provider.moment_deleted"         // 动态删除

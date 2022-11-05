@@ -99,10 +99,10 @@ func (client *Client) OnNewGroupInvitation(handler NewGroupInvitationHandler) {
 }
 
 // 收到入群申请
-type NewJoinGroupApplyHandler func(*cloudevents.Event, *uim.JoinGroupApply) error
+type NewGroupApplyHandler func(*cloudevents.Event, *uim.GroupApply) error
 
-func (client *Client) OnNewJoinGroupApply(handler NewJoinGroupApplyHandler) {
-	client.OnEvent(uim.ProviderEventNewJoinGroupApply, uim.CastEventHandler(handler))
+func (client *Client) OnNewGroupApply(handler NewGroupApplyHandler) {
+	client.OnEvent(uim.ProviderEventNewGroupApply, uim.CastEventHandler(handler))
 }
 
 // 新的元数据

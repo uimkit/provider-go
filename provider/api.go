@@ -71,8 +71,8 @@ func (client *Client) NewGroupInvitation(invitation *uim.GroupInvitation, opts .
 }
 
 // 收到入群申请
-func (client *Client) NewJoinGroupApply(apply *uim.JoinGroupApply, opts ...uim.RequestOption) error {
-	return client.SendEvent(uim.ProviderEventNewJoinGroupApply, apply, opts...)
+func (client *Client) NewJoinGroupApply(apply *uim.GroupApply, opts ...uim.RequestOption) error {
+	return client.SendEvent(uim.ProviderEventNewGroupApply, apply, opts...)
 }
 
 // 新的元数据
