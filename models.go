@@ -212,6 +212,29 @@ type Message struct {
 	State           string            `json:"state,omitempty"`            // 发送消息时携带的业务自定义数据，发送后返回消息会透传给业务方
 }
 
+// 发送消息
+type SendMessageRequest struct {
+	Account          string            `json:"account,omitempty"`           // 归属账号的平台用户ID
+	UserId           string            `json:"user_id,omitempty"`           // 消息发送人平台用户ID
+	Channel          string            `json:"channel,omitempty"`           // 消息发送地址
+	ConversationType ConversationType  `json:"conversation_type,omitempty"` // 消息所属的会话类型
+	Type             MessageType       `json:"type,omitempty"`              // 消息类型
+	Text             string            `json:"text,omitempty"`              // 文本消息
+	Image            *ImageMessageBody `json:"image,omitempty"`             // 图片消息、视频消息封面
+	Thumb            *ImageMessageBody `json:"thumb,omitempty"`             // 图片消息、视频消息封面缩略图
+	Voice            *VoiceMessageBody `json:"voice,omitempty"`             // 语音消息
+	Video            *VideoMessageBody `json:"video,omitempty"`             // 视频消息
+	Seq              int               `json:"seq,omitempty"`               // 序列号，在会话中唯一且有序增长，用于确保消息顺序
+	MentionedType    MentionedType     `json:"mentioned_type,omitempty"`    // @用户类型
+	MentionedUsers   []string          `json:"mentioned_users"`             // @用户列表，是平台用户ID
+}
+
+// 发送消息结果
+type SendMessageResponse struct {
+	BaseResponse
+	Message
+}
+
 // 消息变更
 type MessageUpdate struct {
 	MessageId       string         `json:"message_id,omitempty"`       // 平台消息ID
@@ -321,24 +344,6 @@ type AddContactResponse struct {
 	BaseResponse
 	Success bool   `json:"success"` // 是否发起好友申请成功
 	Reason  string `json:"reason"`  // 发起申请好友失败原因
-}
-
-// 发送消息
-type SendMessageRequest struct {
-	From             string           `json:"from,omitempty"`              // 消息发送者
-	To               string           `json:"to,omitempty"`                // 消息接受者
-	ConversationType ConversationType `json:"conversation_type,omitempty"` // 所属的会话类型
-	Seq              int              `json:"seq,omitempty"`               // 序列号，在会话中唯一且有序增长，用于确保消息顺序
-	MentionedType    MentionedType    `json:"mentioned_type,omitempty"`    // @用户类型
-	MentionedUserIds []string         `json:"mentioned_users"`             // @用户列表
-	SentAt           *time.Time       `json:"sent_at,omitempty"`           // 发送时间
-	Payload          *MessagePayload  `json:"payload,omitempty"`           // 消息内容
-}
-
-// 发送消息结果
-type SendMessageResponse struct {
-	BaseResponse
-	Message
 }
 
 // 消息内容
