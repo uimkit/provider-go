@@ -77,13 +77,6 @@ func (client *Client) OnGroupUpdated(handler GroupUpdatedHandler) {
 	client.OnEvent(uim.ProviderEventGroupUpdated, uim.CastEventHandler(handler))
 }
 
-// 群组删除
-type GroupDeletedHandler func(*cloudevents.Event, *uim.GroupDelete) error
-
-func (client *Client) OnGroupDeleted(handler GroupDeletedHandler) {
-	client.OnEvent(uim.ProviderEventGroupDeleted, uim.CastEventHandler(handler))
-}
-
 // 新群成员
 type NewGroupMemberHandler func(*cloudevents.Event, *uim.GroupMember) error
 

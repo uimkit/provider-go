@@ -232,6 +232,33 @@ type GetChannelInfoResponse struct {
 	User  *IMUser `json:"user,omitempty"`  // 如果是用户的地址，返回用户信息
 }
 
+// 群组
+type Group struct {
+	GroupId         string         `json:"group_id,omitempty"`         // 平台群组ID
+	Account         string         `json:"account,omitempty"`          // 归属账号的平台用户ID
+	Owner           *IMUser        `json:"owner,omitempty"`            // 群主信息
+	Name            string         `json:"name,omitempty"`             // 名称
+	Alias           string         `json:"alias,omitempty"`            // 备注名
+	Avatar          string         `json:"avatar,omitempty"`           // 头像URL
+	Announcement    string         `json:"announcement,omitempty"`     // 群公告
+	Description     string         `json:"description,omitempty"`      // 群介绍
+	Metadata        map[string]any `json:"metadata,omitempty"`         // 公开元数据
+	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
+}
+
+// 群组变更
+type GroupUpdate struct {
+	GroupId         string         `json:"group_id,omitempty"`         // 平台群组ID
+	Owner           *IMUser        `json:"owner,omitempty"`            // 群主变更
+	Name            *string        `json:"name,omitempty"`             // 名称
+	Alias           *string        `json:"alias,omitempty"`            // 备注名
+	Avatar          *string        `json:"avatar,omitempty"`           // 头像URL
+	Announcement    *string        `json:"announcement,omitempty"`     // 群公告
+	Description     *string        `json:"description,omitempty"`      // 群介绍
+	Metadata        map[string]any `json:"metadata,omitempty"`         // 公开元数据
+	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
+}
+
 // 添加好友
 type AddContactRequest struct {
 	UserId       string `json:"user_id,omitempty"`       // 账号的平台用户ID
@@ -244,38 +271,6 @@ type AddContactResponse struct {
 	BaseResponse
 	Success bool   `json:"success"` // 是否发起好友申请成功
 	Reason  string `json:"reason"`  // 发起申请好友失败原因
-}
-
-// 群组
-type Group struct {
-	UserId          string         `json:"user_id,omitempty"`          // 归属的平台用户ID
-	GroupId         string         `json:"group_id,omitempty"`         // 平台群组ID
-	Owner           *IMUser        `json:"owner,omitempty"`            // 群主信息
-	Name            string         `json:"name,omitempty"`             // 名称
-	Avatar          string         `json:"avatar,omitempty"`           // 头像URL
-	Announcement    string         `json:"announcement,omitempty"`     // 群公告
-	Description     string         `json:"description,omitempty"`      // 群介绍
-	Metadata        map[string]any `json:"metadata,omitempty"`         // 公开元数据
-	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
-}
-
-// 群组变更
-type GroupUpdate struct {
-	UserId          string         `json:"user_id,omitempty"`          // 归属的平台用户ID
-	GroupId         string         `json:"group_id,omitempty"`         // 平台群组ID
-	Owner           *IMUser        `json:"owner,omitempty"`            // 群主变更
-	Name            *string        `json:"name,omitempty"`             // 名称
-	Avatar          *string        `json:"avatar,omitempty"`           // 头像URL
-	Announcement    *string        `json:"announcement,omitempty"`     // 群公告
-	Description     *string        `json:"description,omitempty"`      // 群介绍
-	Metadata        map[string]any `json:"metadata,omitempty"`         // 公开元数据
-	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
-}
-
-// 群组删除
-type GroupDelete struct {
-	UserId  string `json:"user_id,omitempty"`  // 归属的平台用户ID
-	GroupId string `json:"group_id,omitempty"` // 平台群组ID
 }
 
 // 入群邀请

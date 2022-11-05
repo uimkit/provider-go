@@ -55,11 +55,6 @@ func (client *Client) GroupUpdated(group *uim.GroupUpdate, opts ...uim.RequestOp
 	return client.SendEvent(uim.ProviderEventGroupUpdated, group, opts...)
 }
 
-// 群组删除
-func (client *Client) GroupDeleted(group *uim.GroupDelete, opts ...uim.RequestOption) error {
-	return client.SendEvent(uim.ProviderEventGroupDeleted, group, opts...)
-}
-
 // 新群成员
 func (client *Client) NewGroupMember(member *uim.GroupMember, opts ...uim.RequestOption) error {
 	return client.SendEvent(uim.ProviderEventNewGroupMember, member, opts...)

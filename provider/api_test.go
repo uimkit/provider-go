@@ -319,7 +319,7 @@ func TestGroup(t *testing.T) {
 	birthday := time.Now().Add(-365 * 10 * 24 * 3600 * time.Second)
 
 	err = client.NewGroup(&uim.Group{
-		UserId:  userId,
+		Account: userId,
 		GroupId: groupId,
 		Owner: &uim.IMUser{
 			UserId:    ownerUserId,
@@ -345,7 +345,6 @@ func TestGroup(t *testing.T) {
 	updateBirthday := time.Now().Add(-365 * 5 * 24 * 3600 * time.Second)
 	updateAnnouncement := "大家记得修改群公告，发广告者提出"
 	err = client.GroupUpdated(&uim.GroupUpdate{
-		UserId:  userId,
 		GroupId: groupId,
 		Owner: &uim.IMUser{
 			UserId:   updateOwnerUserId,
