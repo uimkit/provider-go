@@ -110,3 +110,10 @@ type AddContactHandler func(*cloudevents.Event, *uim.AddContactRequest) (*uim.Ad
 func (client *Client) OnAddContact(handler AddContactHandler) {
 	client.OnEvent(uim.UIMCommandAddContact, uim.CastCommandHandler(handler))
 }
+
+// 查询消息地址关联的信息
+type GetChannelInfoHandler func(*cloudevents.Event, *uim.GetChannelInfoRequest) (*uim.GetChannelInfoResponse, error)
+
+func (client *Client) OnGetChannelInfo(handler GetChannelInfoHandler) {
+	client.OnEvent(uim.UIMCommandGetChannelInfo, uim.CastCommandHandler(handler))
+}
