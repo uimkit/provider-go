@@ -291,6 +291,7 @@ type GroupInvitation struct {
 	Inviter         *IMUser        `json:"inviter,omitempty"`          // 邀请人信息
 	HelloMessage    string         `json:"hello_message,omitempty"`    // 打招呼留言
 	InvitedAt       *time.Time     `json:"invited_at,omitempty"`       // 邀请时间
+	Source          string         `json:"source,omitempty"`           // 邀请来源
 	Metadata        map[string]any `json:"metadata,omitempty"`         // 公开元数据
 	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
 }
@@ -303,6 +304,7 @@ type GroupApply struct {
 	ApplyUser       *IMUser        `json:"apply_user,omitempty"`       // 申请用户信息
 	HelloMessage    string         `json:"hello_message,omitempty"`    // 打招呼留言
 	AppliedAt       *time.Time     `json:"applied_at,omitempty"`       // 申请时间
+	Source          string         `json:"source,omitempty"`           // 申请来源
 	Metadata        map[string]any `json:"metadata,omitempty"`         // 公开元数据
 	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
 }
