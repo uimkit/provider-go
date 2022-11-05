@@ -259,6 +259,30 @@ type GroupUpdate struct {
 	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
 }
 
+// 群组成员
+type GroupMember struct {
+	IMUser                         // 群成员用户资料
+	GroupId         string         `json:"group_id,omitempty"`         // 平台群组ID
+	MemberId        string         `json:"member_id,omitempty"`        // 平台群成员ID
+	IsOwner         bool           `json:"is_owner,omitempty"`         // 是否群主
+	IsAdmin         bool           `json:"is_admin,omitempty"`         // 是否管理员
+	Alias           string         `json:"alias,omitempty"`            // 群内备注名
+	Metadata        map[string]any `json:"metadata,omitempty"`         // 公开元数据
+	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
+}
+
+// 群组成员变更
+type GroupMemberUpdate struct {
+	IMUserUpdate                   // 群成员用户资料更新
+	GroupId         string         `json:"group_id,omitempty"`         // 平台群组ID
+	MemberId        string         `json:"member_id,omitempty"`        // 平台群成员ID
+	IsOwner         *bool          `json:"is_owner,omitempty"`         // 是否群主
+	IsAdmin         *bool          `json:"is_admin,omitempty"`         // 是否管理员
+	Alias           *string        `json:"alias,omitempty"`            // 群内备注名
+	Metadata        map[string]any `json:"metadata,omitempty"`         // 公开元数据
+	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
+}
+
 // 添加好友
 type AddContactRequest struct {
 	UserId       string `json:"user_id,omitempty"`       // 账号的平台用户ID
@@ -295,36 +319,6 @@ type JoinGroupApply struct {
 	AppliedAt       *time.Time     `json:"applied_at,omitempty"`       // 申请时间
 	Metadata        map[string]any `json:"metadata,omitempty"`         // 公开元数据
 	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
-}
-
-// 群组成员
-type GroupMember struct {
-	GroupId         string         `json:"group_id,omitempty"`         // 平台群组ID
-	MemberId        string         `json:"member_id,omitempty"`        // 平台群成员ID
-	User            *IMUser        `json:"user,omitempty"`             // 群成员的用户信息
-	IsOwner         bool           `json:"is_owner,omitempty"`         // 是否群主
-	IsAdmin         bool           `json:"is_admin,omitempty"`         // 是否管理员
-	Alias           string         `json:"alias,omitempty"`            // 群内备注名
-	Metadata        map[string]any `json:"metadata,omitempty"`         // 公开元数据
-	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
-}
-
-// 群组成员变更
-type GroupMemberUpdate struct {
-	GroupId         string         `json:"group_id,omitempty"`         // 平台群组ID
-	MemberId        string         `json:"member_id,omitempty"`        // 平台群成员ID
-	User            *IMUserUpdate  `json:"user,omitempty"`             // 群成员的用户信息
-	IsOwner         *bool          `json:"is_owner,omitempty"`         // 是否群主
-	IsAdmin         *bool          `json:"is_admin,omitempty"`         // 是否管理员
-	Alias           *string        `json:"alias,omitempty"`            // 群内备注名
-	Metadata        map[string]any `json:"metadata,omitempty"`         // 公开元数据
-	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
-}
-
-// 群组成员删除
-type GroupMemberDelete struct {
-	GroupId  string `json:"group_id,omitempty"`  // 平台群组ID
-	MemberId string `json:"member_id,omitempty"` // 平台群成员ID
 }
 
 // 发送消息

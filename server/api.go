@@ -91,13 +91,6 @@ func (client *Client) OnGroupMemberUpdated(handler GroupMemberUpdatedHandler) {
 	client.OnEvent(uim.ProviderEventGroupMemberUpdated, uim.CastEventHandler(handler))
 }
 
-// 群成员删除
-type GroupMemberDeletedHandler func(*cloudevents.Event, *uim.GroupMemberDelete) error
-
-func (client *Client) OnGroupMemberDeleted(handler GroupMemberDeletedHandler) {
-	client.OnEvent(uim.ProviderEventGroupMemberDeleted, uim.CastEventHandler(handler))
-}
-
 // 收到入群邀请
 type NewGroupInvitationHandler func(*cloudevents.Event, *uim.GroupInvitation) error
 

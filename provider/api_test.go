@@ -223,7 +223,7 @@ func TestGroupMember(t *testing.T) {
 	err = client.NewGroupMember(&uim.GroupMember{
 		GroupId:  groupId,
 		MemberId: memberId,
-		User: &uim.IMUser{
+		IMUser: uim.IMUser{
 			UserId:   userId,
 			CustomId: "Chris Webber",
 		},
@@ -247,7 +247,7 @@ func TestGroupMember(t *testing.T) {
 	err = client.GroupMemberUpdated(&uim.GroupMemberUpdate{
 		GroupId:  groupId,
 		MemberId: memberId,
-		User: &uim.IMUserUpdate{
+		IMUserUpdate: uim.IMUserUpdate{
 			UserId: userId,
 			Name:   &updateName,
 		},
@@ -257,7 +257,7 @@ func TestGroupMember(t *testing.T) {
 	err = client.NewGroupMember(&uim.GroupMember{
 		GroupId:  groupId,
 		MemberId: memberId2,
-		User: &uim.IMUser{
+		IMUser: uim.IMUser{
 			UserId:   userId2,
 			CustomId: "Mike Bibby",
 		},
@@ -265,12 +265,6 @@ func TestGroupMember(t *testing.T) {
 		IsAdmin:  true,
 		Alias:    "麦贝比",
 		Metadata: map[string]any{"test": true},
-	})
-	assert.Nil(t, err)
-
-	err = client.GroupMemberDeleted(&uim.GroupMemberDelete{
-		GroupId:  groupId,
-		MemberId: memberId2,
 	})
 	assert.Nil(t, err)
 }
