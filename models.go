@@ -346,12 +346,6 @@ type AddContactResponse struct {
 	Reason  string `json:"reason"`  // 发起申请好友失败原因
 }
 
-// 消息内容
-type MessagePayload struct {
-	Type MessageType `json:"type,omitempty"` // 消息类型
-	Body any         `json:"body,omitempty"` // 消息体
-}
-
 // 自定义数据值类型
 type MetafieldValueType string
 
