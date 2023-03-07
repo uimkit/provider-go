@@ -172,8 +172,8 @@ func TestGroupJoinApply(t *testing.T) {
 		UserId:  userId,
 		GroupId: groupId,
 		ApplyUser: &uim.IMUser{
-			UserId: applyUserId,
-			Name:   "John Stockton",
+			UserId:   applyUserId,
+			Nickname: "John Stockton",
 		},
 		HelloMessage: "你好啊",
 		AppliedAt:    &appliedAt,
@@ -198,8 +198,8 @@ func TestGroupInvitation(t *testing.T) {
 		UserId:  userId,
 		GroupId: groupId,
 		Inviter: &uim.IMUser{
-			UserId: inviterUserId,
-			Name:   "Karl Marlone",
+			UserId:   inviterUserId,
+			Nickname: "Karl Marlone",
 		},
 		HelloMessage: "你好啊",
 		InvitedAt:    &invitedAt,
@@ -283,7 +283,7 @@ func TestFriendApply(t *testing.T) {
 		IMUser: uim.IMUser{
 			UserId:    applyUserId,
 			CustomId:  "Kobe",
-			Name:      "Kobe Bryant",
+			Nickname:  "Kobe Bryant",
 			Mobile:    "18666633332",
 			Avatar:    "https://avatar.url",
 			Gender:    uim.GenderMale,
@@ -318,7 +318,7 @@ func TestGroup(t *testing.T) {
 		Owner: &uim.IMUser{
 			UserId:    ownerUserId,
 			CustomId:  "Angela",
-			Name:      "Angela（网红合作）☀️",
+			Nickname:  "Angela（网红合作）☀️",
 			Mobile:    "13000192287",
 			Avatar:    "https://avatar.url",
 			Gender:    uim.GenderFemale,
@@ -343,7 +343,7 @@ func TestGroup(t *testing.T) {
 		Owner: &uim.IMUser{
 			UserId:   updateOwnerUserId,
 			CustomId: "Fiona",
-			Name:     "Fiona（网红合作）☀️",
+			Nickname: "Fiona（网红合作）☀️",
 			Mobile:   "18988776655",
 			Avatar:   "https://avatar.url",
 			Gender:   uim.GenderFemale,
@@ -370,7 +370,7 @@ func TestContact(t *testing.T) {
 		IMUser: uim.IMUser{
 			UserId:    contactUserId,
 			CustomId:  "Angela",
-			Name:      "Angela（网红合作）☀️",
+			Nickname:  "Angela（网红合作）☀️",
 			Mobile:    "13000192287",
 			Avatar:    "https://avatar.url",
 			Gender:    uim.GenderFemale,
@@ -403,7 +403,7 @@ func TestIMAccount(t *testing.T) {
 		IMUser: uim.IMUser{
 			UserId:    userId,
 			CustomId:  "Angela",
-			Name:      "Angela（网红合作）☀️",
+			Nickname:  "Angela（网红合作）☀️",
 			Mobile:    "13000192287",
 			Avatar:    "https://avatar.url",
 			Gender:    uim.GenderFemale,
@@ -555,7 +555,7 @@ func TestJSON(t *testing.T) {
 		IMUser: uim.IMUser{
 			UserId:    userId,
 			CustomId:  "Angela",
-			Name:      "Angela（网红合作）☀️",
+			Nickname:  "Angela（网红合作）☀️",
 			Mobile:    "13000192287",
 			Avatar:    "https://avatar.url",
 			Gender:    uim.GenderFemale,

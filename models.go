@@ -19,7 +19,6 @@ type IMUser struct {
 	OpenId          string         `json:"open_id,omitempty"`          // 实际的平台用户ID，如：微信ID
 	CustomId        string         `json:"custom_id,omitempty"`        // 用户自定义ID
 	Username        string         `json:"username,omitempty"`         // 用户账户
-	Name            string         `json:"name,omitempty"`             // 名称
 	Nickname        string         `json:"nickname,omitempty"`         // 昵称
 	RealName        string         `json:"real_name,omitempty"`        // 真实名字
 	Mobile          string         `json:"mobile,omitempty"`           // 手机号
