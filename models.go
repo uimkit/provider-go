@@ -77,12 +77,11 @@ type IMUserUpdate struct {
 type Presence int
 
 const (
-	PresenceInitializing       Presence = iota // 初始化中
-	PresenceOnline                             // 在线
-	PresenceOffline                            // 离线
-	PresenceLogout                             // 登出
-	PresenceDisabled                           // 禁用
-	PresenceDisabledByProvider                 // 服务商封禁
+	PresenceInactive     Presence = iota // 未激活
+	PresenceActive                       // 在线
+	PresenceDisconnected                 // 掉线
+	PresenceDisabled                     // 停用
+	PresenceBanned                       // 封号
 )
 
 // 账号
@@ -344,6 +343,17 @@ type AddContactResponse struct {
 	BaseResponse
 	Success bool   `json:"success"` // 是否发起好友申请成功
 	Reason  string `json:"reason"`  // 发起申请好友失败原因
+}
+
+// 通过好友请求
+type AcceptFriendApplyRequest struct {
+	ApplyId string `json:"apply_id,omitempty"` // 好友请求ID
+	UserId  string `json:"user_id,omitempty"`  // 账号的平台用户ID
+}
+
+// 通过好友返回
+type AcceptFriendApplyResponse struct {
+	BaseResponse
 }
 
 // 自定义数据值类型

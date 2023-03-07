@@ -42,16 +42,16 @@ const ()
 
 // UIM 调用 Provider 的指令
 const (
-	UIMCommandGetChannelInfo = "uim.get_channel_info" // 查询消息地址关联的信息
-	UIMCommandSendMessage    = "uim.send_message"     // 发送消息
-	UIMCommandAddContact     = "uim.add_contact"      // 发起好友申请
+	UIMCommandGetChannelInfo    = "uim.get_channel_info"    // 查询消息地址关联的信息
+	UIMCommandSendMessage       = "uim.send_message"        // 发送消息
+	UIMCommandAddContact        = "uim.add_contact"         // 发起好友申请
+	UIMCommandAcceptFriendApply = "uim.accept_friend_apply" // 通过好友请求
 
 	// deprecated
 	UIMCommandUpdateAccount         = "uim.update_account"          // 更新账号资料
 	UIMCommandUpdateContact         = "uim.update_contact"          // 更新联系人资料
 	UIMCommandListContacts          = "uim.list_contacts"           // 查询账号的联系人列表
 	UIMCommandApplyFriend           = "uim.apply_friend"            // 添加好友
-	UIMCommandAcceptFriend          = "uim.accept_friend"           // 通过好友请求
 	UIMCommandCreateGroup           = "uim.create_group"            // 创建群组
 	UIMCommandUpdateGroup           = "uim.update_group"            // 更新群组资料
 	UIMCommandListGroups            = "uim.list_groups"             // 查询账号的群组列表

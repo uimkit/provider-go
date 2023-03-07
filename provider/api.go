@@ -111,6 +111,13 @@ func (client *Client) OnAddContact(handler AddContactHandler) {
 	client.OnEvent(uim.UIMCommandAddContact, uim.CastCommandHandler(handler))
 }
 
+// 通过好友申请
+type AcceptFriendApplyHandler func(*cloudevents.Event, *uim.AcceptFriendApplyRequest) (*uim.AcceptFriendApplyResponse, error)
+
+func (client *Client) OnAcceptFriendApply(handler AcceptFriendApplyHandler) {
+	client.OnEvent(uim.UIMCommandAcceptFriendApply, uim.CastCommandHandler(handler))
+}
+
 // 查询消息地址关联的信息
 type GetChannelInfoHandler func(*cloudevents.Event, *uim.GetChannelInfoRequest) (*uim.GetChannelInfoResponse, error)
 

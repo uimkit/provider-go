@@ -413,12 +413,12 @@ func TestIMAccount(t *testing.T) {
 			Signature: "长期招募主播",
 			Birthday:  &birthday,
 		},
-		Presence: uim.PresenceInitializing,
+		Presence: uim.PresenceInactive,
 	}
 	err = client.NewAccount(account)
 	assert.Nil(t, err)
 
-	updatePresence := uim.PresenceOnline
+	updatePresence := uim.PresenceActive
 	updateMobile := "18900010002"
 	updateName := "jenny"
 	err = client.AccountUpdated(&uim.IMAccountUpdate{
@@ -566,7 +566,7 @@ func TestJSON(t *testing.T) {
 			Birthday:  &birthday,
 			Metadata:  map[string]any{"user": true},
 		},
-		Presence: uim.PresenceInitializing,
+		Presence: uim.PresenceInactive,
 		Metadata: map[string]any{"account": true},
 	})
 	assert.Nil(t, err)
