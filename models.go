@@ -156,26 +156,27 @@ type MessageType string
 const (
 	MessageTypeText     MessageType = "text"     // 文本消息
 	MessageTypeImage    MessageType = "image"    // 图片消息
-	MessageTypeVoice    MessageType = "voice"    // 语音消息
+	MessageTypeAudio    MessageType = "audio"    // 语音消息
 	MessageTypeVideo    MessageType = "video"    // 视频消息
 	MessageTypeLink     MessageType = "link"     // 链接消息
 	MessageTypeLocation MessageType = "location" // 位置消息
 )
 
 type ImageMessageBody struct {
-	URL    string `json:"url,omitempty"`    // 图片URL
-	Width  int    `json:"width,omitempty"`  // 宽度（像素）
-	Height int    `json:"height,omitempty"` // 高度（像素）
-	Size   int    `json:"size,omitempty"`   // 大小（字节）
-	Ext    string `json:"ext,omitempty"`    // 类型，如：png、jpeg
-	MD5    string `json:"md5,omitempty"`    // 文件内容MD5
+	URL       string `json:"url,omitempty"`       // 图片URL
+	Width     int    `json:"width,omitempty"`     // 宽度（像素）
+	Height    int    `json:"height,omitempty"`    // 高度（像素）
+	Size      int    `json:"size,omitempty"`      // 大小（字节）
+	Format    string `json:"format,omitempty"`    // 类型，如：png、jpeg
+	MD5       string `json:"md5,omitempty"`       // 文件内容MD5
+	Thumbnail string `json:"thumbnail,omitempty"` // 缩略图
 }
 
-type VoiceMessageBody struct {
+type AudioMessageBody struct {
 	URL      string `json:"url,omitempty"`      // 语音URL
 	Duration int    `json:"duration,omitempty"` // 时长（毫秒）
 	Size     int    `json:"size,omitempty"`     // 大小（字节）
-	Ext      string `json:"ext,omitempty"`      // 类型，如：mp3
+	Format   string `json:"format,omitempty"`   // 类型，如：mp3
 	MD5      string `json:"md5,omitempty"`      // 文件内容MD5
 }
 
@@ -185,8 +186,9 @@ type VideoMessageBody struct {
 	Width    int    `json:"width,omitempty"`    // 宽度（像素）
 	Height   int    `json:"height,omitempty"`   // 高度（像素）
 	Size     int    `json:"size,omitempty"`     // 大小（字节）
-	Ext      string `json:"ext,omitempty"`      // 类型，如：mp4
+	Format   string `json:"format,omitempty"`   // 类型，如：mp4
 	MD5      string `json:"md5,omitempty"`      // 文件内容MD5
+	Snapshot string `json:"snapshot,omitempty"` // 封面图
 }
 
 // 消息
@@ -198,8 +200,7 @@ type Message struct {
 	Type            MessageType       `json:"type,omitempty"`             // 消息类型
 	Text            string            `json:"text,omitempty"`             // 文本消息
 	Image           *ImageMessageBody `json:"image,omitempty"`            // 图片消息、视频消息封面
-	Thumb           *ImageMessageBody `json:"thumb,omitempty"`            // 图片消息、视频消息封面缩略图
-	Voice           *VoiceMessageBody `json:"voice,omitempty"`            // 语音消息
+	Audio           *AudioMessageBody `json:"audio,omitempty"`            // 语音消息
 	Video           *VideoMessageBody `json:"video,omitempty"`            // 视频消息
 	MentionedType   MentionedType     `json:"mentioned_type,omitempty"`   // @用户类型
 	MentionedUsers  []string          `json:"mentioned_users"`            // @用户列表，是平台用户ID
@@ -219,8 +220,7 @@ type SendMessageRequest struct {
 	Type             MessageType       `json:"type,omitempty"`              // 消息类型
 	Text             string            `json:"text,omitempty"`              // 文本消息
 	Image            *ImageMessageBody `json:"image,omitempty"`             // 图片消息、视频消息封面
-	Thumb            *ImageMessageBody `json:"thumb,omitempty"`             // 图片消息、视频消息封面缩略图
-	Voice            *VoiceMessageBody `json:"voice,omitempty"`             // 语音消息
+	Audio            *AudioMessageBody `json:"audio,omitempty"`             // 语音消息
 	Video            *VideoMessageBody `json:"video,omitempty"`             // 视频消息
 	Seq              int               `json:"seq,omitempty"`               // 序列号，在会话中唯一且有序增长，用于确保消息顺序
 	MentionedType    MentionedType     `json:"mentioned_type,omitempty"`    // @用户类型
