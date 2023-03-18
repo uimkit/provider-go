@@ -266,6 +266,9 @@ type Group struct {
 	Avatar          string         `json:"avatar,omitempty"`           // 头像URL
 	Announcement    string         `json:"announcement,omitempty"`     // 群公告
 	Description     string         `json:"description,omitempty"`      // 群介绍
+	QRCode          string         `json:"qrcode,omitempty"`           // 二维码
+	Remark          string         `json:"remark,omitempty"`           // 备注说明
+	Marked          bool           `json:"marked,omitempty"`           // 是否星标
 	Mute            bool           `json:"mute,omitempty"`             // 是否禁言
 	Metadata        map[string]any `json:"metadata,omitempty"`         // 公开元数据
 	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
@@ -280,6 +283,9 @@ type GroupUpdate struct {
 	Avatar          *string        `json:"avatar,omitempty"`           // 头像URL
 	Announcement    *string        `json:"announcement,omitempty"`     // 群公告
 	Description     *string        `json:"description,omitempty"`      // 群介绍
+	QRCode          *string        `json:"qrcode,omitempty"`           // 二维码
+	Remark          *string        `json:"remark,omitempty"`           // 备注说明
+	Marked          *bool          `json:"marked,omitempty"`           // 是否星标
 	Mute            *bool          `json:"mute,omitempty"`             // 是否禁言
 	Metadata        map[string]any `json:"metadata,omitempty"`         // 公开元数据
 	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
@@ -313,6 +319,7 @@ type GroupMemberUpdate struct {
 	MemberId        string           `json:"member_id,omitempty"`        // 平台群成员ID
 	Role            *GroupMemberRole `json:"role,omitempty"`             // 角色
 	Alias           *string          `json:"alias,omitempty"`            // 群内备注名
+	JoinedAt        *time.Time       `json:"joined_at,omitempty"`        // 入群时间
 	Metadata        map[string]any   `json:"metadata,omitempty"`         // 公开元数据
 	PrivateMetadata map[string]any   `json:"private_metadata,omitempty"` // 私有元数据
 }
