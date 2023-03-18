@@ -227,18 +227,17 @@ func TestGroupMember(t *testing.T) {
 			UserId:   userId,
 			CustomId: "Chris Webber",
 		},
-		IsOwner:  false,
-		IsAdmin:  true,
+		Role:     uim.GroupMemberRoleAdmin,
 		Alias:    "李伟波",
 		Metadata: map[string]any{"test": true},
 	})
 	assert.Nil(t, err)
 
-	updateIsOwner := true
+	role := uim.GroupMemberRoleOwner
 	err = client.GroupMemberUpdated(&uim.GroupMemberUpdate{
 		GroupId:         groupId,
 		MemberId:        memberId,
-		IsOwner:         &updateIsOwner,
+		Role:            &role,
 		PrivateMetadata: map[string]any{"test": false},
 	})
 	assert.Nil(t, err)
@@ -261,8 +260,7 @@ func TestGroupMember(t *testing.T) {
 			UserId:   userId2,
 			CustomId: "Mike Bibby",
 		},
-		IsOwner:  false,
-		IsAdmin:  true,
+		Role:     uim.GroupMemberRoleMember,
 		Alias:    "麦贝比",
 		Metadata: map[string]any{"test": true},
 	})

@@ -266,6 +266,7 @@ type Group struct {
 	Avatar          string         `json:"avatar,omitempty"`           // 头像URL
 	Announcement    string         `json:"announcement,omitempty"`     // 群公告
 	Description     string         `json:"description,omitempty"`      // 群介绍
+	Mute            bool           `json:"mute,omitempty"`             // 是否禁言
 	Metadata        map[string]any `json:"metadata,omitempty"`         // 公开元数据
 	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
 }
@@ -279,32 +280,41 @@ type GroupUpdate struct {
 	Avatar          *string        `json:"avatar,omitempty"`           // 头像URL
 	Announcement    *string        `json:"announcement,omitempty"`     // 群公告
 	Description     *string        `json:"description,omitempty"`      // 群介绍
+	Mute            *bool          `json:"mute,omitempty"`             // 是否禁言
 	Metadata        map[string]any `json:"metadata,omitempty"`         // 公开元数据
 	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
 }
 
+// 群成员角色
+type GroupMemberRole int
+
+const (
+	GroupMemberRoleMember GroupMemberRole = iota // 普通成员
+	GroupMemberRoleAdmin                         // 管理员
+	GroupMemberRoleOwner                         // 群主
+)
+
 // 群组成员
 type GroupMember struct {
-	IMUser                         // 群成员用户资料
-	GroupId         string         `json:"group_id,omitempty"`         // 平台群组ID
-	MemberId        string         `json:"member_id,omitempty"`        // 平台群成员ID
-	IsOwner         bool           `json:"is_owner,omitempty"`         // 是否群主
-	IsAdmin         bool           `json:"is_admin,omitempty"`         // 是否管理员
-	Alias           string         `json:"alias,omitempty"`            // 群内备注名
-	Metadata        map[string]any `json:"metadata,omitempty"`         // 公开元数据
-	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
+	IMUser                          // 群成员用户资料
+	GroupId         string          `json:"group_id,omitempty"`         // 平台群组ID
+	MemberId        string          `json:"member_id,omitempty"`        // 平台群成员ID
+	Role            GroupMemberRole `json:"role,omitempty"`             // 角色
+	Alias           string          `json:"alias,omitempty"`            // 群内备注名
+	JoinedAt        *time.Time      `json:"joined_at,omitempty"`        // 入群时间
+	Metadata        map[string]any  `json:"metadata,omitempty"`         // 公开元数据
+	PrivateMetadata map[string]any  `json:"private_metadata,omitempty"` // 私有元数据
 }
 
 // 群组成员变更
 type GroupMemberUpdate struct {
-	IMUserUpdate                   // 群成员用户资料更新
-	GroupId         string         `json:"group_id,omitempty"`         // 平台群组ID
-	MemberId        string         `json:"member_id,omitempty"`        // 平台群成员ID
-	IsOwner         *bool          `json:"is_owner,omitempty"`         // 是否群主
-	IsAdmin         *bool          `json:"is_admin,omitempty"`         // 是否管理员
-	Alias           *string        `json:"alias,omitempty"`            // 群内备注名
-	Metadata        map[string]any `json:"metadata,omitempty"`         // 公开元数据
-	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
+	IMUserUpdate                     // 群成员用户资料更新
+	GroupId         string           `json:"group_id,omitempty"`         // 平台群组ID
+	MemberId        string           `json:"member_id,omitempty"`        // 平台群成员ID
+	Role            *GroupMemberRole `json:"role,omitempty"`             // 角色
+	Alias           *string          `json:"alias,omitempty"`            // 群内备注名
+	Metadata        map[string]any   `json:"metadata,omitempty"`         // 公开元数据
+	PrivateMetadata map[string]any   `json:"private_metadata,omitempty"` // 私有元数据
 }
 
 // 入群邀请
