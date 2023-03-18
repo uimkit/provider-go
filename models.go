@@ -162,14 +162,17 @@ const (
 	MessageTypeLocation MessageType = "location" // 位置消息
 )
 
+type ImageInfo struct {
+	URL    string `json:"url,omitempty"`    // 图片URL
+	Width  int    `json:"width,omitempty"`  // 宽度（像素）
+	Height int    `json:"height,omitempty"` // 高度（像素）
+}
+
 type ImageMessageBody struct {
-	URL       string `json:"url,omitempty"`       // 图片URL
-	Width     int    `json:"width,omitempty"`     // 宽度（像素）
-	Height    int    `json:"height,omitempty"`    // 高度（像素）
-	Size      int    `json:"size,omitempty"`      // 大小（字节）
-	Format    string `json:"format,omitempty"`    // 类型，如：png、jpeg
-	MD5       string `json:"md5,omitempty"`       // 文件内容MD5
-	Thumbnail string `json:"thumbnail,omitempty"` // 缩略图
+	Size   int          `json:"size,omitempty"`   // 大小（字节）
+	Format string       `json:"format,omitempty"` // 类型，如：png、jpeg
+	MD5    string       `json:"md5,omitempty"`    // 文件内容MD5
+	Infos  []*ImageInfo `json:"infos,omitempty"`  // 图片信息，索引0是原图，1是中图，2是小图
 }
 
 type AudioMessageBody struct {
