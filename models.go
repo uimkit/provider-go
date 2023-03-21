@@ -487,11 +487,12 @@ type VideoMomentContent struct {
 
 // 评论
 type Comment struct {
-	CommentId   string     `json:"comment_id,omitempty"`   // 平台评论ID
-	User        *IMUser    `json:"user,omitempty"`         // 评论人的信息
-	CommentedAt *time.Time `json:"commented_at,omitempty"` // 评论时间
-	ReplyTo     string     `json:"reply_to,omitempty"`     // 回复的平台评论ID
-	Text        string     `json:"text,omitempty"`         // 评论文本
+	CommentId   string     `json:"comment_id,omitempty"`    // 平台评论ID
+	User        *IMUser    `json:"user,omitempty"`          // 评论人的信息
+	CommentedAt *time.Time `json:"commented_at,omitempty"`  // 评论时间
+	ReplyTo     string     `json:"reply_to,omitempty"`      // 回复的平台评论ID
+	ReplyToUser *IMUser    `json:"reply_to_user,omitempty"` // 回复的用户信息
+	Text        string     `json:"text,omitempty"`          // 评论文本
 }
 
 // 点赞
