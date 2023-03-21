@@ -488,9 +488,7 @@ type VideoMomentContent struct {
 // 评论
 type Comment struct {
 	CommentId   string     `json:"comment_id,omitempty"`   // 平台评论ID
-	UserId      string     `json:"user_id,omitempty"`      // 发表评论的平台用户ID
-	Nickname    string     `json:"nickname,omitempty"`     // 发表评论的用户昵称
-	Avatar      string     `json:"avatar,omitempty"`       // 发表评论的用户头像
+	User        *IMUser    `json:"user,omitempty"`         // 评论人的信息
 	CommentedAt *time.Time `json:"commented_at,omitempty"` // 评论时间
 	ReplyTo     string     `json:"reply_to,omitempty"`     // 回复的平台评论ID
 	Text        string     `json:"text,omitempty"`         // 评论文本
@@ -498,18 +496,16 @@ type Comment struct {
 
 // 点赞
 type Like struct {
-	LikeId   string     `json:"like_id,omitempty"`  // 平台点赞ID
-	UserId   string     `json:"user_id,omitempty"`  // 点赞的平台用户ID
-	Nickname string     `json:"nickname,omitempty"` // 点赞的用户昵称
-	Avatar   string     `json:"avatar,omitempty"`   // 点赞的用户头像
-	LikedAt  *time.Time `json:"liked_at,omitempty"` // 点赞时间
+	LikeId  string     `json:"like_id,omitempty"`  // 平台点赞ID
+	User    *IMUser    `json:"user,omitempty"`     // 点赞人的信息
+	LikedAt *time.Time `json:"liked_at,omitempty"` // 点赞时间
 }
 
 // 动态
 type Moment struct {
 	MomentId    string                `json:"moment_id,omitempty"`    // 平台动态ID
 	Account     string                `json:"account,omitempty"`      // 归属账号的平台用户ID
-	UserId      string                `json:"user_id,omitempty"`      // 动态发布人平台用户ID
+	User        *IMUser               `json:"user,omitempty"`         // 动态发布人的信息
 	PublishedAt *time.Time            `json:"published_at,omitempty"` // 发布时间
 	Type        MomentType            `json:"type,omitempty"`         // 动态类型
 	Text        string                `json:"text,omitempty"`         // 文案
