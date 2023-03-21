@@ -104,6 +104,13 @@ func (client *Client) OnSendMessage(handler SendMessageHandler) {
 	client.OnEvent(uim.UIMCommandSendMessage, uim.CastCommandHandler(handler))
 }
 
+// 获取动态列表
+type GetMomentListHandler func(*cloudevents.Event, *uim.GetMomentListRequest) (*uim.GetMomentListResponse, error)
+
+func (client *Client) OnGetMomentList(handler GetMomentListHandler) {
+	client.OnEvent(uim.UIMCommandGetMomentList, uim.CastCommandHandler(handler))
+}
+
 // 添加好友
 type AddContactHandler func(*cloudevents.Event, *uim.AddContactRequest) (*uim.AddContactResponse, error)
 

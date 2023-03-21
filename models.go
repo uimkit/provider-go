@@ -4,6 +4,40 @@ import (
 	"time"
 )
 
+// 游标查询方向
+type CursorDirection string
+
+const (
+	CursorDirectionBefore CursorDirection = "before"
+	CursorDirectionAfter  CursorDirection = "after"
+)
+
+// 游标查询请求
+type CursorQuery struct {
+	Cursor    string          `json:"cursor,omitempty"`    // 游标
+	Limit     int32           `json:"limit,omitempty"`     // 查询数量
+	Direction CursorDirection `json:"direction,omitempty"` // 查询方向
+}
+
+// 游标查询结果扩展信息
+type CursorExtra struct {
+	Limit       int32 `json:"limit,omitempty"` // 平台可能对单词查询数量有限制，这里返回最终实际的查询数量
+	HasPrevious bool  `json:"has_previous"`    // 是否有更多数据
+	HasNext     bool  `json:"has_next"`        // 是否有更多数据
+}
+
+// 游标查询结果条目
+type CursorItem[T any] struct {
+	Cursor string `json:"cursor,omitempty"` // 对应的游标
+	Item   T      `json:"item,omitempty"`   // 对应的数据
+}
+
+// 游标查询结果
+type CursorPage[T any] struct {
+	Extra CursorExtra     `json:"extra,omitempty"` // 扩展信息
+	Items []CursorItem[T] `json:"items,omitempty"` // 结果集
+}
+
 // 性别
 type Gender int
 
@@ -420,4 +454,80 @@ type GetMetafieldRequest struct {
 type GetMetafieldResponse struct {
 	BaseResponse
 	Metafield
+}
+
+// 消息类型
+type MomentType string
+
+const (
+	MomentTypeText  MomentType = "text"  // 文本动态
+	MomentTypeImage MomentType = "image" // 图文动态
+	MomentTypeVideo MomentType = "video" // 视频动态
+)
+
+// 图片动态内容
+type ImageMomentContent struct {
+	Size   int          `json:"size,omitempty"`   // 大小（字节）
+	Format string       `json:"format,omitempty"` // 类型，如：png、jpeg
+	MD5    string       `json:"md5,omitempty"`    // 文件内容MD5
+	Infos  []*ImageInfo `json:"infos,omitempty"`  // 图片信息，索引0是原图，1是中图，2是小图
+}
+
+// 视频动态内容
+type VideoMomentContent struct {
+	URL      string `json:"url,omitempty"`      // 视频URL
+	Duration int    `json:"duration,omitempty"` // 时长（毫秒）
+	Width    int    `json:"width,omitempty"`    // 宽度（像素）
+	Height   int    `json:"height,omitempty"`   // 高度（像素）
+	Size     int    `json:"size,omitempty"`     // 大小（字节）
+	Format   string `json:"format,omitempty"`   // 类型，如：mp4
+	MD5      string `json:"md5,omitempty"`      // 文件内容MD5
+	Snapshot string `json:"snapshot,omitempty"` // 封面图
+}
+
+// 评论
+type Comment struct {
+	CommentId   string     `json:"comment_id,omitempty"`   // 平台评论ID
+	UserId      string     `json:"user_id,omitempty"`      // 发表评论的平台用户ID
+	Nickname    string     `json:"nickname,omitempty"`     // 发表评论的用户昵称
+	Avatar      string     `json:"avatar,omitempty"`       // 发表评论的用户头像
+	CommentedAt *time.Time `json:"commented_at,omitempty"` // 评论时间
+	ReplyTo     string     `json:"reply_to,omitempty"`     // 回复的平台评论ID
+	Text        string     `json:"text,omitempty"`         // 评论文本
+}
+
+// 点赞
+type Like struct {
+	LikeId   string     `json:"like_id,omitempty"`  // 平台点赞ID
+	UserId   string     `json:"user_id,omitempty"`  // 点赞的平台用户ID
+	Nickname string     `json:"nickname,omitempty"` // 点赞的用户昵称
+	Avatar   string     `json:"avatar,omitempty"`   // 点赞的用户头像
+	LikedAt  *time.Time `json:"liked_at,omitempty"` // 点赞时间
+}
+
+// 动态
+type Moment struct {
+	MomentId    string                `json:"moment_id,omitempty"`    // 平台动态ID
+	Account     string                `json:"account,omitempty"`      // 归属账号的平台用户ID
+	UserId      string                `json:"user_id,omitempty"`      // 动态发布人平台用户ID
+	PublishedAt *time.Time            `json:"published_at,omitempty"` // 发布时间
+	Type        MomentType            `json:"type,omitempty"`         // 动态类型
+	Text        string                `json:"text,omitempty"`         // 文案
+	Images      []*ImageMomentContent `json:"images,omitempty"`       // 图片
+	Video       *VideoMomentContent   `json:"video,omitempty"`        // 视频
+	Comments    CursorPage[*Comment]  `json:"comments,omitempty"`     // 评论
+	Likes       CursorPage[*Like]     `json:"likes,omitempty"`        // 点赞
+}
+
+// 查询动态列表请求
+type GetMomentListRequest struct {
+	CursorQuery
+	Account string `json:"account,omitempty"` // 所属账号的平台用户ID
+	UserId  string `json:"user_id,omitempty"` // 发布人的平台用户ID，如果查询账号自己发布的动态，则 account 与 user_id 都为账号的平台用户ID
+}
+
+// 查询懂啊提列表请求返回
+type GetMomentListResponse struct {
+	BaseResponse
+	CursorPage[*Moment]
 }

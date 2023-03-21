@@ -46,6 +46,7 @@ const (
 	UIMCommandSendMessage       = "uim.send_message"        // 发送消息
 	UIMCommandAddContact        = "uim.add_contact"         // 发起好友申请
 	UIMCommandAcceptFriendApply = "uim.accept_friend_apply" // 通过好友请求
+	UIMCommandGetMomentList     = "uim.get_moment_list"     // 获取动态列表
 
 	// deprecated
 	UIMCommandUpdateAccount         = "uim.update_account"          // 更新账号资料
