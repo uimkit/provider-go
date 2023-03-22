@@ -463,6 +463,7 @@ const (
 	MomentTypeText  MomentType = "text"  // 文本动态
 	MomentTypeImage MomentType = "image" // 图文动态
 	MomentTypeVideo MomentType = "video" // 视频动态
+	MomentTypeLink  MomentType = "link"  // 分享链接
 )
 
 // 图片动态内容
@@ -483,6 +484,15 @@ type VideoMomentContent struct {
 	Format   string `json:"format,omitempty"`   // 类型，如：mp4
 	MD5      string `json:"md5,omitempty"`      // 文件内容MD5
 	Snapshot string `json:"snapshot,omitempty"` // 封面图
+}
+
+// 分享链接动态内容
+type LinkMomentContent struct {
+	URL         string `json:"url,omitempty"`         // 链接地址
+	Title       string `json:"title,omitempty"`       // 标题
+	Description string `json:"description,omitempty"` // 描述
+	Image       string `json:"image,omitempty"`       // 图片
+	Thumbnail   string `json:"thumbnail,omitempty"`   // 缩略图
 }
 
 // 评论
@@ -512,8 +522,9 @@ type Moment struct {
 	Text        string                `json:"text,omitempty"`         // 文案
 	Images      []*ImageMomentContent `json:"images,omitempty"`       // 图片
 	Video       *VideoMomentContent   `json:"video,omitempty"`        // 视频
-	Comments    CursorPage[*Comment]  `json:"comments,omitempty"`     // 评论
-	Likes       CursorPage[*Like]     `json:"likes,omitempty"`        // 点赞
+	Link        *LinkMomentContent    `json:"link,omitempty"`         // 分享链接
+	Comments    *CursorPage[*Comment] `json:"comments,omitempty"`     // 评论
+	Likes       *CursorPage[*Like]    `json:"likes,omitempty"`        // 点赞
 }
 
 // 查询动态列表请求
