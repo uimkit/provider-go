@@ -150,6 +150,18 @@ func (client *Client) SendMessage(req *uim.SendMessageRequest, opts ...uim.Reque
 	)
 }
 
+// 获取动态列表
+func (client *Client) GetMomentList(req *uim.GetMomentListRequest, opts ...uim.RequestOption) (*uim.GetMomentListResponse, error) {
+	return uim.CastCommandResponse[*uim.GetMomentListResponse](
+		client.Invoke(
+			uim.UIMCommandGetMomentList,
+			req,
+			&uim.GetMomentListResponse{},
+			opts...,
+		),
+	)
+}
+
 // 申请好友
 func (client *Client) AddContact(req *uim.AddContactRequest, opts ...uim.RequestOption) (*uim.AddContactResponse, error) {
 	return uim.CastCommandResponse[*uim.AddContactResponse](
