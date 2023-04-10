@@ -119,7 +119,6 @@ func TestMessage(t *testing.T) {
 		Account:        defaultUserId,
 		UserId:         userId1,
 		Channel:        defaultGroupId,
-		MentionedType:  uim.MentionedTypeAll,
 		MentionedUsers: make([]string, 0),
 		SentAt:         &now,
 		Type:           uim.MessageTypeText,
@@ -130,7 +129,6 @@ func TestMessage(t *testing.T) {
 	assert.Nil(t, err)
 
 	message.MessageId = messageId2
-	message.MentionedType = uim.MentionedTypeUsers
 	message.MentionedUsers = []string{userId2}
 	message.Text = "yes"
 	err = client.NewMessage(message)
@@ -141,7 +139,6 @@ func TestMessage(t *testing.T) {
 	message.UserId = defaultUserId
 	message.Channel = userId3
 
-	message.MentionedType = uim.MentionedTypeNone
 	message.MentionedUsers = nil
 	message.Text = "在不？"
 	err = client.NewMessage(message)

@@ -175,15 +175,6 @@ const (
 	ConversationTypeCustomerService ConversationType = "customer_service" // 客服
 )
 
-// 消息@用户类型
-type MentionedType int
-
-const (
-	MentionedTypeNone  MentionedType = iota // 没有@
-	MentionedTypeAll                        // 所有人
-	MentionedTypeUsers                      // 指定人
-)
-
 // 消息类型
 type MessageType string
 
@@ -239,7 +230,6 @@ type Message struct {
 	Image           *ImageMessageBody `json:"image,omitempty"`            // 图片消息、视频消息封面
 	Audio           *AudioMessageBody `json:"audio,omitempty"`            // 语音消息
 	Video           *VideoMessageBody `json:"video,omitempty"`            // 视频消息
-	MentionedType   MentionedType     `json:"mentioned_type,omitempty"`   // @用户类型
 	MentionedUsers  []string          `json:"mentioned_users"`            // @用户列表，是平台用户ID
 	SentAt          *time.Time        `json:"sent_at,omitempty"`          // 发送时间
 	Revoked         bool              `json:"revoked,omitempty"`          // 是否撤回
@@ -260,7 +250,6 @@ type SendMessageRequest struct {
 	Audio            *AudioMessageBody `json:"audio,omitempty"`             // 语音消息
 	Video            *VideoMessageBody `json:"video,omitempty"`             // 视频消息
 	Seq              int               `json:"seq,omitempty"`               // 序列号，在会话中唯一且有序增长，用于确保消息顺序
-	MentionedType    MentionedType     `json:"mentioned_type,omitempty"`    // @用户类型
 	MentionedUsers   []string          `json:"mentioned_users"`             // @用户列表，是平台用户ID
 }
 
