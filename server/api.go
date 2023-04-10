@@ -173,3 +173,15 @@ func (client *Client) AddContact(req *uim.AddContactRequest, opts ...uim.Request
 		),
 	)
 }
+
+// 设置群组禁言
+func (client *Client) SetGroupMute(req *uim.SetGroupMuteRequest, opts ...uim.RequestOption) (*uim.SetGroupMuteResponse, error) {
+	return uim.CastCommandResponse[*uim.SetGroupMuteResponse](
+		client.Invoke(
+			uim.UIMCommandSetGroupMute,
+			req,
+			&uim.SetGroupMuteResponse{},
+			opts...,
+		),
+	)
+}

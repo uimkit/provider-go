@@ -384,6 +384,17 @@ type GroupApply struct {
 	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
 }
 
+// 设置群组禁言
+type SetGroupMuteRequest struct {
+	GroupId string `json:"group_id"` // 平台群组ID
+	Mute    bool   `json:"mute"`     // 是否禁言
+}
+
+// 设置群组禁言返回
+type SetGroupMuteResponse struct {
+	BaseResponse
+}
+
 // 添加好友
 type AddContactRequest struct {
 	UserId       string `json:"user_id,omitempty"`       // 账号的平台用户ID

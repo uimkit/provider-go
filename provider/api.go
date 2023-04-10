@@ -131,3 +131,10 @@ type GetChannelInfoHandler func(*cloudevents.Event, *uim.GetChannelInfoRequest) 
 func (client *Client) OnGetChannelInfo(handler GetChannelInfoHandler) {
 	client.OnEvent(uim.UIMCommandGetChannelInfo, uim.CastCommandHandler(handler))
 }
+
+// 设置群组禁言
+type SetGroupMuteHandler func(*cloudevents.Event, *uim.SetGroupMuteRequest) (*uim.SetGroupMuteResponse, error)
+
+func (client *Client) OnSetGroupMute(handler SetGroupMuteHandler) {
+	client.OnEvent(uim.UIMCommandSetGroupMute, uim.CastCommandHandler(handler))
+}
