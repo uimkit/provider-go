@@ -386,6 +386,7 @@ type GroupApply struct {
 
 // 设置群组禁言
 type SetGroupMuteRequest struct {
+	UserId  string `json:"user_id"`  // 账号的平台用户ID
 	GroupId string `json:"group_id"` // 平台群组ID
 	Mute    bool   `json:"mute"`     // 是否禁言
 }
