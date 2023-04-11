@@ -219,6 +219,9 @@ type VideoMessageBody struct {
 	Snapshot string `json:"snapshot,omitempty"` // 封面图
 }
 
+// @所有人
+const MensessageMentionedAll = "all"
+
 // 消息@用户的信息
 type MessageMentionedUser struct {
 	UserId  string `json:"user_id,omitempty"` // 用户ID
