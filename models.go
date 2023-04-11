@@ -220,7 +220,7 @@ type VideoMessageBody struct {
 }
 
 // @所有人
-const MensessageMentionedAll = "all"
+const MessageMentionedAll = "all"
 
 // 消息@用户的信息
 type MessageMentionedUser struct {
