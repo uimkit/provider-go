@@ -219,6 +219,14 @@ type VideoAttachment struct {
 	Snapshot string `json:"snapshot,omitempty"` // 封面图
 }
 
+type LinkAttachment struct {
+	URL         string `json:"url,omitempty"`         // 链接地址
+	Title       string `json:"title,omitempty"`       // 标题
+	Description string `json:"description,omitempty"` // 描述
+	Image       string `json:"image,omitempty"`       // 图片
+	Thumbnail   string `json:"thumbnail,omitempty"`   // 缩略图
+}
+
 // @所有人
 const MessageMentionedAll = "all"
 
@@ -479,35 +487,6 @@ const (
 	MomentTypeLink  MomentType = "link"  // 分享链接
 )
 
-// 图片动态内容
-type ImageMomentContent struct {
-	Size   int          `json:"size,omitempty"`   // 大小（字节）
-	Format string       `json:"format,omitempty"` // 类型，如：png、jpeg
-	MD5    string       `json:"md5,omitempty"`    // 文件内容MD5
-	Infos  []*ImageInfo `json:"infos,omitempty"`  // 图片信息，索引0是原图，1是中图，2是小图
-}
-
-// 视频动态内容
-type VideoMomentContent struct {
-	URL      string `json:"url,omitempty"`      // 视频URL
-	Duration int    `json:"duration,omitempty"` // 时长（毫秒）
-	Width    int    `json:"width,omitempty"`    // 宽度（像素）
-	Height   int    `json:"height,omitempty"`   // 高度（像素）
-	Size     int    `json:"size,omitempty"`     // 大小（字节）
-	Format   string `json:"format,omitempty"`   // 类型，如：mp4
-	MD5      string `json:"md5,omitempty"`      // 文件内容MD5
-	Snapshot string `json:"snapshot,omitempty"` // 封面图
-}
-
-// 分享链接动态内容
-type LinkMomentContent struct {
-	URL         string `json:"url,omitempty"`         // 链接地址
-	Title       string `json:"title,omitempty"`       // 标题
-	Description string `json:"description,omitempty"` // 描述
-	Image       string `json:"image,omitempty"`       // 图片
-	Thumbnail   string `json:"thumbnail,omitempty"`   // 缩略图
-}
-
 // 评论
 type Comment struct {
 	CommentId   string     `json:"comment_id,omitempty"`    // 平台评论ID
@@ -533,9 +512,9 @@ type Moment struct {
 	PublishedAt *time.Time            `json:"published_at,omitempty"` // 发布时间
 	Type        MomentType            `json:"type,omitempty"`         // 动态类型
 	Text        string                `json:"text,omitempty"`         // 文案
-	Images      []*ImageMomentContent `json:"images,omitempty"`       // 图片
-	Video       *VideoMomentContent   `json:"video,omitempty"`        // 视频
-	Link        *LinkMomentContent    `json:"link,omitempty"`         // 分享链接
+	Images      []*ImageAttachment    `json:"images,omitempty"`       // 图片
+	Video       *VideoAttachment      `json:"video,omitempty"`        // 视频
+	Link        *LinkAttachment       `json:"link,omitempty"`         // 分享链接
 	Comments    *CursorPage[*Comment] `json:"comments,omitempty"`     // 评论
 	Likes       *CursorPage[*Like]    `json:"likes,omitempty"`        // 点赞
 }
@@ -551,4 +530,32 @@ type GetMomentListRequest struct {
 type GetMomentListResponse struct {
 	BaseResponse
 	CursorPage[*Moment]
+}
+
+// 发布朋友圈权限
+type MomentPrivacy string
+
+const (
+	MomentPrivacyPublic            MomentPrivacy = "public"              // 无限制
+	MomentPrivacyPrivate           MomentPrivacy = "private"             // 仅自己可见
+	MomentPrivacyVisibleForUsers   MomentPrivacy = "visible_for_users"   // 指定可见
+	MomentPrivacyInvisibleForUsers MomentPrivacy = "invisible_for_users" // 指定不可见
+)
+
+// 发布朋友圈请求
+type PublishMomentRequest struct {
+	Account      string             `json:"account"`                 // 归属账号的平台用户ID
+	Type         MomentType         `json:"type"`                    // 消息类型
+	Text         string             `json:"text,omitempty"`          // 文案
+	Images       []*ImageAttachment `json:"images,omitempty"`        // 图片
+	Video        *VideoAttachment   `json:"video,omitempty"`         // 视频
+	Link         *LinkAttachment    `json:"link,omitempty"`          // 分享链接
+	Privacy      MomentPrivacy      `json:"privacy"`                 // 朋友圈隐私权限
+	PrivacyUsers []string           `json:"privacy_users,omitempty"` // 朋友圈隐私涉及的平台用户ID
+}
+
+// 发送消息结果
+type PublishMomentResponse struct {
+	BaseResponse
+	Moment
 }

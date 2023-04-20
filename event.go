@@ -48,6 +48,7 @@ const (
 	UIMCommandAcceptFriendApply = "uim.accept_friend_apply" // 通过好友请求
 	UIMCommandGetMomentList     = "uim.get_moment_list"     // 获取动态列表
 	UIMCommandSetGroupMute      = "uim.set_group_mute"      // 设置群组禁言
+	UIMCommandPublishMoment     = "uim.publish_moment"      // 发布动态
 
 	// deprecated
 	UIMCommandUpdateAccount         = "uim.update_account"          // 更新账号资料
@@ -62,5 +63,4 @@ const (
 	UIMCommandApplyJoinGroup        = "uim.apply_join_group"        // 申请加入群组
 	UIMCommandAcceptGroupApply      = "uim.accept_group_apply"      // 通过入群申请
 	UIMCommandListGroupMembers      = "uim.list_group_members"      // 查询群成员列表
-	UIMCommandPublishMoment         = "uim.publish_moment"          // 发布动态
 )

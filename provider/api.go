@@ -104,6 +104,13 @@ func (client *Client) OnSendMessage(handler SendMessageHandler) {
 	client.OnEvent(uim.UIMCommandSendMessage, uim.CastCommandHandler(handler))
 }
 
+// 发布朋友圈
+type PublishMomentHandler func(*cloudevents.Event, *uim.PublishMomentRequest) (*uim.PublishMomentResponse, error)
+
+func (client *Client) OnPublishMoment(handler PublishMomentHandler) {
+	client.OnEvent(uim.UIMCommandPublishMoment, uim.CastCommandHandler(handler))
+}
+
 // 获取动态列表
 type GetMomentListHandler func(*cloudevents.Event, *uim.GetMomentListRequest) (*uim.GetMomentListResponse, error)
 

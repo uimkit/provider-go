@@ -150,6 +150,18 @@ func (client *Client) SendMessage(req *uim.SendMessageRequest, opts ...uim.Reque
 	)
 }
 
+// 发布朋友圈
+func (client *Client) PublishMoment(req *uim.PublishMomentRequest, opts ...uim.RequestOption) (*uim.PublishMomentResponse, error) {
+	return uim.CastCommandResponse[*uim.PublishMomentResponse](
+		client.Invoke(
+			uim.UIMCommandPublishMoment,
+			req,
+			&uim.PublishMomentResponse{},
+			opts...,
+		),
+	)
+}
+
 // 获取动态列表
 func (client *Client) GetMomentList(req *uim.GetMomentListRequest, opts ...uim.RequestOption) (*uim.GetMomentListResponse, error) {
 	return uim.CastCommandResponse[*uim.GetMomentListResponse](
