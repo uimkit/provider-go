@@ -193,14 +193,14 @@ type ImageInfo struct {
 	Height int    `json:"height,omitempty"` // 高度（像素）
 }
 
-type ImageMessageBody struct {
+type ImageAttachment struct {
 	Size   int          `json:"size,omitempty"`   // 大小（字节）
 	Format string       `json:"format,omitempty"` // 类型，如：png、jpeg
 	MD5    string       `json:"md5,omitempty"`    // 文件内容MD5
 	Infos  []*ImageInfo `json:"infos,omitempty"`  // 图片信息，索引0是原图，1是中图，2是小图
 }
 
-type AudioMessageBody struct {
+type AudioAttachment struct {
 	URL      string `json:"url,omitempty"`      // 语音URL
 	Duration int    `json:"duration,omitempty"` // 时长（毫秒）
 	Size     int    `json:"size,omitempty"`     // 大小（字节）
@@ -208,7 +208,7 @@ type AudioMessageBody struct {
 	MD5      string `json:"md5,omitempty"`      // 文件内容MD5
 }
 
-type VideoMessageBody struct {
+type VideoAttachment struct {
 	URL      string `json:"url,omitempty"`      // 视频URL
 	Duration int    `json:"duration,omitempty"` // 时长（毫秒）
 	Width    int    `json:"width,omitempty"`    // 宽度（像素）
@@ -231,21 +231,21 @@ type MessageMentionedUser struct {
 
 // 消息
 type Message struct {
-	MessageId       string            `json:"message_id,omitempty"`       // 平台消息ID
-	Channel         string            `json:"channel,omitempty"`          // 消息收发地址，账号回复消息时会发送到此地址
-	Account         string            `json:"account,omitempty"`          // 归属账号的平台用户ID
-	UserId          string            `json:"user_id,omitempty"`          // 消息发送人平台用户ID
-	Type            MessageType       `json:"type,omitempty"`             // 消息类型
-	Text            string            `json:"text,omitempty"`             // 文本消息
-	Image           *ImageMessageBody `json:"image,omitempty"`            // 图片消息、视频消息封面
-	Audio           *AudioMessageBody `json:"audio,omitempty"`            // 语音消息
-	Video           *VideoMessageBody `json:"video,omitempty"`            // 视频消息
-	MentionedUsers  []string          `json:"mentioned_users"`            // @用户列表，是平台用户ID
-	SentAt          *time.Time        `json:"sent_at,omitempty"`          // 发送时间
-	Revoked         bool              `json:"revoked,omitempty"`          // 是否撤回
-	Metadata        map[string]any    `json:"metadata,omitempty"`         // 公开元数据
-	PrivateMetadata map[string]any    `json:"private_metadata,omitempty"` // 私有元数据
-	State           string            `json:"state,omitempty"`            // 发送消息时携带的业务自定义数据，发送后返回消息会透传给业务方
+	MessageId       string           `json:"message_id,omitempty"`       // 平台消息ID
+	Channel         string           `json:"channel,omitempty"`          // 消息收发地址，账号回复消息时会发送到此地址
+	Account         string           `json:"account,omitempty"`          // 归属账号的平台用户ID
+	UserId          string           `json:"user_id,omitempty"`          // 消息发送人平台用户ID
+	Type            MessageType      `json:"type,omitempty"`             // 消息类型
+	Text            string           `json:"text,omitempty"`             // 文本消息
+	Image           *ImageAttachment `json:"image,omitempty"`            // 图片消息、视频消息封面
+	Audio           *AudioAttachment `json:"audio,omitempty"`            // 语音消息
+	Video           *VideoAttachment `json:"video,omitempty"`            // 视频消息
+	MentionedUsers  []string         `json:"mentioned_users"`            // @用户列表，是平台用户ID
+	SentAt          *time.Time       `json:"sent_at,omitempty"`          // 发送时间
+	Revoked         bool             `json:"revoked,omitempty"`          // 是否撤回
+	Metadata        map[string]any   `json:"metadata,omitempty"`         // 公开元数据
+	PrivateMetadata map[string]any   `json:"private_metadata,omitempty"` // 私有元数据
+	State           string           `json:"state,omitempty"`            // 发送消息时携带的业务自定义数据，发送后返回消息会透传给业务方
 }
 
 // 发送消息
@@ -256,9 +256,9 @@ type SendMessageRequest struct {
 	ConversationType ConversationType        `json:"conversation_type,omitempty"` // 消息所属的会话类型
 	Type             MessageType             `json:"type,omitempty"`              // 消息类型
 	Text             string                  `json:"text,omitempty"`              // 文本消息
-	Image            *ImageMessageBody       `json:"image,omitempty"`             // 图片消息、视频消息封面
-	Audio            *AudioMessageBody       `json:"audio,omitempty"`             // 语音消息
-	Video            *VideoMessageBody       `json:"video,omitempty"`             // 视频消息
+	Image            *ImageAttachment        `json:"image,omitempty"`             // 图片消息、视频消息封面
+	Audio            *AudioAttachment        `json:"audio,omitempty"`             // 语音消息
+	Video            *VideoAttachment        `json:"video,omitempty"`             // 视频消息
 	Seq              int                     `json:"seq,omitempty"`               // 序列号，在会话中唯一且有序增长，用于确保消息顺序
 	MentionedUsers   []*MessageMentionedUser `json:"mentioned_users"`             // @用户列表，是平台用户ID
 }
@@ -272,6 +272,8 @@ type SendMessageResponse struct {
 // 消息变更
 type MessageUpdate struct {
 	MessageId       string         `json:"message_id,omitempty"`       // 平台消息ID
+	Channel         string         `json:"channel,omitempty"`          // 消息发送地址
+	Account         string         `json:"account,omitempty"`          // 归属账号的平台用户ID
 	Revoked         *bool          `json:"revoked,omitempty"`          // 是否撤回
 	Metadata        map[string]any `json:"metadata,omitempty"`         // 公开元数据
 	PrivateMetadata map[string]any `json:"private_metadata,omitempty"` // 私有元数据
