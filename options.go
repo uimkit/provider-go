@@ -33,8 +33,8 @@ type Options struct {
 	EnableAsync         bool              `default:"false"`
 	MaxTaskQueueSize    int32             `default:"1000"`
 	GoRoutinePoolSize   int32             `default:"5"`
-	ReadTimeout         time.Duration     `default:"30000000000"` // 30s
-	ConnectTimeout      time.Duration     `default:"10000000000"` // 10s
+	ReadTimeout         time.Duration     `default:"300000000000"` // 300s
+	ConnectTimeout      time.Duration     `default:"10000000000"`  // 10s
 }
 
 func NewOptions() (options *Options) {
