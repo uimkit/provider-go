@@ -465,17 +465,23 @@ func (client *Client) newEvent(eventType string, data any) *cloudevents.Event {
 
 func (client *Client) SendEvent(eventType string, data any, opts ...RequestOption) (err error) {
 	event := client.newEvent(eventType, data)
-	content, _ := json.Marshal(event)
+	content := new(bytes.Buffer)
+	enc := json.NewEncoder(content)
+	enc.SetEscapeHTML(false)
+	_ = enc.Encode(event)
 	req := NewBaseRequest()
-	req.SetContent(content)
+	req.SetContent(content.Bytes())
 	return client.DoAction(req, &BaseResponse{}, opts...)
 }
 
 func (client *Client) Invoke(commandType string, data any, resp Response, opts ...RequestOption) (Response, error) {
 	command := client.newEvent(commandType, data)
-	content, _ := json.Marshal(command)
+	content := new(bytes.Buffer)
+	enc := json.NewEncoder(content)
+	enc.SetEscapeHTML(false)
+	_ = enc.Encode(command)
 	req := NewBaseRequest()
-	req.SetContent(content)
+	req.SetContent(content.Bytes())
 	err := client.DoAction(req, resp, opts...)
 	return resp, err
 }
@@ -535,7 +541,10 @@ func (c *Client) EventHandler() http.HandlerFunc {
 				} else {
 					switch r.Header.Get("accept") {
 					default: // Json
-						if body, err := json.Marshal(resp); err != nil {
+						buf := new(bytes.Buffer)
+						enc := json.NewEncoder(buf)
+						enc.SetEscapeHTML(false)
+						if err := enc.Encode(resp); err != nil {
 							writeError(w, NewServerError(
 								UnsupportedResponseFormatErrorStatus,
 								UnsupportedResponseFormatErrorCode,
@@ -544,7 +553,7 @@ func (c *Client) EventHandler() http.HandlerFunc {
 							))
 						} else {
 							w.WriteHeader(http.StatusOK)
-							_, _ = w.Write(body)
+							_, _ = w.Write(buf.Bytes())
 						}
 					}
 					return
@@ -591,13 +600,15 @@ func marshalBody(request Request) (err error) {
 		return nil
 	}
 	if contentType, contains := request.GetContentType(); contains {
-		var content []byte
 		if contentType == Json {
-			if content, err = json.Marshal(request); err != nil {
+			buf := new(bytes.Buffer)
+			enc := json.NewEncoder(buf)
+			enc.SetEscapeHTML(false)
+			if err = enc.Encode(request); err != nil {
 				err = NewClientError(JsonMarshalErrorCode, JsonMarshalErrorMessage, err)
 				return
 			}
-			request.SetContent(content)
+			request.SetContent(buf.Bytes())
 		}
 	}
 	return
