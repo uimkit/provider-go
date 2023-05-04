@@ -179,12 +179,13 @@ const (
 type MessageType string
 
 const (
-	MessageTypeText     MessageType = "text"     // 文本消息
-	MessageTypeImage    MessageType = "image"    // 图片消息
-	MessageTypeAudio    MessageType = "audio"    // 语音消息
-	MessageTypeVideo    MessageType = "video"    // 视频消息
-	MessageTypeLink     MessageType = "link"     // 链接消息
-	MessageTypeLocation MessageType = "location" // 位置消息
+	MessageTypeText        MessageType = "text"        // 文本消息
+	MessageTypeImage       MessageType = "image"       // 图片消息
+	MessageTypeAudio       MessageType = "audio"       // 语音消息
+	MessageTypeVideo       MessageType = "video"       // 视频消息
+	MessageTypeMiniProgram MessageType = "miniprogram" // 小程序消息
+	MessageTypeLink        MessageType = "link"        // 链接消息
+	MessageTypeLocation    MessageType = "location"    // 位置消息
 )
 
 type ImageInfo struct {
@@ -490,10 +491,11 @@ type GetMetafieldResponse struct {
 type MomentType string
 
 const (
-	MomentTypeText  MomentType = "text"  // 文本动态
-	MomentTypeImage MomentType = "image" // 图文动态
-	MomentTypeVideo MomentType = "video" // 视频动态
-	MomentTypeLink  MomentType = "link"  // 分享链接
+	MomentTypeText        MomentType = "text"        // 文本动态
+	MomentTypeImage       MomentType = "image"       // 图文动态
+	MomentTypeVideo       MomentType = "video"       // 视频动态
+	MomentTypeMiniProgram MomentType = "miniprogram" // 分享链接
+	MomentTypeLink        MomentType = "link"        // 分享链接
 )
 
 // 评论
