@@ -219,6 +219,13 @@ type VideoAttachment struct {
 	Snapshot string `json:"snapshot,omitempty"` // 封面图
 }
 
+type MiniProgramAttachment struct {
+	Content     string `json:"content,omitempty"`     // 小程序内容
+	Title       string `json:"title,omitempty"`       // 标题
+	Description string `json:"description,omitempty"` // 描述
+	Cover       string `json:"cover,omitempty"`       // 封面图片
+}
+
 type LinkAttachment struct {
 	URL         string `json:"url,omitempty"`         // 链接地址
 	Title       string `json:"title,omitempty"`       // 标题
@@ -239,21 +246,22 @@ type MessageMentionedUser struct {
 
 // 消息
 type Message struct {
-	MessageId       string           `json:"message_id,omitempty"`       // 平台消息ID
-	Channel         string           `json:"channel,omitempty"`          // 消息收发地址，账号回复消息时会发送到此地址
-	Account         string           `json:"account,omitempty"`          // 归属账号的平台用户ID
-	UserId          string           `json:"user_id,omitempty"`          // 消息发送人平台用户ID
-	Type            MessageType      `json:"type,omitempty"`             // 消息类型
-	Text            string           `json:"text,omitempty"`             // 文本消息
-	Image           *ImageAttachment `json:"image,omitempty"`            // 图片消息、视频消息封面
-	Audio           *AudioAttachment `json:"audio,omitempty"`            // 语音消息
-	Video           *VideoAttachment `json:"video,omitempty"`            // 视频消息
-	MentionedUsers  []string         `json:"mentioned_users"`            // @用户列表，是平台用户ID
-	SentAt          *time.Time       `json:"sent_at,omitempty"`          // 发送时间
-	Revoked         bool             `json:"revoked,omitempty"`          // 是否撤回
-	Metadata        map[string]any   `json:"metadata,omitempty"`         // 公开元数据
-	PrivateMetadata map[string]any   `json:"private_metadata,omitempty"` // 私有元数据
-	State           string           `json:"state,omitempty"`            // 发送消息时携带的业务自定义数据，发送后返回消息会透传给业务方
+	MessageId       string                 `json:"message_id,omitempty"`       // 平台消息ID
+	Channel         string                 `json:"channel,omitempty"`          // 消息收发地址，账号回复消息时会发送到此地址
+	Account         string                 `json:"account,omitempty"`          // 归属账号的平台用户ID
+	UserId          string                 `json:"user_id,omitempty"`          // 消息发送人平台用户ID
+	Type            MessageType            `json:"type,omitempty"`             // 消息类型
+	Text            string                 `json:"text,omitempty"`             // 文本消息
+	Image           *ImageAttachment       `json:"image,omitempty"`            // 图片消息、视频消息封面
+	Audio           *AudioAttachment       `json:"audio,omitempty"`            // 语音消息
+	Video           *VideoAttachment       `json:"video,omitempty"`            // 视频消息
+	MiniProgram     *MiniProgramAttachment `json:"miniprogram,omitempty"`      // 小程序消息
+	MentionedUsers  []string               `json:"mentioned_users"`            // @用户列表，是平台用户ID
+	SentAt          *time.Time             `json:"sent_at,omitempty"`          // 发送时间
+	Revoked         bool                   `json:"revoked,omitempty"`          // 是否撤回
+	Metadata        map[string]any         `json:"metadata,omitempty"`         // 公开元数据
+	PrivateMetadata map[string]any         `json:"private_metadata,omitempty"` // 私有元数据
+	State           string                 `json:"state,omitempty"`            // 发送消息时携带的业务自定义数据，发送后返回消息会透传给业务方
 }
 
 // 发送消息
@@ -267,6 +275,7 @@ type SendMessageRequest struct {
 	Image            *ImageAttachment        `json:"image,omitempty"`             // 图片消息、视频消息封面
 	Audio            *AudioAttachment        `json:"audio,omitempty"`             // 语音消息
 	Video            *VideoAttachment        `json:"video,omitempty"`             // 视频消息
+	MiniProgram      *MiniProgramAttachment  `json:"miniprogram,omitempty"`       // 小程序消息
 	Seq              int                     `json:"seq,omitempty"`               // 序列号，在会话中唯一且有序增长，用于确保消息顺序
 	MentionedUsers   []*MessageMentionedUser `json:"mentioned_users"`             // @用户列表，是平台用户ID
 }
@@ -506,17 +515,18 @@ type Like struct {
 
 // 动态
 type Moment struct {
-	MomentId    string                `json:"moment_id,omitempty"`    // 平台动态ID
-	Account     string                `json:"account,omitempty"`      // 归属账号的平台用户ID
-	User        *IMUser               `json:"user,omitempty"`         // 动态发布人的信息
-	PublishedAt *time.Time            `json:"published_at,omitempty"` // 发布时间
-	Type        MomentType            `json:"type,omitempty"`         // 动态类型
-	Text        string                `json:"text,omitempty"`         // 文案
-	Images      []*ImageAttachment    `json:"images,omitempty"`       // 图片
-	Video       *VideoAttachment      `json:"video,omitempty"`        // 视频
-	Link        *LinkAttachment       `json:"link,omitempty"`         // 分享链接
-	Comments    *CursorPage[*Comment] `json:"comments,omitempty"`     // 评论
-	Likes       *CursorPage[*Like]    `json:"likes,omitempty"`        // 点赞
+	MomentId    string                 `json:"moment_id,omitempty"`    // 平台动态ID
+	Account     string                 `json:"account,omitempty"`      // 归属账号的平台用户ID
+	User        *IMUser                `json:"user,omitempty"`         // 动态发布人的信息
+	PublishedAt *time.Time             `json:"published_at,omitempty"` // 发布时间
+	Type        MomentType             `json:"type,omitempty"`         // 动态类型
+	Text        string                 `json:"text,omitempty"`         // 文案
+	Images      []*ImageAttachment     `json:"images,omitempty"`       // 图片
+	Video       *VideoAttachment       `json:"video,omitempty"`        // 视频
+	MiniProgram *MiniProgramAttachment `json:"miniprogram,omitempty"`  // 小程序
+	Link        *LinkAttachment        `json:"link,omitempty"`         // 分享链接
+	Comments    *CursorPage[*Comment]  `json:"comments,omitempty"`     // 评论
+	Likes       *CursorPage[*Like]     `json:"likes,omitempty"`        // 点赞
 }
 
 // 查询动态列表请求
@@ -544,14 +554,15 @@ const (
 
 // 发布朋友圈请求
 type PublishMomentRequest struct {
-	Account      string             `json:"account"`                 // 归属账号的平台用户ID
-	Type         MomentType         `json:"type"`                    // 消息类型
-	Text         string             `json:"text,omitempty"`          // 文案
-	Images       []*ImageAttachment `json:"images,omitempty"`        // 图片
-	Video        *VideoAttachment   `json:"video,omitempty"`         // 视频
-	Link         *LinkAttachment    `json:"link,omitempty"`          // 分享链接
-	Privacy      MomentPrivacy      `json:"privacy"`                 // 朋友圈隐私权限
-	PrivacyUsers []string           `json:"privacy_users,omitempty"` // 朋友圈隐私涉及的平台用户ID
+	Account      string                 `json:"account"`                 // 归属账号的平台用户ID
+	Type         MomentType             `json:"type"`                    // 消息类型
+	Text         string                 `json:"text,omitempty"`          // 文案
+	Images       []*ImageAttachment     `json:"images,omitempty"`        // 图片
+	Video        *VideoAttachment       `json:"video,omitempty"`         // 视频
+	MiniProgram  *MiniProgramAttachment `json:"miniprogram,omitempty"`   // 小程序
+	Link         *LinkAttachment        `json:"link,omitempty"`          // 分享链接
+	Privacy      MomentPrivacy          `json:"privacy"`                 // 朋友圈隐私权限
+	PrivacyUsers []string               `json:"privacy_users,omitempty"` // 朋友圈隐私涉及的平台用户ID
 }
 
 // 发送消息结果
