@@ -184,6 +184,7 @@ const (
 	MessageTypeAudio       MessageType = "audio"       // 语音消息
 	MessageTypeVideo       MessageType = "video"       // 视频消息
 	MessageTypeMiniProgram MessageType = "miniprogram" // 小程序消息
+	MessageTypeFile        MessageType = "file"        // 文件消息
 	MessageTypeLink        MessageType = "link"        // 链接消息
 	MessageTypeLocation    MessageType = "location"    // 位置消息
 )
@@ -227,6 +228,14 @@ type MiniProgramAttachment struct {
 	Cover       string `json:"cover,omitempty"`       // 封面图片
 }
 
+type FileAttachment struct {
+	URL    string `json:"url,omitempty"`    // 文件URL
+	Name   string `json:"name,omitempty"`   // 文件名
+	Size   int    `json:"size,omitempty"`   // 大小（字节）
+	Format string `json:"format,omitempty"` // 类型，如：pdf
+	MD5    string `json:"md5,omitempty"`    // 文件内容MD5
+}
+
 type LinkAttachment struct {
 	URL         string `json:"url,omitempty"`         // 链接地址
 	Title       string `json:"title,omitempty"`       // 标题
@@ -257,6 +266,7 @@ type Message struct {
 	Audio           *AudioAttachment       `json:"audio,omitempty"`            // 语音消息
 	Video           *VideoAttachment       `json:"video,omitempty"`            // 视频消息
 	MiniProgram     *MiniProgramAttachment `json:"miniprogram,omitempty"`      // 小程序消息
+	File            *FileAttachment        `json:"file,omitempty"`             // 文件消息
 	MentionedUsers  []string               `json:"mentioned_users"`            // @用户列表，是平台用户ID
 	SentAt          *time.Time             `json:"sent_at,omitempty"`          // 发送时间
 	Revoked         bool                   `json:"revoked,omitempty"`          // 是否撤回
@@ -277,6 +287,7 @@ type SendMessageRequest struct {
 	Audio            *AudioAttachment        `json:"audio,omitempty"`             // 语音消息
 	Video            *VideoAttachment        `json:"video,omitempty"`             // 视频消息
 	MiniProgram      *MiniProgramAttachment  `json:"miniprogram,omitempty"`       // 小程序消息
+	File             *FileAttachment         `json:"file,omitempty"`              // 文件消息
 	Seq              int                     `json:"seq,omitempty"`               // 序列号，在会话中唯一且有序增长，用于确保消息顺序
 	MentionedUsers   []*MessageMentionedUser `json:"mentioned_users"`             // @用户列表，是平台用户ID
 }
