@@ -241,7 +241,6 @@ type LinkAttachment struct {
 	Title       string `json:"title,omitempty"`       // 标题
 	Description string `json:"description,omitempty"` // 描述
 	Image       string `json:"image,omitempty"`       // 图片
-	Thumbnail   string `json:"thumbnail,omitempty"`   // 缩略图
 }
 
 // @所有人
