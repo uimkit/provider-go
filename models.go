@@ -267,6 +267,7 @@ type Message struct {
 	Video           *VideoAttachment       `json:"video,omitempty"`            // 视频消息
 	MiniProgram     *MiniProgramAttachment `json:"miniprogram,omitempty"`      // 小程序消息
 	File            *FileAttachment        `json:"file,omitempty"`             // 文件消息
+	Link            *LinkAttachment        `json:"link,omitempty"`             // 链接消息
 	MentionedUsers  []string               `json:"mentioned_users"`            // @用户列表，是平台用户ID
 	SentAt          *time.Time             `json:"sent_at,omitempty"`          // 发送时间
 	Revoked         bool                   `json:"revoked,omitempty"`          // 是否撤回
@@ -288,6 +289,7 @@ type SendMessageRequest struct {
 	Video            *VideoAttachment        `json:"video,omitempty"`             // 视频消息
 	MiniProgram      *MiniProgramAttachment  `json:"miniprogram,omitempty"`       // 小程序消息
 	File             *FileAttachment         `json:"file,omitempty"`              // 文件消息
+	Link             *LinkAttachment         `json:"link,omitempty"`              // 链接消息
 	Seq              int                     `json:"seq,omitempty"`               // 序列号，在会话中唯一且有序增长，用于确保消息顺序
 	MentionedUsers   []*MessageMentionedUser `json:"mentioned_users"`             // @用户列表，是平台用户ID
 }
